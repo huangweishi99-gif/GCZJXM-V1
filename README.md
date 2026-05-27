@@ -2,6 +2,8 @@
 
 自主学习历史清单成本 → 对甲方招标清单 **精确/模糊** 匹配相同项 → 导出 **投标方 18 列单价分析表**（含 Excel 公式）。
 
+**GitHub 仓库**：https://github.com/huangweishi99-gif/GCZJXM-V1
+
 ## 安装（Python 环境，无需 Cursor 扩展）
 
 ```powershell

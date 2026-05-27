@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+.env.*
+
+# 测试/临时导出（可本地重新生成）
+data/exports/*.xlsx
+
+# PyInstaller 解包产物
+**/lj.exe_extracted/
+
+# IDE
+.idea/
+*.swp
+.DS_Store
+
+# Streamlit
+.streamlit/secrets.toml

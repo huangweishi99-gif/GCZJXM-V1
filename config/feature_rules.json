@@ -1,0 +1,39 @@
+{
+  "critical_keys": [
+    "paint_coats",
+    "tile_bind",
+    "plaster_thickness_mm",
+    "waterproof",
+    "fire_rating",
+    "board_thickness_mm",
+    "keel_type",
+    "glass_type"
+  ],
+  "rules": [
+    {"id": "paint_coats_3", "pattern": "三遍|3遍|三遍涂刷|三遍乳胶漆", "key": "paint_coats", "value": "3", "label": "乳胶漆三遍"},
+    {"id": "paint_coats_2", "pattern": "两遍|2遍|二遍|两遍乳胶漆|两遍涂刷", "key": "paint_coats", "value": "2", "label": "乳胶漆两遍"},
+    {"id": "paint_coats_1", "pattern": "一遍|1遍|一遍涂刷", "key": "paint_coats", "value": "1", "label": "乳胶漆一遍"},
+    {"id": "paint_primer", "pattern": "底漆|封闭底漆|抗碱底漆", "key": "paint_primer", "value": "yes", "label": "含底漆"},
+    {"id": "tile_adhesive", "pattern": "瓷砖胶|胶泥|胶粘剂|薄贴|粘结剂", "key": "tile_bind", "value": "adhesive", "label": "瓷砖胶粘贴"},
+    {"id": "tile_mortar", "pattern": "水泥砂浆.{0,8}粘贴|砂浆结合层|DTG砂浆|DSM15|DS砂浆|水泥砂浆粘结", "key": "tile_bind", "value": "mortar", "label": "水泥砂浆粘贴"},
+    {"id": "tile_dry", "pattern": "干挂|干贴法", "key": "tile_bind", "value": "dry_hang", "label": "干挂"},
+    {"id": "waterproof_yes", "pattern": "防水|防水层|聚合物水泥防水|JS防水", "key": "waterproof", "value": "yes", "label": "有防水"},
+    {"id": "wet_zone", "pattern": "湿区|有水区|卫生间|淋浴", "key": "zone", "value": "wet", "label": "湿区"},
+    {"id": "fire_a", "pattern": "燃烧性能等级A|A级|不燃", "key": "fire_rating", "value": "A", "label": "防火A级"},
+    {"id": "fire_b1", "pattern": "B1级|难燃", "key": "fire_rating", "value": "B1", "label": "防火B1级"},
+    {"id": "keel_light", "pattern": "轻钢龙骨|镀锌龙骨", "key": "keel_type", "value": "light_steel", "label": "轻钢龙骨"},
+    {"id": "keel_steel", "pattern": "钢结构龙骨|方通|镀锌方通", "key": "keel_type", "value": "steel", "label": "钢龙骨"},
+    {"id": "glass_tempered", "pattern": "钢化玻璃", "key": "glass_type", "value": "tempered", "label": "钢化玻璃"},
+    {"id": "glass_laminated", "pattern": "夹胶|中空玻璃|6\\+6", "key": "glass_type", "value": "laminated", "label": "夹胶/中空"},
+    {"id": "putty_water", "pattern": "耐水腻子|防水腻子", "key": "putty", "value": "water_resist", "label": "耐水腻子"}
+  ],
+  "thickness_pattern": "([0-9]+)\\s*(?:mm|毫米|厚)",
+  "name_hints": {
+    "乳胶漆": ["paint_coats"],
+    "涂料": ["paint_coats", "paint_primer"],
+    "地砖": ["tile_bind"],
+    "瓷砖": ["tile_bind"],
+    "墙砖": ["tile_bind"],
+    "抹灰": ["plaster_thickness_mm"]
+  }
+}

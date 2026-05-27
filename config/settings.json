@@ -1,0 +1,34 @@
+{
+  "match": {
+    "mode": "auto",
+    "weights": {
+      "name": 0.20,
+      "feature": 0.35,
+      "tag": 0.45
+    },
+    "exact": {
+      "name_min": 0.98,
+      "feature_min": 0.90,
+      "tag_min": 0.95
+    },
+    "fuzzy": {
+      "name_min": 0.85,
+      "feature_min": 0.70,
+      "tag_min": 0.75,
+      "total_min": 0.72,
+      "reference_min": 0.55
+    }
+  },
+  "pricing": {
+    "aggregate": "median",
+    "default_management_rate": 0,
+    "default_profit_rate": 0,
+    "default_tax_rate": 0
+  },
+  "import": {
+    "pricing_row_requires": ["name", "unit", "quantity"],
+    "remark_optional": true
+  },
+  "export_template": "bidder_export",
+  "database_path": "data/cost_pricing.db"
+}

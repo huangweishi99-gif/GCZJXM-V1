@@ -1,0 +1,52 @@
+{
+  "tender_owner": {
+    "label": "甲方招标清单（列数可变，下列为常见列）",
+    "required_fields": ["name", "unit", "quantity"],
+    "optional_fields": ["seq", "feature", "unit_price", "amount", "remark", "list_code"],
+    "min_columns_hint": 5
+  },
+  "bidder_export": {
+    "label": "投标方单价分析表（2026更新版 18列）",
+    "header_rows": [3, 4],
+    "data_start_row": 6,
+    "rate_cells": {
+      "management_rate": "P4",
+      "profit_rate": "Q4",
+      "tax_rate": "R4"
+    },
+    "default_rates": {
+      "management_rate": 0,
+      "profit_rate": 0,
+      "tax_rate": 0
+    },
+    "columns": {
+      "seq": "A",
+      "name": "B",
+      "feature": "C",
+      "unit": "D",
+      "quantity": "E",
+      "unit_price": "F",
+      "amount": "G",
+      "remark": "H",
+      "cost_unit_price": "I",
+      "material_main": "J",
+      "material_loss_rate": "K",
+      "labor": "L",
+      "material_aux": "M",
+      "machinery": "N",
+      "cost_amount": "O",
+      "management": "P",
+      "profit": "Q",
+      "tax": "R"
+    },
+    "formulas": {
+      "cost_unit_price": "=J{row}+J{row}*K{row}+L{row}+M{row}+N{row}",
+      "cost_amount": "=I{row}*E{row}",
+      "management": "=(J{row}+J{row}*K{row}+L{row}+M{row}+N{row})*$P$4",
+      "profit": "=(J{row}+J{row}*K{row}+L{row}+M{row}+N{row}+P{row})*$Q$4",
+      "tax": "=(J{row}+J{row}*K{row}+L{row}+M{row}+N{row}+P{row}+Q{row})*$R$4",
+      "unit_price": "=I{row}+P{row}+Q{row}+R{row}",
+      "amount": "=E{row}*F{row}"
+    }
+  }
+}

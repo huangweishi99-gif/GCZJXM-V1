@@ -1,0 +1,31 @@
+---
+description: 工程造价智能清单组价项目 — 编码与业务约定
+globs:
+  - "**/*.py"
+  - "**/*.json"
+  - "docs/**"
+---
+
+# 智能清单组价项目规则
+
+## 业务
+
+- **learn**：解析用户提供的清单+成本价，写入 SQLite 知识库（`data/cost_pricing.db`）。
+- **tender + price + export**：甲方招标清单 → 匹配（精确/模糊）→ 投标方 **18列** 单价分析表。
+- 匹配键：**项目名称 + 单位 + 做法标签（特征解析）**；特征全文相似度为辅。
+- 关键做法不一致（如乳胶漆三遍 vs 两遍、砂浆贴砖 vs 瓷砖胶）**禁止自动套价**。
+- 做法规则见 `config/feature_rules.json`，可扩展。
+- 报价行：**有名称 + 有单位 + 有工程量**。
+- 管理费/利润/税金默认 **0%**（`config/settings.json`）。
+
+## 技术
+
+- 表头识别用 `src/ingest/detector.py`，勿写死列号。
+- 匹配用 `src/match/engine.py`（`exact` / `fuzzy` / `auto`）。
+- 导出公式以 `config/column_templates.json` 的 `bidder_export` 为准。
+- 样本与对比表在 `清单数据资料/AI学习清单/`。
+
+## 禁止
+
+- 不要将造价资料默认上传云端。
+- 不要跳过单位一致性校验做自动套价。

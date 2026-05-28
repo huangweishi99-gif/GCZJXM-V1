@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
 
@@ -14,64 +13,15 @@ from src.ingest.detector import (
     is_pricing_row,
     should_skip_sheet,
 )
+from src.ingest.line_types import ParsedLine, ParsedWorkbook, cell_str, to_float
+from src.ingest.unit_price_analysis import (
+    enrich_from_boq_features,
+    parse_unit_price_analysis_sheet,
+)
+from src.normalize.text import normalize_name, normalize_unit
 
-
-@dataclass
-class ParsedLine:
-    sheet_name: str
-    section_path: str
-    seq: str
-    list_code: str
-    name: str
-    feature: str
-    unit: str
-    quantity: Optional[float]
-    unit_price: Optional[float]
-    amount: Optional[float]
-    remark: str
-    material_main: Optional[float] = None
-    material_loss_rate: Optional[float] = None
-    material_aux: Optional[float] = None
-    labor: Optional[float] = None
-    machinery: Optional[float] = None
-    management: Optional[float] = None
-    profit: Optional[float] = None
-    tax: Optional[float] = None
-    cost_unit_price: Optional[float] = None
-    cost_amount: Optional[float] = None
-    row_index: int = 0
-    has_cost_detail: bool = False
-
-
-@dataclass
-class ParsedWorkbook:
-    file_path: str
-    project_name: str
-    sheets: List[str]
-    lines: List[ParsedLine] = field(default_factory=list)
-    format_hint: str = "unknown"
-    layouts: List[SheetLayout] = field(default_factory=list)
-
-
-def _cell_str(v: Any) -> str:
-    if v is None or (isinstance(v, float) and pd.isna(v)):
-        return ""
-    return str(v).strip()
-
-
-def _to_float(v: Any) -> Optional[float]:
-    if v is None or (isinstance(v, float) and pd.isna(v)):
-        return None
-    try:
-        return float(v)
-    except (TypeError, ValueError):
-        s = str(v).strip().replace(",", "")
-        if not s:
-            return None
-        try:
-            return float(s)
-        except ValueError:
-            return None
+_cell_str = cell_str
+_to_float = to_float
 
 
 def _get(row: Tuple[Any, ...], mapping: dict, key: str, alt: Optional[str] = None) -> Any:
@@ -121,6 +71,11 @@ def _parse_sheet(df: pd.DataFrame, sheet_name: str) -> Tuple[List[ParsedLine], O
             cost_up = col("cost_unit_price")
         if cost_up is None and any(x is not None for x in (mm, la, ma, mc)):
             cost_up = (mm or 0) * (1 + (loss or 0)) + (la or 0) + (ma or 0) + (mc or 0)
+        listed_up = col("unit_price")
+        if listed_up is not None and listed_up > 0:
+            cost_up = listed_up
+        elif (cost_up is None or cost_up == 0) and listed_up:
+            cost_up = listed_up
 
         feat = _cell_str(_get(row, m, "feature"))
         spec = _cell_str(_get(row, m, "spec")) if "spec" in m else ""
@@ -130,13 +85,18 @@ def _parse_sheet(df: pd.DataFrame, sheet_name: str) -> Tuple[List[ParsedLine], O
             feat = f"[{sheet_name}] {feat}"
 
         qty = col("quantity")
+        if qty is None and col("unit_price") is not None:
+            qty = 1.0
         cost_amt = col("cost_amount")
         if cost_amt is None and cost_up is not None and qty is not None:
             cost_amt = round(cost_up * qty, 2)
 
-        has_cost = cost_up is not None or any(
-            x is not None for x in (mm, la, ma, mc, col("management"), col("profit"))
-        )
+        has_cost = cost_up is not None and cost_up > 0
+        if not has_cost:
+            has_cost = any(
+                x is not None and x > 0
+                for x in (mm, la, ma, mc, col("management"), col("profit"))
+            )
 
         lines.append(
             ParsedLine(
@@ -184,21 +144,44 @@ def _extract_project_name(xl: pd.ExcelFile, path: Path) -> str:
     return path.stem
 
 
+def _is_analysis_sheet(sheet_name: str) -> bool:
+    return "综合单价分析" in sheet_name.replace(" ", "")
+
+
 def parse_workbook(path: str | Path) -> ParsedWorkbook:
     path = Path(path)
     xl = pd.ExcelFile(path)
     project_name = _extract_project_name(xl, path)
     all_lines: List[ParsedLine] = []
     layouts: List[SheetLayout] = []
+    analysis_lines: List[ParsedLine] = []
 
     for sn in xl.sheet_names:
-        if should_skip_sheet(sn):
+        if should_skip_sheet(sn) or _is_analysis_sheet(sn):
             continue
         df = pd.read_excel(xl, sheet_name=sn, header=None)
         parsed, layout = _parse_sheet(df, sn)
         if layout:
             layouts.append(layout)
         all_lines.extend(parsed)
+
+    for sn in xl.sheet_names:
+        if not _is_analysis_sheet(sn):
+            continue
+        df = pd.read_excel(xl, sheet_name=sn, header=None)
+        analysis_lines.extend(parse_unit_price_analysis_sheet(df, sn.strip()))
+
+    if analysis_lines:
+        enrich_from_boq_features(analysis_lines, all_lines)
+        covered = {
+            (normalize_name(l.name), normalize_unit(l.unit)) for l in analysis_lines
+        }
+        for ln in all_lines:
+            if _is_analysis_sheet(ln.sheet_name):
+                continue
+            if (normalize_name(ln.name), normalize_unit(ln.unit)) in covered:
+                ln.has_cost_detail = False
+        all_lines.extend(analysis_lines)
 
     cost_lines = sum(1 for ln in all_lines if ln.has_cost_detail)
     if cost_lines > len(all_lines) * 0.3:

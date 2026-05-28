@@ -30,6 +30,7 @@
   "thickness_pattern": "([0-9]+)\\s*(?:mm|毫米|厚)",
   "name_hints": {
     "乳胶漆": ["paint_coats"],
+    "无机涂料": ["paint_coats", "paint_primer"],
     "涂料": ["paint_coats", "paint_primer"],
     "地砖": ["tile_bind"],
     "瓷砖": ["tile_bind"],

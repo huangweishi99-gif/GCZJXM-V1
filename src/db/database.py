@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS projects (
     project_type    TEXT NOT NULL DEFAULT 'historical',
     source_file     TEXT,
     region          TEXT,
+    city            TEXT NOT NULL DEFAULT '',
+    price_tier      TEXT NOT NULL DEFAULT 'mid',
     remark          TEXT,
     created_at      TEXT NOT NULL DEFAULT (datetime('now','localtime'))
 );
@@ -113,6 +115,115 @@ CREATE INDEX IF NOT EXISTS idx_boq_project ON boq_lines(project_id);
 CREATE INDEX IF NOT EXISTS idx_std_method ON standard_items(name_norm, unit_norm, method_signature);
 CREATE INDEX IF NOT EXISTS idx_cost_std ON cost_records(standard_item_id);
 CREATE INDEX IF NOT EXISTS idx_pricing_job ON pricing_lines(job_id);
+
+-- 清单项 × 城市 × 档位 聚合单价（主材/辅材/人工/机械）
+CREATE TABLE IF NOT EXISTS line_price_facts (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    standard_item_id    INTEGER NOT NULL REFERENCES standard_items(id) ON DELETE CASCADE,
+    city                TEXT NOT NULL DEFAULT '',
+    price_tier          TEXT NOT NULL DEFAULT 'mid',
+    material_main       REAL NOT NULL DEFAULT 0,
+    material_loss_rate  REAL NOT NULL DEFAULT 0,
+    material_aux        REAL NOT NULL DEFAULT 0,
+    labor               REAL NOT NULL DEFAULT 0,
+    machinery           REAL NOT NULL DEFAULT 0,
+    cost_unit_price     REAL NOT NULL DEFAULT 0,
+    sample_count        INTEGER NOT NULL DEFAULT 0,
+    updated_at          TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+    UNIQUE(standard_item_id, city, price_tier)
+);
+
+-- 材料规格 × 城市 × 档位 主材价库（如 600*600 地砖）
+CREATE TABLE IF NOT EXISTS material_price_facts (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    material_key        TEXT NOT NULL,
+    material_category   TEXT,
+    spec_text           TEXT,
+    unit_norm           TEXT NOT NULL,
+    city                TEXT NOT NULL DEFAULT '',
+    price_tier          TEXT NOT NULL DEFAULT 'mid',
+    material_main       REAL NOT NULL,
+    material_loss_rate  REAL NOT NULL DEFAULT 0,
+    sample_count        INTEGER NOT NULL DEFAULT 0,
+    updated_at          TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+    UNIQUE(material_key, unit_norm, city, price_tier)
+);
+
+CREATE INDEX IF NOT EXISTS idx_line_facts_lookup
+    ON line_price_facts(city, price_tier, standard_item_id);
+CREATE INDEX IF NOT EXISTS idx_mat_facts_lookup
+    ON material_price_facts(city, price_tier, material_key);
+
+-- 主材/辅材判定目录（主材辅材判定.xlsx）
+CREATE TABLE IF NOT EXISTS material_catalog (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    material_code   TEXT,
+    material_name   TEXT NOT NULL,
+    name_norm       TEXT NOT NULL,
+    category        TEXT,
+    trade           TEXT,
+    role            TEXT NOT NULL,
+    brands          TEXT,
+    source_file     TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_mat_catalog_name ON material_catalog(name_norm);
+
+-- 定额子目库（广联达消耗量标准，待 OCR/录入）
+CREATE TABLE IF NOT EXISTS quota_items (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    quota_book          TEXT NOT NULL,
+    chapter             TEXT,
+    item_code           TEXT,
+    item_name           TEXT NOT NULL,
+    name_norm           TEXT NOT NULL,
+    unit_quota          TEXT NOT NULL,
+    unit_scale          REAL NOT NULL DEFAULT 1,
+    work_content        TEXT,
+    labor_norm          REAL,
+    material_main_norm  REAL,
+    material_aux_norm   REAL,
+    machinery_norm      REAL,
+    note                TEXT,
+    UNIQUE(quota_book, item_code)
+);
+
+CREATE TABLE IF NOT EXISTS boq_quota_links (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    boq_name_pattern    TEXT,
+    feature_pattern     TEXT,
+    quota_item_id       INTEGER NOT NULL REFERENCES quota_items(id),
+    convert_note        TEXT
+);
+
+-- 工艺类型 × 城市 × 档位 人材机价型（从历史成本聚合，支撑 ≥80% 判断）
+CREATE TABLE IF NOT EXISTS craft_cost_profiles (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    craft_type          TEXT NOT NULL,
+    trade               TEXT NOT NULL DEFAULT 'decoration',
+    tag_key             TEXT NOT NULL DEFAULT '',
+    tag_value           TEXT NOT NULL DEFAULT '',
+    unit_norm           TEXT NOT NULL,
+    city                TEXT NOT NULL DEFAULT '',
+    price_tier          TEXT NOT NULL DEFAULT 'mid',
+    material_main       REAL NOT NULL DEFAULT 0,
+    material_loss_rate  REAL NOT NULL DEFAULT 0,
+    material_aux        REAL NOT NULL DEFAULT 0,
+    labor               REAL NOT NULL DEFAULT 0,
+    machinery           REAL NOT NULL DEFAULT 0,
+    cost_unit_price     REAL NOT NULL DEFAULT 0,
+    main_share          REAL NOT NULL DEFAULT 0,
+    aux_share           REAL NOT NULL DEFAULT 0,
+    labor_share         REAL NOT NULL DEFAULT 0,
+    mach_share          REAL NOT NULL DEFAULT 0,
+    sample_count        INTEGER NOT NULL DEFAULT 0,
+    confidence_base     REAL NOT NULL DEFAULT 0.5,
+    updated_at          TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+    UNIQUE(craft_type, trade, tag_key, tag_value, unit_norm, city, price_tier)
+);
+
+CREATE INDEX IF NOT EXISTS idx_craft_profile_lookup
+    ON craft_cost_profiles(craft_type, city, price_tier, unit_norm);
 """
 
 _MIGRATIONS = [
@@ -126,6 +237,8 @@ _MIGRATIONS = [
     "ALTER TABLE standard_items ADD COLUMN method_summary TEXT",
     "ALTER TABLE boq_lines ADD COLUMN method_signature TEXT",
     "ALTER TABLE boq_lines ADD COLUMN method_summary TEXT",
+    "ALTER TABLE projects ADD COLUMN city TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE projects ADD COLUMN price_tier TEXT NOT NULL DEFAULT 'mid'",
 ]
 
 

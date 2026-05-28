@@ -78,3 +78,41 @@ def feature_fingerprint(feature_norm: str) -> str:
     s = feature_norm.replace("\n", "|")
     s = re.sub(r"\s+", "", s)
     return s[:500]
+
+
+# 项目特征常见条目前缀（清单规范：1.部位 2.做法 … 每点一道工序）
+_CRAFT_PREFIX = re.compile(
+    r"^(\d+)[.、．)]\s*|^[（(]\d+[)）]\s*|^[-•·]\s*"
+)
+
+
+def parse_craft_points(feature: str | None) -> List[str]:
+    """
+    将项目特征拆成施工工艺条目（每行/每点一道工序）。
+    造价组价时：名称定项，特征定工法与单价。
+    """
+    text = normalize_feature(feature)
+    if not text:
+        return []
+
+    points: List[str] = []
+    for raw in text.split("\n"):
+        line = raw.strip()
+        if len(line) < 4:
+            continue
+        line = _CRAFT_PREFIX.sub("", line).strip()
+        if not line:
+            continue
+        # 跳过纯栏目名
+        if re.fullmatch(r"(部位|做法|工艺|材料|厚度|规格|项目特征|工作内容)[：:]?", line):
+            continue
+        points.append(line)
+
+    # 单行内用分号罗列的多点做法
+    if len(points) <= 1 and "；" in text:
+        parts = [_CRAFT_PREFIX.sub("", p).strip() for p in text.split("；")]
+        parts = [p for p in parts if len(p) >= 6]
+        if len(parts) >= 2:
+            points = parts
+
+    return points

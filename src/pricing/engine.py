@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
+from src.knowledge.query import PricingContext
 from src.knowledge.repository import KnowledgeRepository
 from src.match.engine import (
     MatchMode,
@@ -46,6 +47,7 @@ class PricingEngine:
                 (tender_project_id,),
             )
             job_id = int(cur.lastrowid)
+            ctx: PricingContext = self.repo.get_project_context(tender_project_id)
 
             filled = 0
             exact_count = 0
@@ -72,7 +74,9 @@ class PricingEngine:
                         exact_count += 1
                     elif level == "B":
                         fuzzy_count += 1
-                    records = self.repo.get_cost_records_for_item(sid) if sid else []
+                    records = (
+                        self.repo.get_cost_records_for_item(sid, ctx=ctx) if sid else []
+                    )
                     method_note = f"做法「{candidate.method_summary}」"
                     if candidate.tag_conflicts:
                         method_note += "；" + "；".join(candidate.tag_conflicts)
@@ -169,10 +173,13 @@ class PricingEngine:
         feature: str,
         unit: str,
         top_n: int = 5,
+        exclude_standard_item_ids: Optional[set] = None,
     ) -> List[dict]:
         conn = self.repo.conn()
         try:
             pool = self._load_pool(conn)
+            if exclude_standard_item_ids:
+                pool = [p for p in pool if p["id"] not in exclude_standard_item_ids]
         finally:
             conn.close()
         cands = rank_candidates(

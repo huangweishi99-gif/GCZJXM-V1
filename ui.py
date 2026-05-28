@@ -10,6 +10,7 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent
 
 from src.db.database import init_database
+from src.export.inplace_bidder import fill_tender_inplace
 from src.export.excel import export_pricing_job
 from src.knowledge.repository import KnowledgeRepository
 from src.link.export_link import export_dedupe_workbook, export_linked_pricing
@@ -28,8 +29,10 @@ match_mode = st.sidebar.selectbox(
 st.sidebar.markdown(
     """
 **精确**：名称≥98%、特征≥92%  
-**模糊**：名称≥85%、特征≥75%  
-**自动**：先精确后模糊
+**模糊**：名称≥85%、特征≥78%  
+**自动**：先精确后模糊  
+
+**组价铁律**：项目特征每一条 = 一道施工工艺，不能只看名称套价。
 
 **去重链接**：相同名称+单位+做法只填母表一次，明细自动引用（吸收 lj.exe 思路）
 """
@@ -52,14 +55,15 @@ with tab_learn:
         st.success(json.dumps(r, ensure_ascii=False, indent=2))
 
 with tab_tender:
-    st.subheader("甲方招标清单 → 单价分析表")
+    st.subheader("甲方招标清单 → 原表填价（投标方成本列 + 链接）")
     up2 = st.file_uploader("招标 Excel", type=["xlsx", "xls"], key="tender")
     tname = st.text_input("工程名称（可选）", key="tname")
-    dedupe_link = st.checkbox(
-        "去重链接导出（推荐大清单）",
+    ref_fill = st.checkbox(
+        "未精确匹配时填入历史参考价",
         value=True,
-        help="导出含「去重母表」Sheet，相同项成本只填一次，明细行公式自动链接",
+        help="D/C 级也按知识库 Top1 填入主材/人工等，备注标注需确认",
     )
+    extra_tpl = st.checkbox("另存独立模板表（可选）", value=False)
     if up2 and st.button("导入并组价导出", type="primary"):
         with tempfile.NamedTemporaryFile(delete=False, suffix=Path(up2.name).suffix) as tmp:
             tmp.write(up2.getvalue())
@@ -68,16 +72,22 @@ with tab_tender:
         imp = repo.import_tender(path, project_name=tname or None)
         eng = PricingEngine(match_mode=match_mode)
         pr = eng.run_for_project(imp["project_id"])
-        out = export_pricing_job(pr["job_id"], use_dedupe_link=dedupe_link)
+        out = fill_tender_inplace(path, pr["job_id"], reference_fill=ref_fill)
         st.success(f"组价完成：{json.dumps(pr, ensure_ascii=False)}")
-        if dedupe_link:
-            st.info("已含去重母表：请在「去重母表」Sheet 修改主材/人工等，明细行自动更新。")
+        st.info("已在原表追加成本单价/主材/人工/辅材/机械/合价等列；1#、2# 相同项已公式链接。")
         st.download_button(
-            "下载单价分析表",
+            "下载组价后招标清单",
             data=Path(out).read_bytes(),
             file_name=Path(out).name,
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
+        if extra_tpl:
+            tpl = export_pricing_job(pr["job_id"], use_dedupe_link=True)
+            st.download_button(
+                "下载独立模板表（可选）",
+                data=Path(tpl).read_bytes(),
+                file_name=Path(tpl).name,
+            )
 
 with tab_dedupe:
     st.subheader("清单去重 + 链接（不经过知识库）")

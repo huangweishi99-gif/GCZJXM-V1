@@ -1,0 +1,175 @@
+{
+  "_comment": "公开市场/信息价参考（深圳中档，元/清单单位），无历史匹配时优先于工艺价型中位数。来源：造价通/招标控制价/行业报价2024-2025。",
+  "default_city": "深圳",
+  "default_tier": "mid",
+  "rules": [
+    {
+      "id": "tile_600_floor",
+      "name_keywords": ["块料楼地面", "地砖"],
+      "feature_keywords": ["600*600", "600×600", "600*600"],
+      "units": ["㎡", "m2"],
+      "material_main": 82,
+      "material_aux": 14,
+      "labor": 48,
+      "machinery": 2,
+      "source_note": "市场参考：600地砖材料约75-90+铺贴人工辅料(深圳2024)"
+    },
+    {
+      "id": "tile_800_floor",
+      "name_keywords": ["块料楼地面", "地砖"],
+      "feature_keywords": ["800*800", "800×800"],
+      "units": ["㎡", "m2"],
+      "material_main": 95,
+      "material_aux": 15,
+      "labor": 52,
+      "machinery": 2,
+      "source_note": "市场参考：800地砖铺贴"
+    },
+    {
+      "id": "tile_floor_generic",
+      "name_keywords": ["块料楼地面", "块料楼梯", "地砖", "石材地面", "铺砖石材"],
+      "units": ["㎡", "m2"],
+      "material_main": 75,
+      "material_aux": 13,
+      "labor": 50,
+      "machinery": 2,
+      "source_note": "市场参考：块料楼地面综合"
+    },
+    {
+      "id": "spc_floor",
+      "name_keywords": ["SPC", "spc地板"],
+      "units": ["㎡", "m2"],
+      "material_main": 68,
+      "material_aux": 10,
+      "labor": 32,
+      "machinery": 1.5,
+      "source_note": "市场参考：SPC地板包工包料"
+    },
+    {
+      "id": "waterproof_polyurethane_floor",
+      "name_keywords": ["涂膜防水", "防水"],
+      "feature_keywords": ["聚氨酯"],
+      "units": ["㎡", "m2"],
+      "material_main": 18,
+      "material_aux": 4,
+      "labor": 24,
+      "machinery": 1.5,
+      "source_note": "市场参考：聚氨酯涂膜防水两遍约35-50元/㎡(控制价/行业)"
+    },
+    {
+      "id": "waterproof_floor",
+      "name_keywords": ["涂膜防水", "地面防水", "楼地面防水"],
+      "units": ["㎡", "m2"],
+      "material_main": 15,
+      "material_aux": 3.5,
+      "labor": 22,
+      "machinery": 1.2,
+      "source_note": "市场参考：楼地面涂膜防水"
+    },
+    {
+      "id": "stone_threshold",
+      "name_keywords": ["石门槛", "门槛石"],
+      "units": ["m", "米"],
+      "material_main": 95,
+      "material_aux": 18,
+      "labor": 45,
+      "machinery": 2,
+      "source_note": "市场参考：石门槛按延长米m计量，含石材+粘结+防水处理约160元/m"
+    },
+    {
+      "id": "ceramic_wall",
+      "name_keywords": ["块料墙面", "墙砖", "墙面砖"],
+      "units": ["㎡", "m2"],
+      "material_main": 55,
+      "material_aux": 14,
+      "labor": 58,
+      "machinery": 2,
+      "source_note": "市场参考：墙砖湿贴"
+    },
+    {
+      "id": "paint_ceiling",
+      "name_keywords": ["无机涂料", "乳胶漆", "天棚涂料", "涂料"],
+      "feature_keywords": ["天棚", "顶棚"],
+      "units": ["㎡", "m2"],
+      "material_main": 12,
+      "material_aux": 3,
+      "labor": 24,
+      "machinery": 0.8,
+      "source_note": "市场参考：天棚涂料(无机涂料=乳胶漆口径)包工包料约35-48元/㎡"
+    },
+    {
+      "id": "paint_ceiling_waterproof",
+      "name_keywords": ["无机涂料", "乳胶漆"],
+      "feature_keywords": ["天棚", "防水"],
+      "units": ["㎡", "m2"],
+      "material_main": 14,
+      "material_aux": 3.5,
+      "labor": 26,
+      "machinery": 0.8,
+      "source_note": "市场参考：天棚防水涂料(同乳胶漆工序)"
+    },
+    {
+      "id": "wall_paint_plaster",
+      "name_keywords": ["涂料饰面", "乳胶漆", "无机涂料", "墙面涂料", "白色涂料"],
+      "units": ["㎡", "m2"],
+      "material_main": 8,
+      "material_aux": 9,
+      "labor": 28,
+      "machinery": 1,
+      "source_note": "市场参考：墙面腻子+涂料饰面"
+    },
+    {
+      "id": "ceiling_gypsum",
+      "name_keywords": ["吊顶", "石膏板吊顶", "轻钢天棚"],
+      "feature_keywords": ["石膏板", "轻钢龙骨"],
+      "units": ["㎡", "m2"],
+      "material_main": 28,
+      "material_aux": 42,
+      "labor": 55,
+      "machinery": 2,
+      "source_note": "市场参考：轻钢龙骨石膏板吊顶"
+    },
+    {
+      "id": "backfill_ceramsite",
+      "name_keywords": ["陶粒", "回填陶粒"],
+      "units": ["m3", "m³"],
+      "material_main": 185,
+      "material_aux": 22,
+      "labor": 75,
+      "machinery": 12,
+      "source_note": "市场参考：陶粒回填层"
+    },
+    {
+      "id": "stainless_trim",
+      "name_keywords": ["不锈钢"],
+      "feature_keywords": ["50mm", "收边", "嵌条"],
+      "units": ["m", "米"],
+      "material_main": 52,
+      "material_aux": 6,
+      "labor": 18,
+      "machinery": 1,
+      "source_note": "市场参考：不锈钢线条/收边"
+    },
+    {
+      "id": "glass_mirror",
+      "name_keywords": ["玻璃", "镜面玻璃"],
+      "units": ["㎡", "m2"],
+      "material_main": 165,
+      "material_aux": 12,
+      "labor": 42,
+      "machinery": 2,
+      "source_note": "市场参考：镜面玻璃安装"
+    },
+    {
+      "id": "aluminum_canopy",
+      "name_keywords": ["雨棚", "铝板"],
+      "feature_keywords": ["铝板", "户外"],
+      "units": ["㎡", "m2"],
+      "material_main": 220,
+      "material_aux": 25,
+      "labor": 65,
+      "machinery": 3,
+      "source_note": "市场参考：户外铝板雨棚"
+    }
+  ]
+}

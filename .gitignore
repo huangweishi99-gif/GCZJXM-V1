@@ -7,8 +7,16 @@ venv/
 .env
 .env.*
 
-# 测试/临时导出（可本地重新生成）
+# 本地知识库与导出（可 relearn-all / tender --export 重新生成）
+data/cost_pricing.db
 data/exports/*.xlsx
+data/exports/**/*.xlsx
+
+# 广联达定额扫描 PDF（体积>100MB，仅本地学习，待 OCR 后入库）
+清单数据资料/**/广联达定额/*.pdf
+
+# VS Code（本地配置）
+.vscode/
 
 # PyInstaller 解包产物
 **/lj.exe_extracted/

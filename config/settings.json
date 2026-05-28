@@ -2,19 +2,20 @@
   "match": {
     "mode": "auto",
     "weights": {
-      "name": 0.20,
-      "feature": 0.35,
-      "tag": 0.45
+      "name": 0.15,
+      "feature": 0.40,
+      "tag": 0.45,
+      "_comment": "名称定项；特征全文+逐条工艺定工法；标签捕获关键做法冲突"
     },
     "exact": {
       "name_min": 0.98,
-      "feature_min": 0.90,
+      "feature_min": 0.92,
       "tag_min": 0.95
     },
     "fuzzy": {
       "name_min": 0.85,
-      "feature_min": 0.70,
-      "tag_min": 0.75,
+      "feature_min": 0.78,
+      "tag_min": 0.78,
       "total_min": 0.72,
       "reference_min": 0.55
     }
@@ -23,7 +24,24 @@
     "aggregate": "median",
     "default_management_rate": 0,
     "default_profit_rate": 0,
-    "default_tax_rate": 0
+    "default_tax_rate": 0,
+    "reference_line": {
+      "name_min": 0.55,
+      "feature_min": 0.42,
+      "tag_min": 0.45,
+      "total_min": 0.58,
+      "_comment": "整项参照：名称与特征均须达到相似度，禁止仅因综合分误套"
+    },
+    "material_fallback": {
+      "enabled": true,
+      "min_score": 0.55,
+      "_comment": "无整项参照时按品类+规格(如600*600地砖)取历史主材单价中位数"
+    }
+  },
+  "component_judge": {
+    "auto_fill_confidence": 0.8,
+    "review_confidence": 0.55,
+    "_comment": "多源融合判断人材机：≥0.8 自动填入；0.55~0.8 参考填入并标注；<0.55 不填"
   },
   "import": {
     "pricing_row_requires": ["name", "unit", "quantity"],

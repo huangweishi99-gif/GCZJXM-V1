@@ -1,0 +1,37 @@
+{
+  "_paint_equivalence": "定额与市场口径：无机涂料与乳胶漆同套涂料子目/同查价",
+  "size_pattern": "(\\d{2,4})\\s*[*×xX]\\s*(\\d{2,4})",
+  "thickness_pattern": "(\\d+)\\s*(?:mm|毫米)(?!/㎡)",
+  "categories": [
+    {
+      "id": "tile",
+      "keywords": ["地砖", "瓷砖", "墙砖", "块料楼地面", "块料墙面", "块料楼梯"],
+      "units": ["㎡", "m2"]
+    },
+    {
+      "id": "spc_floor",
+      "keywords": ["spc", "spc地板", "石塑"],
+      "units": ["㎡"]
+    },
+    {
+      "id": "paint",
+      "keywords": ["乳胶漆", "无机涂料", "涂料", "油漆"],
+      "units": ["㎡"]
+    },
+    {
+      "id": "aluminum",
+      "keywords": ["铝单板", "铝板", "铝格栅"],
+      "units": ["㎡"]
+    },
+    {
+      "id": "stone",
+      "keywords": ["石材", "大理石", "花岗岩", "石门槛"],
+      "units": ["㎡", "m"]
+    },
+    {
+      "id": "glass",
+      "keywords": ["玻璃", "钢化玻璃", "镜面玻璃"],
+      "units": ["㎡"]
+    }
+  ]
+}

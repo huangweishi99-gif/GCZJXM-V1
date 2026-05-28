@@ -9,16 +9,33 @@ import pandas as pd
 
 # 字段别名（成本列须在 unit_price 之前，避免「材料成本单价」误匹配「单价」）
 FIELD_ALIASES: Dict[str, List[str]] = {
-    "seq": ["序号", "项号", "编码序号"],
+    "seq": ["序号", "项号", "编码序号", "编号"],
     "list_code": ["项目编码", "清单编码", "清单编号"],
-    "name": ["项目名称", "分区分类描述", "名称"],
-    "feature": ["项目特征描述", "项目特征", "特征描述", "特征", "部位", "工作内容"],
+    "name": ["项目名称", "分部分项名称", "分部分项", "分区分类描述", "名称", "材料名称"],
+    "feature": [
+        "项目特征描述",
+        "项目特征",
+        "特征描述",
+        "特征",
+        "部位",
+        "工作内容",
+        "型号及规格",
+    ],
     "spec": ["规格"],
     "unit": ["计量单位", "计量\n单位", "单位"],
-    "quantity": ["工程量", "工程数量", "数量", "成本数量", "增加数量"],
+    "quantity": [
+        "24/25年暂估工程量",
+        "暂估工程量",
+        "成本数量",
+        "增加数量",
+        "工程数量",
+        "工程量",
+        "数量",
+    ],
     "material_main": [
         "材料成本单价",
         "材料计划成本单价",
+        "材料费",
         "主材费",
         "主材",
     ],
@@ -27,9 +44,16 @@ FIELD_ALIASES: Dict[str, List[str]] = {
     "material_aux": ["辅材费", "辅材"],
     "machinery": ["机械费", "机械"],
     "cost_amount": ["成本合价", "材料成本总价", "人工成本总价"],
-    "cost_unit_price": ["成本单价", "成本价"],
-    "unit_price": ["综合单价（不含税）", "综合单价(不含税)", "综合单价", "单价"],
-    "amount": ["合价", "合计"],
+    "cost_unit_price": ["成本单价", "成本价", "不含税单价"],
+    "unit_price": [
+        "综合单价（不含税）",
+        "综合单价(不含税)",
+        "综合单价",
+        "不含税单价",
+        "含税单价",
+        "综合单价（不含税）",
+    ],
+    "amount": ["合价", "合计", "不含税合价", "含税合价"],
     "remark": ["备注", "说明"],
     "management": ["管理费"],
     "profit": ["利润"],
@@ -41,7 +65,20 @@ _PRIMARY_KEYS = ("name", "unit", "quantity")
 # 或 name+unit（工程量可能在下一行子表头才出现）
 _FALLBACK_KEYS = ("name", "unit")
 
-SKIP_SHEET_KEYWORDS = ("封面", "报价说明", "报价汇总", "汇总", "说明", "品牌", "材料表")
+SKIP_SHEET_KEYWORDS = (
+    "封面",
+    "报价说明",
+    "报价汇总",
+    "价格说明",
+    "清单及价格",
+    "汇总",
+    "说明",
+    "品牌",
+    "材料表",
+    "品牌表",
+    "施工图纸",
+    "图纸",
+)
 
 
 def _norm_header(text: Any) -> str:
@@ -56,6 +93,8 @@ def _match_field(header: str, field: str) -> bool:
     h = _norm_header(header)
     if not h:
         return False
+    if field == "quantity" and ("规则" in h or "计算规则" in h):
+        return False
     for alias in FIELD_ALIASES.get(field, []):
         a = _norm_header(alias)
         if h == a:
@@ -65,25 +104,41 @@ def _match_field(header: str, field: str) -> bool:
                 continue
             if a == "成本单价" and ("材料" in h or "人工" in h):
                 continue
+            if field == "quantity" and ("规则" in h or "适用范围" in h):
+                continue
+            if field == "feature" and "适用范围" in h:
+                continue
             return True
     return False
 
 
 def _score_header_row(row_values: List[Any]) -> Tuple[int, Dict[str, int]]:
-    """返回 (得分, 列映射)。"""
+    """返回 (得分, 列映射)。每字段取最佳匹配列（最长别名优先）。"""
     mapping: Dict[str, int] = {}
     hits = 0
-    for idx, val in enumerate(row_values):
-        h = _norm_header(val)
-        if not h:
-            continue
-        for field, aliases in FIELD_ALIASES.items():
-            if field in mapping:
+    for field, aliases in FIELD_ALIASES.items():
+        best_idx: Optional[int] = None
+        best_score = 0
+        for idx, val in enumerate(row_values):
+            h = _norm_header(val)
+            if not h:
                 continue
-            if _match_field(h, field):
-                mapping[field] = idx
-                hits += 1
-                break
+            for alias in aliases:
+                a = _norm_header(alias)
+                if h == a:
+                    score = 1000 + len(a)
+                elif len(a) >= 3 and a in h:
+                    if not _match_field(h, field):
+                        continue
+                    score = len(a)
+                else:
+                    continue
+                if score > best_score:
+                    best_score = score
+                    best_idx = idx
+        if best_idx is not None:
+            mapping[field] = best_idx
+            hits += 1
     primary = sum(1 for k in _PRIMARY_KEYS if k in mapping)
     fallback = sum(1 for k in _FALLBACK_KEYS if k in mapping)
     score = primary * 10 + fallback * 5 + hits
@@ -197,8 +252,12 @@ def detect_sheet_layout(df: pd.DataFrame, sheet_name: str) -> Optional[SheetLayo
         sub = df.iloc[best_row + 1].tolist()
         sub_score, sub_map = _score_header_row(sub)
         sub_joined = " ".join(_norm_header(v) for v in sub if _norm_header(v))
-        is_subheader = "综合单价" in sub_joined or (
-            "unit_price" in sub_map and "quantity" not in sub_map
+        is_subheader = (
+            "综合单价" in sub_joined
+            or "不含税单价" in sub_joined
+            or "含税单价" in sub_joined
+            or ("单价" in sub_joined and "合价" in sub_joined)
+            or ("unit_price" in sub_map and "quantity" not in sub_map)
         )
         if is_subheader:
             sub_row_idx = best_row + 1
@@ -209,6 +268,7 @@ def detect_sheet_layout(df: pd.DataFrame, sheet_name: str) -> Optional[SheetLayo
         k in merged
         for k in (
             "cost_unit_price",
+            "unit_price",
             "material_main",
             "material_main_cost",
             "labor",
@@ -225,12 +285,23 @@ def detect_sheet_layout(df: pd.DataFrame, sheet_name: str) -> Optional[SheetLayo
     )
 
 
+def _parse_qty(v: Any) -> Optional[float]:
+    if v is None or (isinstance(v, float) and pd.isna(v)):
+        return None
+    if isinstance(v, str) and not v.strip():
+        return None
+    try:
+        return float(str(v).strip().replace(",", ""))
+    except (TypeError, ValueError):
+        return None
+
+
 def is_pricing_row(row: Tuple[Any, ...], column_map: Dict[str, int]) -> bool:
-    """有项目名称 + 单位 + 工程量 → 需要报价。"""
+    """有名称 + 单位 + (工程量 或 综合单价) → 需要报价。"""
     name_i = column_map.get("name")
     unit_i = column_map.get("unit")
     qty_i = column_map.get("quantity")
-    if name_i is None or unit_i is None or qty_i is None:
+    if name_i is None or unit_i is None:
         return False
     name = _norm_header(row[name_i] if name_i < len(row) else "")
     unit = _norm_header(row[unit_i] if unit_i < len(row) else "")
@@ -238,12 +309,20 @@ def is_pricing_row(row: Tuple[Any, ...], column_map: Dict[str, int]) -> bool:
         return False
     if "合计" in name.replace(" ", ""):
         return False
-    qty_raw = row[qty_i] if qty_i < len(row) else None
-    if qty_raw is None or (isinstance(qty_raw, float) and pd.isna(qty_raw)):
+    if "小计" in name.replace(" ", ""):
         return False
-    if isinstance(qty_raw, str) and not qty_raw.strip():
-        return False
-    return True
+
+    qty_ok = qty_i is not None and _parse_qty(row[qty_i] if qty_i < len(row) else None) is not None
+
+    up_i = column_map.get("unit_price")
+    if up_i is None:
+        up_i = column_map.get("cost_unit_price")
+    price_ok = False
+    if up_i is not None and up_i < len(row):
+        p = _parse_qty(row[up_i])
+        price_ok = p is not None and p > 0
+
+    return qty_ok or price_ok
 
 
 def should_skip_sheet(sheet_name: str) -> bool:

@@ -1,0 +1,168 @@
+{
+  "_comment": "工艺类型识别 + 人材机应有结构 + 无历史样本时的份额模板（仅作兜底）",
+  "min_profile_samples": 3,
+  "auto_fill_confidence": 0.8,
+  "review_confidence": 0.55,
+  "crafts": [
+    {
+      "id": "paint_wall",
+      "trade": "decoration",
+      "label": "墙面涂料",
+      "keywords": ["墙面乳胶漆", "内墙乳胶漆", "墙面粉刷", "墙面涂料", "无机涂料"],
+      "units": ["㎡"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.32, "aux": 0.1, "labor": 0.54, "machinery": 0.02},
+      "tag_keys": ["paint_coats", "paint_primer", "putty"]
+    },
+    {
+      "id": "paint_ceiling",
+      "trade": "decoration",
+      "label": "天棚涂料",
+      "keywords": ["天棚乳胶漆", "顶棚乳胶漆", "天棚涂料", "顶面乳胶漆", "无机涂料", "白色无机涂料"],
+      "units": ["㎡"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.3, "aux": 0.12, "labor": 0.55, "machinery": 0.02},
+      "tag_keys": ["paint_coats", "paint_primer"]
+    },
+    {
+      "id": "tile_floor",
+      "trade": "decoration",
+      "label": "地面块料",
+      "keywords": ["地砖", "块料楼地面", "地面砖", "石材地面", "水磨石砖"],
+      "units": ["㎡"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.55, "aux": 0.12, "labor": 0.3, "machinery": 0.02},
+      "tag_keys": ["tile_bind", "waterproof"]
+    },
+    {
+      "id": "tile_wall",
+      "trade": "decoration",
+      "label": "墙面块料",
+      "keywords": ["墙砖", "块料墙面", "墙面砖", "瓷砖墙面"],
+      "units": ["㎡"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.52, "aux": 0.14, "labor": 0.32, "machinery": 0.02},
+      "tag_keys": ["tile_bind", "waterproof"]
+    },
+    {
+      "id": "partition_light_steel",
+      "trade": "decoration",
+      "label": "轻钢龙骨隔墙",
+      "keywords": ["轻钢龙骨隔墙", "龙骨隔墙", "石膏板隔墙"],
+      "units": ["㎡"],
+      "expects": {"material_main": 0, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.08, "aux": 0.42, "labor": 0.48, "machinery": 0.02},
+      "tag_keys": ["keel_type", "board_thickness_mm"]
+    },
+    {
+      "id": "ceiling_suspended",
+      "trade": "decoration",
+      "label": "吊顶",
+      "keywords": ["吊顶", "铝扣板吊顶", "石膏板吊顶", "格栅吊顶", "铝格栅"],
+      "units": ["㎡"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.38, "aux": 0.28, "labor": 0.32, "machinery": 0.02},
+      "tag_keys": ["keel_type"]
+    },
+    {
+      "id": "curtain_wall",
+      "trade": "decoration",
+      "label": "幕墙/铝板",
+      "keywords": ["铝单板", "幕墙", "铝板幕墙", "氟碳"],
+      "units": ["㎡"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.58, "aux": 0.12, "labor": 0.28, "machinery": 0.02},
+      "tag_keys": ["keel_type", "glass_type"]
+    },
+    {
+      "id": "glass_partition",
+      "trade": "decoration",
+      "label": "玻璃隔断",
+      "keywords": ["玻璃隔断", "钢化玻璃", "中空玻璃"],
+      "units": ["㎡"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.62, "aux": 0.1, "labor": 0.26, "machinery": 0.02},
+      "tag_keys": ["glass_type"]
+    },
+    {
+      "id": "waterproof",
+      "trade": "decoration",
+      "label": "防水",
+      "keywords": ["防水", "防水层", "防水工程"],
+      "units": ["㎡", "m"],
+      "expects": {"material_main": 0, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.15, "aux": 0.45, "labor": 0.38, "machinery": 0.02},
+      "tag_keys": ["waterproof"]
+    },
+    {
+      "id": "plaster",
+      "trade": "decoration",
+      "label": "抹灰找平",
+      "keywords": ["抹灰", "找平", "水泥砂浆面层"],
+      "units": ["㎡"],
+      "expects": {"material_main": 0, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.05, "aux": 0.35, "labor": 0.58, "machinery": 0.02},
+      "tag_keys": ["plaster_thickness_mm"]
+    },
+    {
+      "id": "floor_spc",
+      "trade": "decoration",
+      "label": "地板/SPC",
+      "keywords": ["spc", "木地板", "复合地板", "地板"],
+      "units": ["㎡"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.48, "aux": 0.1, "labor": 0.4, "machinery": 0.02},
+      "tag_keys": []
+    },
+    {
+      "id": "electrical_cable",
+      "trade": "mep",
+      "label": "电缆线缆",
+      "keywords": ["电缆", "YJV", "WDZ", "BV线", "电线"],
+      "units": ["m", "㎡", "项"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.65, "aux": 0.08, "labor": 0.25, "machinery": 0.02},
+      "tag_keys": []
+    },
+    {
+      "id": "electrical_light",
+      "trade": "mep",
+      "label": "灯具",
+      "keywords": ["灯具", "筒灯", "射灯", "灯带", "LED灯"],
+      "units": ["套", "个", "m", "㎡"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.7, "aux": 0.08, "labor": 0.2, "machinery": 0.02},
+      "tag_keys": []
+    },
+    {
+      "id": "electrical_panel",
+      "trade": "mep",
+      "label": "配电箱柜",
+      "keywords": ["配电箱", "配电柜", "开关箱", "强电"],
+      "units": ["台", "套", "个", "项"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.55, "aux": 0.12, "labor": 0.3, "machinery": 0.02},
+      "tag_keys": []
+    },
+    {
+      "id": "fire",
+      "trade": "mep",
+      "label": "消防",
+      "keywords": ["消防", "喷淋", "烟感", "消火栓"],
+      "units": ["个", "套", "m", "㎡", "项"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.5, "aux": 0.15, "labor": 0.32, "machinery": 0.02},
+      "tag_keys": []
+    },
+    {
+      "id": "generic_finish",
+      "trade": "decoration",
+      "label": "装饰综合",
+      "keywords": ["装修", "装饰", "精装"],
+      "units": ["㎡", "项", "m"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.4, "aux": 0.2, "labor": 0.36, "machinery": 0.02},
+      "tag_keys": []
+    }
+  ]
+}

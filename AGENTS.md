@@ -1,34 +1,44 @@
 # AGENTS.md — 智能清单组价系统
 
+> **接手本项目请先读：`docs/PROJECT_HANDOFF.md`（目的、现状、下一步、命令）。**
+
 ## 项目是什么
 
-本地化 **工程造价知识库 + 自动组价**：学习历史 Excel 清单，对招标清单做精确/模糊匹配，导出投标方单价分析表。
+本地化 **工程造价知识库 + 自动组价**：学习历史 Excel 清单，对招标清单匹配填价，**保留原招标 Excel 结构**追加成本列并同表去重链接。
+
+**实务口径**：项目名称 = 做什么；项目特征 = 施工步骤；主材多在名称里。无机涂料 = 乳胶漆（套价/匹配同乳胶漆）。
+
+**填价链**：整项历史 → 市场参考价 → 工艺价型（慎用）→ 主材规格价。见 `src/pricing/component_judge.py`、`docs/人材机判断机制.md`。
+
+**每次给资料**：`learn` 自动解剖 → 人材机 + 城市×档位价库 → `data/exports/解剖报告/`。
 
 ## 关键路径
 
 | 路径 | 说明 |
 |------|------|
-| `app.py` | CLI 入口 |
-| `ui.py` | Streamlit 图形界面 |
-| `src/ingest/` | 表头识别、解析 |
-| `src/match/` | 相同项精确/模糊匹配 |
-| `src/knowledge/` | 入库 learn |
-| `src/pricing/` | 组价 |
-| `src/export/` | Excel 导出 |
-| `config/settings.json` | 阈值、匹配模式、费率 |
-| `清单数据资料/AI学习清单/` | 用户样本 |
+| `docs/PROJECT_HANDOFF.md` | **交接规格（必读）** |
+| `app.py` | CLI：`learn` `tender` `judge` `audit-judge` `import-catalog` |
+| `src/export/inplace_bidder.py` | 原表组价导出（默认交付） |
+| `src/pricing/component_judge.py` | 人材机多源判断 |
+| `config/market_reference_prices.json` | 无历史时的市场参考价 |
+| `config/settings.json` | 匹配阈值、auto_fill 0.8 |
+| `清单数据资料/AI学习清单/` | 历史样本 |
+| `清单数据资料/甲方招标清单/` | 招标样例 |
 
 ## 常用命令
 
 ```bash
 pip install -r requirements.txt
-python app.py init
-python app.py learn "清单数据资料/AI学习清单/xxx.xlsx"
-python app.py tender "招标.xlsx" --price --export --match-mode auto
-python app.py match "项目名称" --feature "特征" --unit "㎡"
-streamlit run ui.py
+python app.py init && python app.py import-catalog
+python app.py relearn-all --reset
+python app.py tender "招标.xlsx" --city 深圳 --tier mid --price --export
+python app.py audit-judge
 ```
 
-## 修改匹配逻辑时
+## 下一步（摘要）
 
-同时更新：`config/settings.json`、`src/match/engine.py`、`docs/需求与实施计划-智能清单组价系统.md`。
+见 `docs/PROJECT_HANDOFF.md` §9：补深圳信息价、多 learn 历史项目、广联达定额 OCR、audit 监控准确率。
+
+## 修改匹配/组价时
+
+同步更新：`config/settings.json`、`src/match/engine.py`、`src/pricing/component_judge.py`、相关 `docs/`。

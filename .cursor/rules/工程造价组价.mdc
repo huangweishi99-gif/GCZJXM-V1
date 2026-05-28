@@ -10,17 +10,24 @@ globs:
 
 ## 业务
 
-- **learn**：解析用户提供的清单+成本价，写入 SQLite 知识库（`data/cost_pricing.db`）。
+- **learn（每次给资料必做解剖）**：解析清单+成本 → 拆分主材/辅材/人工/机械 → 写入知识库 → 按**城市×高/中/低档**聚合 `line_price_facts`、`material_price_facts` → 导出 `data/exports/解剖报告/`（见 `docs/知识库解剖流程.md`）。
 - **tender + price + export**：甲方招标清单 → 匹配（精确/模糊）→ 投标方 **18列** 单价分析表。
-- 匹配键：**项目名称 + 单位 + 做法标签（特征解析）**；特征全文相似度为辅。
-- 关键做法不一致（如乳胶漆三遍 vs 两遍、砂浆贴砖 vs 瓷砖胶）**禁止自动套价**。
-- 做法规则见 `config/feature_rules.json`，可扩展。
+- **组价铁律**：
+  - **项目名称** = 要做什么（主材品类多在名称里，且多为肉眼可见面层）
+  - **项目特征** = **施工步骤**（逐条比对，不能只看名称套价）
+  - **主材/辅材** = 按 Excel 表头入库；主材≈名称面层，辅材≈安装辅耗；判定目录见 `material_catalog`（`python app.py import-catalog`）
+  - **清单 vs 定额**：特征=施工工艺=定额做法；定额单位常≠清单单位（见 `docs/清单定额与组价原理.md`、`docs/装饰工程施工工艺与定额套用.md`）
+  - **人材机判断**：`judge_line_components` 多源融合，置信度≥0.8 自动填（见 `docs/人材机判断机制.md`）
+- 匹配键：**项目名称 + 单位 + 做法标签 + 逐条工艺指纹**；特征全文相似度为辅。
+- 关键做法或工艺条目不一致（如乳胶漆三遍 vs 两遍、砂浆贴砖 vs 瓷砖胶、少写防水）**禁止自动套价**。
+- 做法规则见 `config/feature_rules.json`；工艺拆分见 `src/normalize/text.py` → `parse_craft_points`。
 - 报价行：**有名称 + 有单位 + 有工程量**。
 - 管理费/利润/税金默认 **0%**（`config/settings.json`）。
 
 ## 技术
 
 - 表头识别用 `src/ingest/detector.py`，勿写死列号。
+- **综合单价分析表**（块式 Sheet）用 `src/ingest/unit_price_analysis.py` 解析，**优先于**清单表单价入库。
 - 匹配用 `src/match/engine.py`（`exact` / `fuzzy` / `auto`）。
 - 导出公式以 `config/column_templates.json` 的 `bidder_export` 为准。
 - 样本与对比表在 `清单数据资料/AI学习清单/`。

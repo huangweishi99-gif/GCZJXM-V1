@@ -13,6 +13,7 @@ from src.normalize.feature_extract import (
     compare_profiles,
     extract_feature_profile,
 )
+from src.normalize.paint_equiv import paint_name_match_score
 from src.normalize.text import normalize_feature, normalize_name, normalize_unit
 
 
@@ -108,6 +109,7 @@ def score_pair(
     na, nb = normalize_name(name_a), normalize_name(name_b)
     fa, fb = normalize_feature(feature_a), normalize_feature(feature_b)
     ns = fuzz.token_set_ratio(na, nb) / 100.0
+    ns = max(ns, paint_name_match_score(name_a, name_b))
     fs = (
         fuzz.token_set_ratio(fa, fb) / 100.0
         if (fa or fb)

@@ -2,6 +2,7 @@
 """项目主材编号价表（如售楼处主材料.xlsx）导入与查询。"""
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 from typing import List, Optional, Tuple
@@ -33,6 +34,67 @@ _CODE_CATEGORY = {
     "MR": "镜子",
     "DF": "其他饰面",
 }
+
+
+_SUPPLEMENTS_PATH = Path(__file__).resolve().parents[2] / "config" / "project_material_supplements.json"
+_supplements_cache: Optional[dict] = None
+
+
+def _load_supplements() -> dict:
+    global _supplements_cache
+    if _supplements_cache is not None:
+        return _supplements_cache
+    if not _SUPPLEMENTS_PATH.exists():
+        _supplements_cache = {}
+        return _supplements_cache
+    _supplements_cache = json.loads(_SUPPLEMENTS_PATH.read_text(encoding="utf-8"))
+    return _supplements_cache
+
+
+def _supplement_material_row(
+    code: str,
+    *,
+    project_ref: Optional[str],
+    unit: str,
+    city: str = "",
+) -> Optional[dict]:
+    refs = []
+    if project_ref:
+        refs.append(project_ref)
+    if city:
+        refs.append(f"city:{city}")
+    for ref in refs:
+        sup = _load_supplements().get(ref, {}).get(code.upper())
+        if not sup:
+            continue
+        un = normalize_unit(str(sup.get("unit_norm") or "㎡"))
+        line_u = normalize_unit(unit)
+        if line_u and un and line_u != un and line_u not in ("m2", "㎡") and un in ("m2", "㎡"):
+            pass
+        elif line_u and un and line_u != un:
+            continue
+        return {
+            "material_code": code.upper(),
+            "material_name": str(sup.get("material_name") or code),
+            "material_main": float(sup["material_main"]),
+            "unit_norm": un,
+            "project_name": ref,
+            "project_ref": ref,
+        }
+    return None
+
+
+def _material_try_codes(code: str) -> List[str]:
+    """编号查价顺序：WD-03→WD-04；ST-01.02→ST-01。"""
+    try_codes = [code.upper()]
+    if code.upper() == "WD-03":
+        try_codes.append("WD-04")
+    m_sub = re.match(r"^(ST-\d+)\.\d+", code, re.I)
+    if m_sub:
+        parent = m_sub.group(1).upper()
+        if parent not in try_codes:
+            try_codes.append(parent)
+    return try_codes
 
 
 def extract_material_codes(name: str, feature: str = "") -> List[str]:
@@ -219,10 +281,7 @@ def lookup_project_material_row(
     conn = get_connection(db_path)
     try:
         for code in codes:
-            try_codes = [code]
-            if code.upper() == "WD-03":
-                try_codes.append("WD-04")
-            for tc in try_codes:
+            for tc in _material_try_codes(code):
                 queries = []
                 params: list = []
                 if project_ref:
@@ -243,19 +302,28 @@ def lookup_project_material_row(
                         params.append((tc, city_try, tier_try, un, un))
 
                 row = None
+                from_supplement = False
                 for sql, p in zip(queries, params):
                     row = conn.execute(sql, p).fetchone()
                     if row:
                         break
                 if not row:
+                    row = _supplement_material_row(
+                        tc, project_ref=project_ref, unit=unit, city=city
+                    )
+                    from_supplement = row is not None
+                if not row:
                     continue
+                row_dict = dict(row) if not isinstance(row, dict) else row
+                prefix = "[补充表价]" if from_supplement else "[项目主材表]"
                 note = (
-                    f"[项目主材表]{row['project_name']}·{tc}·{row['material_name']}"
-                    f" 主材{float(row['material_main']):.2f}/{row['unit_norm']}"
+                    f"{prefix}{row_dict.get('project_name', project_ref or '')}·{tc}·"
+                    f"{row_dict.get('material_name', tc)}"
+                    f" 主材{float(row_dict['material_main']):.2f}/{row_dict.get('unit_norm', '')}"
                 )
-                if tc != code:
+                if tc != code.upper():
                     note = f"{note}（{code}→{tc}）"
-                return dict(row), note
+                return row_dict, note
     finally:
         conn.close()
     return None, ""

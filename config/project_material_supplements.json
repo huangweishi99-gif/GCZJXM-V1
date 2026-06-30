@@ -1,0 +1,22 @@
+{
+  "_comment": "主材 xlsx 中 DISPIMG 等导致无价时，按项目 ref 补充表价（元/㎡）",
+  "haide_sales_office": {
+    "WD-03": {
+      "material_name": "木饰面",
+      "unit_norm": "㎡",
+      "material_main": 580
+    },
+    "WD-04": {
+      "material_name": "木饰面",
+      "unit_norm": "㎡",
+      "material_main": 580
+    }
+  },
+  "city:珠海": {
+    "PT-07": {
+      "material_name": "涂料",
+      "unit_norm": "㎡",
+      "material_main": 101
+    }
+  }
+}

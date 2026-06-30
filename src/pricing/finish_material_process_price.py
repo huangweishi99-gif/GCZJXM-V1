@@ -14,10 +14,12 @@ WALLPAPER_PREFIXES = ("WP",)
 
 
 def _stone_install_labor(text: str, name: str) -> float:
-    """地面石材湿贴：主材表价外固定铺工（海德/深海口径）。"""
+    """地面石材湿贴 / 墙面干挂铺工（海德/深海口径）。"""
+    if re.search(r"干挂", text):
+        return 145.0
     if re.search(r"70mm|20mm.*砂浆|DS-M15", text):
         return 140.0
-    if re.search(r"墙面|墙身|干挂", text) or "墙面" in name:
+    if re.search(r"墙面|墙身", text) or "墙面" in name:
         return 95.0
     return 130.0
 
@@ -45,18 +47,22 @@ def decompose_stone_material_price(
         main = 450.0
         labor = 125.0 if re.search(r"湿贴", text) else 150.0
     elif re.search(r"20mm", text) and re.search(r"地面|楼地面", text + name):
-        if re.search(r"波打|拼花", text):
+        if re.search(r"拼花", text):
+            main = round(material_unit_price * 1.66, 2)
+        elif re.search(r"波打", text):
             pass
         elif material_code.upper().startswith("ST-03"):
             main = round(material_unit_price * 0.944, 2)
         elif material_code.upper().startswith("ST-06"):
             main = round(material_unit_price * 1.31, 2)
         else:
-            main = round(material_unit_price * 1.66, 2)
+            main = round(material_unit_price * 1.22, 2)
+    if re.search(r"不锈钢线条", text):
+        main = round(main + 155.0, 2)
+    elif re.search(r"波浪", text) and re.search(r"干挂", text):
+        main = round(max(main, material_unit_price * 1.25), 2)
     if re.search(r"拼花|波打", text):
         labor = 130.0
-    if re.search(r"粘结剂|干混砂浆|云石胶|防护", text):
-        aux = 46.2
     mach = round(max(12.0, material_unit_price * 0.022), 2)
     note = (
         f"[工序拆价·{material_code}={material_unit_price:.0f}元/㎡·石材]"
@@ -88,6 +94,8 @@ def decompose_wood_veneer_material_price(
         return None, ""
 
     text = normalize_name(f"{name}\n{feature}")
+    if re.search(r"平开门|门扇|DR\d", name, re.I):
+        return None, ""
     if not re.search(r"木饰面|WD", text) and "WD" not in material_code.upper():
         return None, ""
 
@@ -95,9 +103,18 @@ def decompose_wood_veneer_material_price(
     aux = 35.0
     mach = 15.0
     main = material_unit_price
-    if re.search(r"阻燃板|轻钢龙骨|钢结构", text) or "墙面" in name:
-        main = round(material_unit_price * 2.2, 2)
-        aux = 123.75 if material_unit_price >= 500 else round(material_unit_price * 0.21, 2)
+    code_u = material_code.upper()
+    has_substrate = bool(re.search(r"阻燃板|轻钢龙骨|钢结构", text)) or "墙面" in name
+    if has_substrate:
+        if code_u.startswith("WD-03"):
+            main = round(material_unit_price * 2.2, 2)
+            aux = 123.75 if material_unit_price >= 500 else round(material_unit_price * 0.21, 2)
+        elif code_u.startswith("WD-04"):
+            main = material_unit_price
+            aux = 35.0
+        else:
+            main = round(material_unit_price * 2.2, 2)
+            aux = 123.75 if material_unit_price >= 500 else round(material_unit_price * 0.21, 2)
 
     note = (
         f"[工序拆价·{material_code}={material_unit_price:.0f}元/㎡·木饰面]"

@@ -144,6 +144,17 @@ def is_paint_line_item(name: str, feature: str) -> bool:
     return any(k in text for k in PAINT_LINE_KEYWORDS)
 
 
+def _apply_direct_cost_mode(comps: dict) -> dict:
+    """简易/地库涂料金标准：直接费≈主材+人工，辅材机械不单列。"""
+    mat = float(comps.get("material_main") or 0)
+    if mat < 15.0:
+        out = dict(comps)
+        out["material_aux"] = 0.0
+        out["machinery"] = 0.0
+        return out
+    return comps
+
+
 def _decompose_from_scope(
     scope: PaintProcessScope,
     material_unit_price: float,
@@ -192,13 +203,13 @@ def _decompose_from_scope(
             f"[工序拆价·{code_label}={material_unit_price:.0f}元/㎡·仅计辅材]"
             f"{'；'.join(note_parts)}；简易涂料项"
         )
-        return {
+        return _apply_direct_cost_mode({
             "material_main": mat,
             "material_loss_rate": 0.0,
             "material_aux": aux,
             "labor": labor,
             "machinery": 0.2,
-        }, note
+        }), note
 
     if scope.texture_finish:
         finish_factor = 0.78
@@ -263,6 +274,8 @@ def lookup_paint_by_feature(
     use_texture = scope.texture_finish
     finish_price = tier_prices["texture_inorganic"] if use_texture else tier_prices["latex"]
     comps, note = _decompose_from_scope(scope, finish_price)
+    if scope.light_coat_only:
+        return _apply_direct_cost_mode(comps), note
     return comps, note
 
 
@@ -288,24 +301,25 @@ def decompose_paint_material_price(
 
     if not scope.texture_finish and not scope.light_coat_only:
         if scope.has_primer and scope.top_coats >= 2:
-            mat, labor, aux = 5.5, 19.5, 6.0
-        else:
             mat = round(min(12.0, material_unit_price * 0.05), 2)
-            labor = None
-            aux = None
-        if labor is not None:
-            return {
+            comps = {
                 "material_main": mat,
                 "material_loss_rate": 0.0,
-                "material_aux": aux,
-                "labor": labor,
-                "machinery": 0.2,
-            }, f"[工序拆价·{material_code}]一底两面标准涂刷（金标准口径）"
+                "material_aux": 6.0,
+                "labor": 19.5,
+                "machinery": 0.0,
+            }
+            if "投影面" in normalize_name(f"{name}\n{feature}"):
+                comps = _apply_direct_cost_mode(comps)
+            return comps, f"[工序拆价·{material_code}]一底两面标准涂刷（金标准口径）"
         material_unit_price = min(material_unit_price, DEFAULT_FINISH_PRICE["mid"]["latex"])
 
-    return _decompose_from_scope(
+    comps, note = _decompose_from_scope(
         scope,
         material_unit_price,
         material_code=material_code,
         material_name=material_name,
     )
+    if scope.light_coat_only:
+        return _apply_direct_cost_mode(comps), note
+    return comps, note

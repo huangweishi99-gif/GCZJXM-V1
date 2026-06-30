@@ -19,7 +19,8 @@
       "gold": "清单数据资料/AI学习清单/珠海丹田海德地库清单-20260627.xlsx",
       "export": "data/exports/珠海丹田海德地库清单-20260627_成本分析_去重链接.xlsx",
       "city": "珠海",
-      "tier": "mid"
+      "tier": "mid",
+      "project_materials_ref": "haide_basement"
     },
     {
       "id": "costco",

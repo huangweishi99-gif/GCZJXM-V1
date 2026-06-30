@@ -26,6 +26,7 @@ FURNITURE_KEYWORDS = (
     "洽谈区柜",
     "沙盘",
     "展示台",
+    "接待台",
 )
 SIZE3_RE = re.compile(
     r"(\d{3,5})\s*mm?\s*[*×xX]\s*(\d{2,5})\s*mm?\s*[*×xX]\s*(\d{2,5})",

@@ -113,7 +113,7 @@ def lookup_project_material_components(
                 project_ref=project_ref, db_path=repo.db_path,
             )
             if r2:
-                main_val = float(r2["material_main"])
+                main_val = round(float(r2["material_main"]) * 1.66, 2)
 
     prefix = code.split("-")[0].upper()
     line_unit = normalize_unit(unit)
@@ -137,7 +137,7 @@ def lookup_project_material_components(
         }, f"[工序拆价·{code}金属饰面+玻镁基层]主材=表价；人工{labor:.0f}；{note}"
 
     if prefix == "MR" and re.search(r"阻燃板|轻钢龙骨", text_norm):
-        aux = 93.0 if re.search(r"不锈钢线条", text_norm) else 35.0
+        aux = 93.0 if re.search(r"不锈钢线条", text_norm) else 118.0
         return {
             "material_main": main_val,
             "material_loss_rate": 0.0,

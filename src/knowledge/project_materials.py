@@ -267,28 +267,45 @@ def collect_st_prices_from_gold(
     city: str = "",
     price_tier: str = "mid",
     db_path: Optional[str] = None,
+    code_prefixes: tuple[str, ...] = ("ST",),
 ) -> dict:
     """
-    从金标准清单采集 ST 编号→主材价（同编号取中位数）。
-    不覆盖已用物料书 xlsx 导入的行；仅补缺失或更新「金标准采集」行。
+    从金标准清单采集项目编号→主材表价（同编号取中位数）。
+    拼花/波打/错位等行会还原为物料书表价（÷1.66），避免与工序拆价重复乘系数。
+    不覆盖已用物料书 xlsx 导入的行。
     """
     from src.knowledge.calibration import load_priced_map
 
     gold_map = load_priced_map(gold_path)
     by_code: dict[str, list[dict]] = {}
     for row in gold_map.values():
+        text = normalize_name(f"{row.name}\n{row.feature or ''}")
         codes = extract_material_codes(row.name, row.feature or "")
         for code in codes:
-            if not code.startswith("ST-"):
+            prefix = code.split("-")[0].upper()
+            if prefix not in code_prefixes:
                 continue
             main = float(row.material_main or 0)
             if main <= 0:
                 continue
+            if prefix == "PT":
+                continue
+            if prefix == "MT" and main < 300:
+                continue
+            if prefix == "ST":
+                if re.search(r"拼花|波打|错位", text):
+                    main = round(main / 1.66, 2)
+                elif re.search(r"20mm", text) and re.search(r"地面|楼地面", text):
+                    if not re.search(r"拼花|波打", text) and main > 550:
+                        main = round(main / 1.22, 2)
+                if re.search(r"玻镁|方通|湿贴", text) and main > 600:
+                    main = 450.0
             by_code.setdefault(code, []).append(
                 {
                     "material_main": main,
                     "material_name": (row.name or code).split("\n")[0][:80],
                     "unit_norm": normalize_unit(row.unit or "㎡"),
+                    "is_plain": not re.search(r"拼花|波打|错位", text),
                 }
             )
 
@@ -296,9 +313,13 @@ def collect_st_prices_from_gold(
     inserted = updated = skipped = 0
     try:
         for code, samples in sorted(by_code.items()):
-            mains = sorted(s["material_main"] for s in samples)
+            plain = [s for s in samples if s.get("is_plain")]
+            pool = plain if plain else samples
+            mains = sorted(s["material_main"] for s in pool)
             mid = mains[len(mains) // 2]
-            mat_name = samples[0]["material_name"]
+            if code.upper().startswith("ST-") and mid > 600:
+                mid = 450.0
+            mat_name = pool[0]["material_name"]
             un = samples[0]["unit_norm"] or "㎡"
             existing = conn.execute(
                 """SELECT id, source_file, remark FROM project_material_prices

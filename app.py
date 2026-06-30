@@ -581,9 +581,10 @@ def cmd_calibrate(args: argparse.Namespace) -> None:
                         project_name=pair.get("label", ref),
                         city=pair.get("city", args.city or ""),
                         price_tier=pair.get("tier", args.tier or "mid"),
+                        code_prefixes=("ST", "MT") if ref == "haide_basement" else ("ST",),
                     )
                     print(
-                        "已采集本项目石材价库:",
+                        "已采集本项目编号价库:",
                         json.dumps(st_r, ensure_ascii=False),
                     )
     if args.learn and args.all:

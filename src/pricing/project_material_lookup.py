@@ -100,26 +100,7 @@ def lookup_project_material_components(
             if r2:
                 prices.append(float(r2.get("material_main") or 0))
         if prices and re.search(r"波打", text_norm):
-            primary = (
-                extract_material_codes(name, "")[0]
-                if extract_material_codes(name, "")
-                else st_codes[0]
-            )
-            for sc in st_codes:
-                if sc.upper().startswith(primary.upper().split(".")[0]):
-                    primary = sc
-                    break
-            r2, _ = lookup_project_material_row(
-                primary,
-                feature,
-                unit,
-                city=city,
-                price_tier=tier,
-                project_ref=project_ref,
-                db_path=repo.db_path,
-            )
-            if r2:
-                main_val = round(float(r2["material_main"]) * 1.66, 2)
+            main_val = round(min(prices) * 1.66, 2)
         elif prices and re.search(r"拼花", text_norm):
             primary = extract_material_codes(name, "")[0] if extract_material_codes(name, "") else st_codes[0]
             for sc in st_codes:

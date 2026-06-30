@@ -571,6 +571,21 @@ def cmd_calibrate(args: argparse.Namespace) -> None:
                 print(
                     f"已 learn 金标准: {gold_path} → {r.get('learned_records', 0)} 条"
                 )
+                ref = (pair or {}).get("project_materials_ref")
+                if ref and pair:
+                    from src.knowledge.project_materials import collect_st_prices_from_gold
+
+                    st_r = collect_st_prices_from_gold(
+                        _resolve_file(gold_path),
+                        project_ref=ref,
+                        project_name=pair.get("label", ref),
+                        city=pair.get("city", args.city or ""),
+                        price_tier=pair.get("tier", args.tier or "mid"),
+                    )
+                    print(
+                        "已采集本项目石材价库:",
+                        json.dumps(st_r, ensure_ascii=False),
+                    )
     if args.learn and args.all:
         from src.knowledge.backfill_kb import backfill_projects_and_facts
 

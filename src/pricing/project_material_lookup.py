@@ -84,8 +84,9 @@ def lookup_project_material_components(
         return None, ""
 
     code = str(row["material_code"])
+    catalog_ok = bool(row.get("_from_project_catalog"))
     st_codes = list(dict.fromkeys(re.findall(r"ST-\d+(?:\.\d+)?", text_norm, re.I)))
-    if len(st_codes) > 1 and code.upper().startswith("ST"):
+    if len(st_codes) > 1 and code.upper().startswith("ST") and catalog_ok:
         prices: list[float] = []
         for sc in st_codes:
             r2, _ = lookup_project_material_row(
@@ -183,9 +184,23 @@ def lookup_project_material_components(
     if tile_comps:
         return tile_comps, f"{tile_note}；{note}"
 
+    if prefix == "ST" and project_ref and not catalog_ok:
+        return None, f"[项目主材表]{code}未录入本项目({project_ref})石材价库，请 import-project-materials 或 calibrate --learn 后补表"
+
+    stone_comps, stone_note = decompose_stone_material_price(
+        code,
+        str(row.get("material_name") or ""),
+        main_val,
+        name,
+        feature,
+        unit,
+        project_catalog=catalog_ok,
+    )
+    if stone_comps:
+        return stone_comps, f"{stone_note}；{note}"
+
     for decompose in (
         decompose_glass_material_price,
-        decompose_stone_material_price,
         decompose_wood_veneer_material_price,
         decompose_wood_floor_material_price,
         decompose_vinyl_floor_material_price,

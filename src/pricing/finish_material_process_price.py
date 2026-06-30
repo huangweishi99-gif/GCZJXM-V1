@@ -31,6 +31,8 @@ def decompose_stone_material_price(
     name: str,
     feature: str,
     unit: str,
+    *,
+    project_catalog: bool = False,
 ) -> Tuple[Optional[dict], str]:
     prefix = material_code.split("-")[0].upper()
     if prefix not in STONE_PREFIXES:
@@ -46,7 +48,7 @@ def decompose_stone_material_price(
     if re.search(r"玻镁板|镀锌方通|方通", text) and material_unit_price > 600:
         main = 450.0
         labor = 125.0 if re.search(r"湿贴", text) else 150.0
-    elif re.search(r"20mm", text) and re.search(r"地面|楼地面", text + name):
+    elif re.search(r"20mm", text) and re.search(r"地面|楼地面", text + name) and project_catalog:
         if re.search(r"拼花|错位", text):
             main = round(material_unit_price * 1.66, 2)
         elif re.search(r"波打", text):
@@ -57,19 +59,20 @@ def decompose_stone_material_price(
             main = round(material_unit_price * 0.944, 2)
         else:
             main = round(material_unit_price * 1.22, 2)
-    elif re.search(r"墙面湿贴", name) and material_code.upper().startswith("ST-"):
+    elif re.search(r"墙面湿贴", name) and material_code.upper().startswith("ST-") and project_catalog:
         main = round(material_unit_price + 155.0, 2)
         labor = 95.0
-    if re.search(r"不锈钢线条", text):
+    if project_catalog and re.search(r"不锈钢线条", text):
         main = round(main + 155.0, 2)
-    elif re.search(r"波浪", text) and re.search(r"干挂", text):
+    elif project_catalog and re.search(r"波浪", text) and re.search(r"干挂", text):
         main = round(max(main, material_unit_price * 1.25), 2)
-    if re.search(r"拼花|波打", text):
+    if re.search(r"拼花|波打", text) and project_catalog:
         labor = 130.0
     mach = round(max(12.0, material_unit_price * 0.022), 2)
+    scope_tag = "本项目石材表" if project_catalog else "未录本项目表价·主材=表价"
     note = (
-        f"[工序拆价·{material_code}={material_unit_price:.0f}元/㎡·石材]"
-        f"湿贴；主材{main:.0f}，人工{labor:.0f}+辅材{aux}"
+        f"[工序拆价·{material_code}={material_unit_price:.0f}元/㎡·{material_name}·{scope_tag}]"
+        f"主材{main:.0f}，人工{labor:.0f}+辅材{aux}"
     )
     return {
         "material_main": main,

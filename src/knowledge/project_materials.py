@@ -259,6 +259,140 @@ def import_project_materials_xlsx(
     }
 
 
+def collect_st_prices_from_gold(
+    gold_path: str | Path,
+    *,
+    project_ref: str,
+    project_name: str,
+    city: str = "",
+    price_tier: str = "mid",
+    db_path: Optional[str] = None,
+) -> dict:
+    """
+    从金标准清单采集 ST 编号→主材价（同编号取中位数）。
+    不覆盖已用物料书 xlsx 导入的行；仅补缺失或更新「金标准采集」行。
+    """
+    from src.knowledge.calibration import load_priced_map
+
+    gold_map = load_priced_map(gold_path)
+    by_code: dict[str, list[dict]] = {}
+    for row in gold_map.values():
+        codes = extract_material_codes(row.name, row.feature or "")
+        for code in codes:
+            if not code.startswith("ST-"):
+                continue
+            main = float(row.material_main or 0)
+            if main <= 0:
+                continue
+            by_code.setdefault(code, []).append(
+                {
+                    "material_main": main,
+                    "material_name": (row.name or code).split("\n")[0][:80],
+                    "unit_norm": normalize_unit(row.unit or "㎡"),
+                }
+            )
+
+    conn = get_connection(db_path)
+    inserted = updated = skipped = 0
+    try:
+        for code, samples in sorted(by_code.items()):
+            mains = sorted(s["material_main"] for s in samples)
+            mid = mains[len(mains) // 2]
+            mat_name = samples[0]["material_name"]
+            un = samples[0]["unit_norm"] or "㎡"
+            existing = conn.execute(
+                """SELECT id, source_file, remark FROM project_material_prices
+                   WHERE material_code=? AND project_ref=? AND unit_norm=?""",
+                (code, project_ref, un),
+            ).fetchone()
+            if existing and existing["source_file"] and "金标准采集" not in (
+                existing["remark"] or ""
+            ):
+                skipped += 1
+                continue
+            conn.execute(
+                """INSERT INTO project_material_prices
+                   (material_code, material_name, name_norm, spec_text, use_area,
+                    unit_norm, material_main, category, project_name, project_ref,
+                    city, price_tier, source_file, remark)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                   ON CONFLICT(material_code, project_ref, unit_norm) DO UPDATE SET
+                     material_main=excluded.material_main,
+                     material_name=excluded.material_name,
+                     name_norm=excluded.name_norm,
+                     remark=excluded.remark""",
+                (
+                    code,
+                    mat_name,
+                    normalize_name(mat_name),
+                    "",
+                    "",
+                    un,
+                    mid,
+                    "石材",
+                    project_name,
+                    project_ref,
+                    city or "",
+                    price_tier or "mid",
+                    str(gold_path),
+                    f"金标准采集·{len(samples)}项·中位{mid:.2f}",
+                ),
+            )
+            if existing:
+                updated += 1
+            else:
+                inserted += 1
+            conn.execute(
+                """INSERT INTO material_price_facts
+                   (material_key, material_category, spec_text, unit_norm, city, price_tier,
+                    material_main, material_loss_rate, sample_count)
+                   VALUES (?,?,?,?,?,?,?,?,1)
+                   ON CONFLICT(material_key, unit_norm, city, price_tier) DO UPDATE SET
+                     material_main=excluded.material_main,
+                     sample_count=sample_count+1,
+                     updated_at=datetime('now','localtime')""",
+                (
+                    f"code:{code}",
+                    "石材",
+                    mat_name,
+                    un,
+                    city or "",
+                    price_tier or "mid",
+                    mid,
+                    0.0,
+                ),
+            )
+            upsert_material_fact_from_line(
+                conn,
+                f"{code} {mat_name}",
+                "",
+                un,
+                city or "",
+                price_tier or "mid",
+                mid,
+                0.0,
+            )
+        conn.commit()
+    finally:
+        conn.close()
+
+    return {
+        "project_ref": project_ref,
+        "codes_seen": len(by_code),
+        "inserted": inserted,
+        "updated": updated,
+        "skipped_xlsx": skipped,
+    }
+
+
+def _is_project_catalog_row(row: dict, project_ref: Optional[str]) -> bool:
+    """表价是否来自当前项目价库（非跨项目/城市混用）。"""
+    if not project_ref:
+        return False
+    ref = str(row.get("project_ref") or "")
+    return ref == project_ref or ref == f"city:{project_ref}"
+
+
 def lookup_project_material_row(
     name: str,
     feature: str,
@@ -282,47 +416,56 @@ def lookup_project_material_row(
     try:
         for code in codes:
             for tc in _material_try_codes(code):
-                queries = []
-                params: list = []
-                if project_ref:
-                    queries.append(
-                        """SELECT * FROM project_material_prices
-                           WHERE material_code=? AND project_ref=?
-                             AND (unit_norm=? OR unit_norm='' OR ?='')"""
-                    )
-                    params.append((tc, project_ref, un, un))
-                for city_try in ([city, ""] if city else [""]):
-                    for tier_try in ([price_tier, "mid"] if price_tier else ["mid"]):
-                        queries.append(
-                            """SELECT * FROM project_material_prices
-                               WHERE material_code=? AND city=? AND price_tier=?
-                                 AND (unit_norm=? OR unit_norm='' OR ?='')
-                               ORDER BY project_ref DESC LIMIT 1"""
-                        )
-                        params.append((tc, city_try, tier_try, un, un))
-
                 row = None
                 from_supplement = False
-                for sql, p in zip(queries, params):
-                    row = conn.execute(sql, p).fetchone()
-                    if row:
-                        break
-                if not row:
-                    row = _supplement_material_row(
-                        tc, project_ref=project_ref, unit=unit, city=city
-                    )
-                    from_supplement = row is not None
+                if project_ref:
+                    row = conn.execute(
+                        """SELECT * FROM project_material_prices
+                           WHERE material_code=? AND project_ref=?
+                             AND (unit_norm=? OR unit_norm='' OR ?='')""",
+                        (tc, project_ref, un, un),
+                    ).fetchone()
+                    if not row:
+                        row = _supplement_material_row(
+                            tc, project_ref=project_ref, unit=unit, city=city
+                        )
+                        from_supplement = row is not None
+                else:
+                    for city_try in ([city, ""] if city else [""]):
+                        for tier_try in ([price_tier, "mid"] if price_tier else ["mid"]):
+                            row = conn.execute(
+                                """SELECT * FROM project_material_prices
+                                   WHERE material_code=? AND city=? AND price_tier=?
+                                     AND (unit_norm=? OR unit_norm='' OR ?='')
+                                   ORDER BY project_ref DESC LIMIT 1""",
+                                (tc, city_try, tier_try, un, un),
+                            ).fetchone()
+                            if row:
+                                break
+                        if row:
+                            break
+                    if not row:
+                        row = _supplement_material_row(
+                            tc, project_ref=None, unit=unit, city=city
+                        )
+                        from_supplement = row is not None
                 if not row:
                     continue
                 row_dict = dict(row) if not isinstance(row, dict) else row
+                row_dict["_from_project_catalog"] = _is_project_catalog_row(
+                    row_dict, project_ref
+                )
+                stone_name = str(row_dict.get("material_name") or tc)
                 prefix = "[补充表价]" if from_supplement else "[项目主材表]"
                 note = (
                     f"{prefix}{row_dict.get('project_name', project_ref or '')}·{tc}·"
-                    f"{row_dict.get('material_name', tc)}"
-                    f" 主材{float(row_dict['material_main']):.2f}/{row_dict.get('unit_norm', '')}"
+                    f"{stone_name} 主材{float(row_dict['material_main']):.2f}/"
+                    f"{row_dict.get('unit_norm', '')}"
                 )
                 if tc != code.upper():
                     note = f"{note}（{code}→{tc}）"
+                if not row_dict.get("_from_project_catalog") and project_ref:
+                    note = f"{note}；⚠非本项目价库，ST/编号表价不跨项目套用"
                 return row_dict, note
     finally:
         conn.close()

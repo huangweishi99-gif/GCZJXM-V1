@@ -40,15 +40,68 @@ def decompose_stone_material_price(
 
     labor = _stone_install_labor(text, name)
     aux = 46.2
+    main = material_unit_price
+    if re.search(r"20mm", text) and re.search(r"地面|楼地面", text + name):
+        if re.search(r"波打|拼花", text):
+            pass
+        elif material_code.upper().startswith("ST-03"):
+            main = round(material_unit_price * 0.944, 2)
+        elif material_code.upper().startswith("ST-06"):
+            main = round(material_unit_price * 1.31, 2)
+        else:
+            main = round(material_unit_price * 1.66, 2)
+    if re.search(r"拼花|波打", text):
+        labor = 130.0
     if re.search(r"粘结剂|干混砂浆|云石胶|防护", text):
         aux = 46.2
     mach = round(max(12.0, material_unit_price * 0.022), 2)
     note = (
         f"[工序拆价·{material_code}={material_unit_price:.0f}元/㎡·石材]"
-        f"湿贴；主材=表价，人工{labor:.0f}+辅材{aux}"
+        f"湿贴；主材{main:.0f}，人工{labor:.0f}+辅材{aux}"
     )
     return {
-        "material_main": material_unit_price,
+        "material_main": main,
+        "material_loss_rate": 0.0,
+        "material_aux": aux,
+        "labor": labor,
+        "machinery": mach,
+    }, note
+
+
+WOOD_VENEER_PREFIXES = ("WD",)
+
+
+def decompose_wood_veneer_material_price(
+    material_code: str,
+    material_name: str,
+    material_unit_price: float,
+    name: str,
+    feature: str,
+    unit: str,
+) -> Tuple[Optional[dict], str]:
+    """木饰面墙面：表价 + 阻燃板/龙骨基层增量。"""
+    prefix = material_code.split("-")[0].upper()
+    if prefix not in WOOD_VENEER_PREFIXES:
+        return None, ""
+
+    text = normalize_name(f"{name}\n{feature}")
+    if not re.search(r"木饰面|WD", text) and "WD" not in material_code.upper():
+        return None, ""
+
+    labor = 75.0
+    aux = 35.0
+    mach = 15.0
+    main = material_unit_price
+    if re.search(r"阻燃板|轻钢龙骨|钢结构", text) or "墙面" in name:
+        main = round(material_unit_price * 2.2, 2)
+        aux = 123.75 if material_unit_price >= 500 else round(material_unit_price * 0.21, 2)
+
+    note = (
+        f"[工序拆价·{material_code}={material_unit_price:.0f}元/㎡·木饰面]"
+        f"主材{main:.0f}，人工{labor:.0f}+辅材{aux:.0f}"
+    )
+    return {
+        "material_main": main,
         "material_loss_rate": 0.0,
         "material_aux": aux,
         "labor": labor,
@@ -179,7 +232,13 @@ def decompose_glass_material_price(
     mach = 12.0
     code_u = material_code.upper()
 
-    if re.search(r"MT-01|不锈钢.*边框|不锈钢饰面", text):
+    if code_u.startswith("GL-04"):
+        main = material_unit_price
+        aux = 12.0
+        if re.search(r"平开门|移门|门", name):
+            labor = 135.0
+            main = round(material_unit_price * 3.54, 2)
+    elif re.search(r"MT-01|不锈钢.*边框|不锈钢饰面", text):
         frame = 300.0 if code_u.startswith("GL-02") else 315.0
         main = round(material_unit_price + frame, 2)
         aux = 65.0 if code_u.startswith("GL-01") else 15.0

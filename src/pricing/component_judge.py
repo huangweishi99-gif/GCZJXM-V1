@@ -12,7 +12,10 @@ from src.normalize.feature_extract import extract_feature_profile
 from src.pricing.engine import PricingEngine
 from src.pricing.cost_basis import get_net_divisor, prefer_net_price
 from src.pricing.custom_door import lookup_custom_door_price
-from src.pricing.custom_furniture import lookup_custom_furniture_price
+from src.pricing.custom_furniture import (
+    is_custom_furniture_candidate,
+    lookup_custom_furniture_price,
+)
 from src.pricing.market_reference import lookup_market_reference
 from src.pricing.material_lookup import MaterialPriceLookup
 from src.pricing.metal_trim import lookup_metal_trim_price
@@ -394,6 +397,26 @@ def judge_line_components(
     result.notes.append(pricing_basis_note(identity))
     if block_auto:
         result.warnings.append(feat_reason)
+
+    # --- 层 0a：定制柜体（㎡/套）优先于主材编号，避免误套 ST/WD 表价 ---
+    if is_custom_furniture_candidate(name, feature, unit):
+        furn_early, furn_note = lookup_custom_furniture_price(
+            name, feature, unit, repo, ctx, net_divisor=net_divisor
+        )
+        if furn_early and _components_usable(furn_early):
+            result.material_main = float(furn_early.get("material_main") or 0)
+            result.material_aux = float(furn_early.get("material_aux") or 0)
+            result.labor = float(furn_early.get("labor") or 0)
+            result.machinery = float(furn_early.get("machinery") or 0)
+            result.material_loss_rate = float(furn_early.get("material_loss_rate") or 0)
+            result.cost_unit_price = _component_total(result.as_components())
+            result.confidence = 0.85
+            result.field_confidence = {k: 0.85 for k in ("material_main", "material_aux", "labor", "machinery")}
+            result.source = "custom_furniture_profile"
+            result.notes.append(furn_note)
+            result.auto_fill_ok = _auto(result.confidence >= auto_min)
+            result.warnings = _validate_expectations(craft, result.as_components(), role)
+            return result
 
     # --- 层 0：项目主材编号表（名称/特征含 PT-01、ST-04 → 售楼处主材料价）---
     from src.knowledge.project_materials import extract_material_codes

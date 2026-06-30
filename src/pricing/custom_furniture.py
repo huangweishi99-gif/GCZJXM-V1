@@ -10,7 +10,7 @@ from src.knowledge.repository import KnowledgeRepository
 from src.normalize.text import normalize_name, normalize_unit
 from src.pricing.reconcile import component_total, reconcile_components_with_stored_total
 
-FURNITURE_UNITS = {"套", "项", "个", "组"}
+FURNITURE_UNITS = {"套", "项", "个", "组", "m2", "㎡"}
 FURNITURE_KEYWORDS = (
     "水吧台",
     "吧台",
@@ -22,6 +22,10 @@ FURNITURE_KEYWORDS = (
     "洗手台",
     "柜体",
     "造型柜",
+    "开放柜",
+    "洽谈区柜",
+    "沙盘",
+    "展示台",
 )
 SIZE3_RE = re.compile(
     r"(\d{3,5})\s*mm?\s*[*×xX]\s*(\d{2,5})\s*mm?\s*[*×xX]\s*(\d{2,5})",
@@ -85,8 +89,8 @@ def _load_furniture_samples(
                FROM line_price_facts lpf
                JOIN standard_items si ON si.id = lpf.standard_item_id
                WHERE COALESCE(lpf.city,'') = ? AND COALESCE(lpf.price_tier,'mid') = ?
-                 AND si.name_norm = ?""",
-            (ctx.city or "", ctx.price_tier or "mid", name_norm),
+                 AND (si.name_norm = ? OR si.name_norm LIKE ?)""",
+            (ctx.city or "", ctx.price_tier or "mid", name_norm, f"%{name_norm}%"),
         ).fetchall()
     finally:
         conn.close()

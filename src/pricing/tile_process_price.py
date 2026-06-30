@@ -111,6 +111,24 @@ def decompose_tile_material_price(
             material_code, material_unit_price, name, feature, unit
         )
 
+    # 项目主材表价 = 砖材 元/㎡，主材取表价（不用比例折算）
+    mat_main = material_unit_price
+
+    if wall and re.search(r"轻钢龙骨|水泥纤维板|阻燃板基层|焊网|钢丝网", text):
+        labor = 89.0 if re.search(r"轻钢龙骨|水泥纤维板", text) else 71.0
+        aux = 55.5 if re.search(r"轻钢龙骨|水泥纤维板", text) else 37.0
+        note = (
+            f"[工序拆价·{material_code}={material_unit_price:.0f}元/㎡·砖材]"
+            f"墙面瓷砖+基层；主材=表价"
+        )
+        return {
+            "material_main": mat_main,
+            "material_loss_rate": 0.0,
+            "material_aux": aux,
+            "labor": labor,
+            "machinery": 0.5,
+        }, note
+
     if wall and adhesive:
         if re.search(r"钢丝网|焊网|钢筋", text):
             note = (
@@ -118,19 +136,18 @@ def decompose_tile_material_price(
                 f"墙面瓷砖+焊网；主材=表价"
             )
             return {
-                "material_main": material_unit_price,
+                "material_main": mat_main,
                 "material_loss_rate": 0.0,
                 "material_aux": 37.0,
                 "labor": 71.0,
                 "machinery": 0.5,
             }, note
-        mat = round(material_unit_price * 0.173, 2) if material_unit_price > 50 else 45.0
         note = (
             f"[工序拆价·{material_code}={material_unit_price:.0f}元/㎡·砖材]"
-            f"瓷砖胶墙面；主材按砖价17%计"
+            f"墙面瓷砖胶；主材=表价"
         )
         return {
-            "material_main": mat,
+            "material_main": mat_main,
             "material_loss_rate": 0.0,
             "material_aux": 16.5,
             "labor": 45.0,
@@ -138,21 +155,22 @@ def decompose_tile_material_price(
         }, note
 
     if floor and (mortar or not adhesive):
-        mat = round(material_unit_price * 0.32, 2) if material_unit_price > 50 else 75.0
-        note = f"[工序拆价·{material_code}]砂浆地砖铺贴"
+        labor = 90.0 if re.search(r"80mm|DS-M15|花砖", text) else 48.0
+        if re.search(r"拼花", text):
+            labor = 80.0
+        note = f"[工序拆价·{material_code}]砂浆地砖；主材=表价"
         return {
-            "material_main": mat,
+            "material_main": mat_main,
             "material_loss_rate": 0.0,
             "material_aux": 14.0,
-            "labor": 48.0,
+            "labor": labor,
             "machinery": 2.0,
         }, note
 
     if adhesive:
-        mat = round(material_unit_price * 0.2, 2)
-        note = f"[工序拆价·{material_code}]瓷砖胶铺贴"
+        note = f"[工序拆价·{material_code}]瓷砖胶铺贴；主材=表价"
         return {
-            "material_main": mat,
+            "material_main": mat_main,
             "material_loss_rate": 0.0,
             "material_aux": 14.0,
             "labor": 50.0,

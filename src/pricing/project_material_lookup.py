@@ -18,6 +18,7 @@ from src.pricing.tile_process_price import decompose_tile_material_price
 from src.pricing.finish_material_process_price import (
     decompose_glass_material_price,
     decompose_stone_material_price,
+    decompose_wood_veneer_material_price,
     decompose_vinyl_floor_material_price,
     decompose_wallpaper_material_price,
     decompose_wood_floor_material_price,
@@ -75,6 +76,24 @@ def lookup_project_material_components(
         return None, ""
 
     code = str(row["material_code"])
+    st_codes = list(dict.fromkeys(re.findall(r"ST-\d+", text_norm, re.I)))
+    if len(st_codes) > 1 and code.upper().startswith("ST"):
+        prices: list[float] = []
+        for sc in st_codes:
+            r2, _ = lookup_project_material_row(
+                sc,
+                feature,
+                unit,
+                city=city,
+                price_tier=tier,
+                project_ref=project_ref,
+                db_path=repo.db_path,
+            )
+            if r2:
+                prices.append(float(r2.get("material_main") or 0))
+        if prices:
+            main_val = round(max(prices) * 1.285, 2)
+
     prefix = code.split("-")[0].upper()
     line_unit = normalize_unit(unit)
     row_unit = normalize_unit(str(row.get("unit_norm") or ""))
@@ -127,6 +146,7 @@ def lookup_project_material_components(
     for decompose in (
         decompose_glass_material_price,
         decompose_stone_material_price,
+        decompose_wood_veneer_material_price,
         decompose_wood_floor_material_price,
         decompose_vinyl_floor_material_price,
         decompose_wallpaper_material_price,

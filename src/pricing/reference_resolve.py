@@ -75,6 +75,26 @@ def _line_reference_ok_strong_name(
     return True, "同名称强匹配"
 
 
+def line_reference_ok_door(
+    c: dict,
+    *,
+    query_unit: str = "",
+) -> Tuple[bool, str]:
+    """定制门/门套：名称+单位为主，特征阈值放宽。"""
+    if query_unit and c.get("unit"):
+        if not units_must_match(query_unit, c["unit"]):
+            return False, f"单位不一致({normalize_unit(query_unit)} vs {normalize_unit(c['unit'])})"
+    if c.get("conflicts"):
+        return False, "做法标签冲突"
+    if c.get("name_score", 0) < 0.62:
+        return False, f"名称相似度{c['name_score']:.0%}不足"
+    if c.get("feature_score", 0) < 0.30:
+        return False, f"特征相似度{c['feature_score']:.0%}不足"
+    if "门" not in (c.get("name") or ""):
+        return False, "历史项非门"
+    return True, "定制门放宽整项参照"
+
+
 def resolve_reference_costs(
     name: str,
     feature: str,
@@ -123,8 +143,14 @@ def resolve_reference_costs(
         top_n=3,
         exclude_standard_item_ids=exclude_standard_item_ids,
     )
+    from src.pricing.custom_door import is_door_whole_line
+
+    door_line = is_door_whole_line(name, feature or "")
     for c in cands:
-        ok, reason = _line_reference_ok(c, th, cfg, query_unit=unit)
+        if door_line:
+            ok, reason = line_reference_ok_door(c, query_unit=unit)
+        else:
+            ok, reason = _line_reference_ok(c, th, cfg, query_unit=unit)
         if not ok:
             continue
         sid = c["standard_item_id"]

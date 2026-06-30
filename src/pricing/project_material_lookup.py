@@ -7,6 +7,7 @@ from typing import Optional, Tuple
 import re
 
 from src.knowledge.project_materials import lookup_project_material_row, extract_material_codes
+from src.pricing.custom_door import is_door_whole_line
 from src.knowledge.query import PricingContext
 from src.knowledge.repository import KnowledgeRepository
 from src.knowledge.cost_split import share_map
@@ -45,16 +46,12 @@ def lookup_project_material_components(
     tier = ctx.price_tier if ctx else "mid"
     project_ref = (ctx.project_materials_ref if ctx else None) or project_ref
     text_norm = normalize_name(f"{name}\n{feature}")
-    if re.search(r"DR\d", name, re.I):
+    if is_door_whole_line(name, feature):
         return None, ""
     codes_early = extract_material_codes(name, feature)
     if len(codes_early) >= 2 and len({c.split("-")[0].upper() for c in codes_early}) >= 2:
-        if re.search(r"定制|屏风|门|套门", text_norm):
+        if re.search(r"定制|屏风", text_norm):
             return None, ""
-    if re.search(r"平开门|门扇", name, re.I) and re.search(
-        r"DR\d|定制成品", text_norm, re.I
-    ):
-        return None, ""
     is_ct_kick = bool(re.search(r"踢脚", text_norm)) and bool(
         re.search(r"CT-\d+", text_norm, re.I)
     )
@@ -103,7 +100,7 @@ def lookup_project_material_components(
             if r2:
                 prices.append(float(r2.get("material_main") or 0))
         if prices and re.search(r"波打", text_norm):
-            main_val = round(max(prices) * 1.285, 2)
+            main_val = round(max(prices) * 1.66, 2)
         elif prices and re.search(r"拼花", text_norm):
             primary = extract_material_codes(name, "")[0] if extract_material_codes(name, "") else st_codes[0]
             for sc in st_codes:
@@ -129,13 +126,23 @@ def lookup_project_material_components(
     from src.pricing.material_process_price import analyze_paint_process
 
     if prefix == "MT" and re.search(r"玻镁板|方通|镀锌方通", text_norm):
+        labor = 110.0 if "门套" in name else 85.0
         return {
             "material_main": main_val,
             "material_loss_rate": 0.0,
             "material_aux": 0.0,
-            "labor": 85.0,
+            "labor": labor,
             "machinery": 0.0,
-        }, f"[工序拆价·{code}金属饰面+玻镁基层]主材=表价；人工85；{note}"
+        }, f"[工序拆价·{code}金属饰面+玻镁基层]主材=表价；人工{labor:.0f}；{note}"
+
+    if prefix == "MR" and re.search(r"阻燃板|轻钢龙骨", text_norm):
+        return {
+            "material_main": main_val,
+            "material_loss_rate": 0.0,
+            "material_aux": 35.0,
+            "labor": 110.0,
+            "machinery": 15.0,
+        }, f"[工序拆价·{code}银镜+基层]主材=表价；人工110；{note}"
 
     scope = analyze_paint_process(name, feature)
     if scope.blocked_substrate and prefix in ("PT", "AM"):

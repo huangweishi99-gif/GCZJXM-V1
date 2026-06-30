@@ -11,7 +11,7 @@ from src.knowledge.repository import KnowledgeRepository
 from src.normalize.feature_extract import extract_feature_profile
 from src.pricing.engine import PricingEngine
 from src.pricing.cost_basis import get_net_divisor, prefer_net_price
-from src.pricing.custom_door import lookup_custom_door_price
+from src.pricing.custom_door import lookup_custom_door_price, lookup_door_whole_line_price
 from src.pricing.custom_furniture import (
     is_custom_furniture_candidate,
     lookup_custom_furniture_price,
@@ -417,6 +417,25 @@ def judge_line_components(
             result.auto_fill_ok = _auto(result.confidence >= auto_min)
             result.warnings = _validate_expectations(craft, result.as_components(), role)
             return result
+
+    # --- 层 0b：定制门整项（㎡）优先于 WD/MT 表价误套 ---
+    door_whole, door_whole_note = lookup_door_whole_line_price(
+        name, feature, unit, engine, repo, ctx
+    )
+    if door_whole and _components_usable(door_whole):
+        result.material_main = float(door_whole.get("material_main") or 0)
+        result.material_aux = float(door_whole.get("material_aux") or 0)
+        result.labor = float(door_whole.get("labor") or 0)
+        result.machinery = float(door_whole.get("machinery") or 0)
+        result.material_loss_rate = float(door_whole.get("material_loss_rate") or 0)
+        result.cost_unit_price = _component_total(result.as_components())
+        result.confidence = 0.86
+        result.field_confidence = {k: 0.86 for k in ("material_main", "material_aux", "labor", "machinery")}
+        result.source = "door_whole_line"
+        result.notes.append(door_whole_note)
+        result.auto_fill_ok = _auto(result.confidence >= auto_min)
+        result.warnings = _validate_expectations(craft, result.as_components(), role)
+        return result
 
     # --- 层 0：项目主材编号表（名称/特征含 PT-01、ST-04 → 售楼处主材料价）---
     from src.knowledge.project_materials import extract_material_codes

@@ -7,10 +7,11 @@ from typing import Dict, List, Optional, Tuple
 
 from src.knowledge.query import PricingContext
 from src.knowledge.repository import KnowledgeRepository
-from src.normalize.text import normalize_unit
+from src.normalize.text import normalize_unit, normalize_name
 
 SIZE_RE = re.compile(r"(\d{3,4})\s*[*×xX]\s*(\d{3,4})")
 DOOR_UNITS = {"樘", "套", "扇", "项"}
+DOOR_M2_UNITS = {"m2", "㎡", "平方"}
 
 DOOR_RULES = (
     ("fire_door", ("防火门", "甲级防火", "乙级防火", "丙级防火")),
@@ -39,6 +40,22 @@ def classify_door_type(name: str, feature: str = "") -> str:
     if "门" in text and parse_door_size(name, feature):
         return "door_generic"
     return ""
+
+
+def is_door_whole_line(name: str, feature: str = "") -> bool:
+    """定制门/门套整项组价（㎡ 或 樘），不单套饰面主材编号表。"""
+    if not re.search(r"门", name):
+        return False
+    text = normalize_name(f"{name}\n{feature}")
+    if re.search(r"DR\d", name, re.I):
+        return True
+    if re.search(r"定制成品|门扇|套装门", text):
+        return True
+    if re.search(r"清洁间门|平开门|转轴门|防火门|推拉门|隐形门", name):
+        return True
+    if "门套" in name:
+        return True
+    return False
 
 
 def is_custom_door_candidate(name: str, feature: str = "", unit: str = "") -> bool:
@@ -202,3 +219,64 @@ def lookup_custom_door_price(
     size_note = f"{target[0]}*{target[1]}mm" if target else "无尺寸"
     note = f"[{door_type}|{size_note}] 价库「{best.get('name_norm','')[:24]}」"
     return comps, note
+
+
+def lookup_door_whole_line_price(
+    name: str,
+    feature: str,
+    unit: str,
+    engine,
+    repo: KnowledgeRepository,
+    ctx: Optional[PricingContext],
+) -> Tuple[Optional[dict], str]:
+    """㎡ 定制门：放宽整项历史匹配（DR/套装门等）。"""
+    if not is_door_whole_line(name, feature):
+        return None, ""
+    if normalize_unit(unit) not in DOOR_M2_UNITS:
+        return None, ""
+
+    from src.pricing.reference_resolve import line_reference_ok_door
+
+    cands = engine.search(name, feature or "", unit, top_n=8)
+    scope = f"（{ctx.scope_note()}）" if ctx else ""
+    for c in cands:
+        ok, _ = line_reference_ok_door(c, query_unit=unit)
+        if not ok:
+            continue
+        sid = c["standard_item_id"]
+        if ctx:
+            fact, fnote = repo.get_line_fact(sid, ctx)
+            if fact:
+                total = float(fact.get("cost_unit_price") or 0)
+                if total < 400:
+                    continue
+                note = (
+                    f"[定制门整项]{fnote}{scope}「{c['name']}」"
+                    f" 名称{c['name_score']:.0%} 特征{c['feature_score']:.0%}"
+                )
+                return {
+                    "material_main": float(fact.get("material_main") or 0),
+                    "material_loss_rate": float(fact.get("material_loss_rate") or 0),
+                    "labor": float(fact.get("labor") or 0),
+                    "material_aux": float(fact.get("material_aux") or 0),
+                    "machinery": float(fact.get("machinery") or 0),
+                }, note
+        records = repo.get_cost_records_for_item(sid, ctx=ctx)
+        if not records:
+            continue
+        agg = repo.aggregate_costs(records)
+        total = float(agg.get("cost_unit_price") or agg.get("_cost_unit_price") or 0)
+        if total < 400:
+            continue
+        note = (
+            f"[定制门整项]「{c['name']}」"
+            f" 名称{c['name_score']:.0%} 特征{c['feature_score']:.0%}；{len(records)}条样本{scope}"
+        )
+        return {
+            "material_main": float(agg.get("material_main") or 0),
+            "material_loss_rate": float(agg.get("material_loss_rate") or 0),
+            "labor": float(agg.get("labor") or 0),
+            "material_aux": float(agg.get("material_aux") or 0),
+            "machinery": float(agg.get("machinery") or 0),
+        }, note
+    return None, ""

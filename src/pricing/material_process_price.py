@@ -302,11 +302,12 @@ def decompose_paint_material_price(
     if not scope.texture_finish and not scope.light_coat_only:
         if scope.has_primer and scope.top_coats >= 2:
             mat = round(min(12.0, material_unit_price * 0.05), 2)
+            labor = 28.5 if re.search(r"天花|吊顶", name) else 19.5
             comps = {
                 "material_main": mat,
                 "material_loss_rate": 0.0,
                 "material_aux": 6.0,
-                "labor": 19.5,
+                "labor": labor,
                 "machinery": 0.0,
             }
             if "投影面" in normalize_name(f"{name}\n{feature}"):

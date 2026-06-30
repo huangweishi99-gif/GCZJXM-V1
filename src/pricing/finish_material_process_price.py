@@ -47,16 +47,19 @@ def decompose_stone_material_price(
         main = 450.0
         labor = 125.0 if re.search(r"湿贴", text) else 150.0
     elif re.search(r"20mm", text) and re.search(r"地面|楼地面", text + name):
-        if re.search(r"拼花", text):
+        if re.search(r"拼花|错位", text):
             main = round(material_unit_price * 1.66, 2)
         elif re.search(r"波打", text):
             pass
+        elif material_code.upper().startswith("ST-06"):
+            pass
         elif material_code.upper().startswith("ST-03"):
             main = round(material_unit_price * 0.944, 2)
-        elif material_code.upper().startswith("ST-06"):
-            main = round(material_unit_price * 1.31, 2)
         else:
             main = round(material_unit_price * 1.22, 2)
+    elif re.search(r"墙面湿贴", name) and material_code.upper().startswith("ST-"):
+        main = round(material_unit_price + 155.0, 2)
+        labor = 95.0
     if re.search(r"不锈钢线条", text):
         main = round(main + 155.0, 2)
     elif re.search(r"波浪", text) and re.search(r"干挂", text):
@@ -112,6 +115,9 @@ def decompose_wood_veneer_material_price(
         elif code_u.startswith("WD-04"):
             main = material_unit_price
             aux = 35.0
+            if "隔断" in name:
+                main = round(material_unit_price + 195.0, 2)
+                labor = 45.0
         else:
             main = round(material_unit_price * 2.2, 2)
             aux = 123.75 if material_unit_price >= 500 else round(material_unit_price * 0.21, 2)
@@ -207,7 +213,9 @@ def decompose_vinyl_floor_material_price(
     if prefix not in VINYL_PREFIXES:
         return None, ""
 
-    if "水磨石" in material_name or re.search(r"VF-01", material_code, re.I):
+    if material_code.upper().startswith("VF-01") or (
+        "水磨石" in material_name and material_code.upper().startswith("VF-01")
+    ):
         labor, aux = 80.0, 45.9
     else:
         labor, aux = 45.5, 18.0

@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 
 import re
 
-from src.knowledge.project_materials import lookup_project_material_row
+from src.knowledge.project_materials import lookup_project_material_row, extract_material_codes
 from src.knowledge.query import PricingContext
 from src.knowledge.repository import KnowledgeRepository
 from src.knowledge.cost_split import share_map
@@ -43,6 +43,7 @@ def lookup_project_material_components(
     """
     city = ctx.city if ctx else ""
     tier = ctx.price_tier if ctx else "mid"
+    project_ref = (ctx.project_materials_ref if ctx else None) or project_ref
     text_norm = normalize_name(f"{name}\n{feature}")
     is_ct_kick = bool(re.search(r"踢脚", text_norm)) and bool(
         re.search(r"CT-\d+", text_norm, re.I)
@@ -76,7 +77,7 @@ def lookup_project_material_components(
         return None, ""
 
     code = str(row["material_code"])
-    st_codes = list(dict.fromkeys(re.findall(r"ST-\d+", text_norm, re.I)))
+    st_codes = list(dict.fromkeys(re.findall(r"ST-\d+(?:\.\d+)?", text_norm, re.I)))
     if len(st_codes) > 1 and code.upper().startswith("ST"):
         prices: list[float] = []
         for sc in st_codes:
@@ -91,8 +92,20 @@ def lookup_project_material_components(
             )
             if r2:
                 prices.append(float(r2.get("material_main") or 0))
-        if prices:
+        if prices and re.search(r"波打", text_norm):
             main_val = round(max(prices) * 1.285, 2)
+        elif prices and re.search(r"拼花", text_norm):
+            primary = extract_material_codes(name, "")[0] if extract_material_codes(name, "") else st_codes[0]
+            for sc in st_codes:
+                if sc.upper().startswith(primary.upper().split(".")[0]):
+                    primary = sc
+                    break
+            r2, _ = lookup_project_material_row(
+                primary, feature, unit, city=city, price_tier=tier,
+                project_ref=project_ref, db_path=repo.db_path,
+            )
+            if r2:
+                main_val = float(r2["material_main"])
 
     prefix = code.split("-")[0].upper()
     line_unit = normalize_unit(unit)

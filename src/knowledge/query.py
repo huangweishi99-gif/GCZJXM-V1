@@ -11,6 +11,7 @@ from src.knowledge.metadata import ProjectMetadata
 class PricingContext:
     city: str = ""
     price_tier: str = "mid"
+    project_materials_ref: str = ""
 
     @classmethod
     def from_metadata(cls, meta: ProjectMetadata) -> "PricingContext":

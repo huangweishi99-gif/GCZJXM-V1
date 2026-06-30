@@ -511,6 +511,7 @@ def fill_tender_inplace(
     output_path: Optional[str | Path] = None,
     db_path: Optional[str] = None,
     reference_fill: bool = True,
+    project_materials_ref: Optional[str] = None,
 ) -> Path:
     """
     复制原招标清单，保留原表结构，追加/识别成本列，填入组价并同表去重链接。
@@ -551,6 +552,8 @@ def fill_tender_inplace(
         raise ValueError(f"组价任务不存在: {job_id}")
 
     ctx = repo.get_project_context(int(job["project_id"]))
+    if project_materials_ref:
+        ctx.project_materials_ref = project_materials_ref
 
     wb = load_workbook(out)
     by_sheet: Dict[str, List[dict]] = {}

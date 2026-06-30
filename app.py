@@ -437,6 +437,7 @@ def cmd_deliver(args: argparse.Namespace) -> None:
             export_list = [pair["export"]]
         if not tender_list:
             raise SystemExit(f"项目 {args.project} 未配置 tender 路径")
+        materials_ref = pair.get("project_materials_ref")
         for i, tender in enumerate(tender_list):
             out = (
                 args.output
@@ -450,12 +451,20 @@ def cmd_deliver(args: argparse.Namespace) -> None:
                     tier=tier,
                     output=out,
                     args=args,
+                    project_materials_ref=materials_ref,
                 )
             except Exception as exc:
                 fb = pair.get("tender_fallback")
                 if fb and _resolve_file(tender) != _resolve_file(fb):
                     print(f"主招标失败({exc})，改用 tender_fallback: {fb}")
-                    _run_deliver_one(fb, city=city, tier=tier, output=out, args=args)
+                    _run_deliver_one(
+                        fb,
+                        city=city,
+                        tier=tier,
+                        output=out,
+                        args=args,
+                        project_materials_ref=materials_ref,
+                    )
                 else:
                     raise
         print("下一步: 您校正后保存到 AI学习清单/ → python app.py calibrate --project", args.project)
@@ -475,6 +484,7 @@ def _run_deliver_one(
     tier: str,
     output: Optional[str],
     args: argparse.Namespace,
+    project_materials_ref: Optional[str] = None,
 ) -> None:
     tender_path = _resolve_file(tender)
     out_path = str(ROOT / output) if output and not Path(output).is_absolute() else output
@@ -491,6 +501,7 @@ def _run_deliver_one(
         pr["job_id"],
         output_path=out_path,
         reference_fill=not args.no_reference_fill,
+        project_materials_ref=project_materials_ref,
     )
     print(f"已交付: {written}")
 

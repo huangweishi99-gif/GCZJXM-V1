@@ -41,7 +41,10 @@ def decompose_stone_material_price(
     labor = _stone_install_labor(text, name)
     aux = 46.2
     main = material_unit_price
-    if re.search(r"20mm", text) and re.search(r"地面|楼地面", text + name):
+    if re.search(r"玻镁板|镀锌方通|方通", text) and material_unit_price > 600:
+        main = 450.0
+        labor = 125.0 if re.search(r"湿贴", text) else 150.0
+    elif re.search(r"20mm", text) and re.search(r"地面|楼地面", text + name):
         if re.search(r"波打|拼花", text):
             pass
         elif material_code.upper().startswith("ST-03"):

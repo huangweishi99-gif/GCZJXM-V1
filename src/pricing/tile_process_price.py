@@ -113,6 +113,8 @@ def decompose_tile_material_price(
 
     # 项目主材表价 = 砖材 元/㎡，主材取表价（不用比例折算）
     mat_main = material_unit_price
+    if re.search(r"拼花", name) and material_unit_price < 120:
+        mat_main = round(material_unit_price * (220.0 / 45.0), 2)
 
     if wall and re.search(r"轻钢龙骨|水泥纤维板|阻燃板基层|焊网|钢丝网", text):
         labor = 89.0 if re.search(r"轻钢龙骨|水泥纤维板", text) else 71.0

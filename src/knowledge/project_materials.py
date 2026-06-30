@@ -12,7 +12,10 @@ from src.db.database import get_connection
 from src.knowledge.facts import upsert_material_fact_from_line
 from src.normalize.text import normalize_name, normalize_unit
 
-MATERIAL_CODE_RE = re.compile(r"([A-Z]{2}-\d{1,2}[a-zA-Z]?)(?![A-Z0-9-])", re.I)
+MATERIAL_CODE_RE = re.compile(
+    r"([A-Z]{2}-\d{1,2}(?:\.\d{1,2})?[a-zA-Z]?)(?![A-Z0-9.\-])",
+    re.I,
+)
 
 _CODE_CATEGORY = {
     "PT": "涂料",
@@ -33,16 +36,17 @@ _CODE_CATEGORY = {
 
 
 def extract_material_codes(name: str, feature: str = "") -> List[str]:
-    """从名称+特征提取物料编号（PT-01、ST-04a 等），去重保序。"""
+    """从名称+特征提取物料编号（PT-01、CT-01.02、ST-04a 等），去重保序（长编号优先）。"""
     text = f"{name or ''} {feature or ''}"
     seen: set[str] = set()
-    out: List[str] = []
+    raw: List[str] = []
     for m in MATERIAL_CODE_RE.finditer(text):
         code = m.group(1).upper()
         if code not in seen:
             seen.add(code)
-            out.append(code)
-    return out
+            raw.append(code)
+    raw.sort(key=lambda c: (-len(c), text.upper().find(c)))
+    return raw
 
 
 def _category_from_code(code: str) -> str:
@@ -215,37 +219,43 @@ def lookup_project_material_row(
     conn = get_connection(db_path)
     try:
         for code in codes:
-            queries = []
-            params: list = []
-            if project_ref:
-                queries.append(
-                    """SELECT * FROM project_material_prices
-                       WHERE material_code=? AND project_ref=?
-                         AND (unit_norm=? OR unit_norm='' OR ?='')"""
-                )
-                params.append((code, project_ref, un, un))
-            for city_try in ([city, ""] if city else [""]):
-                for tier_try in ([price_tier, "mid"] if price_tier else ["mid"]):
+            try_codes = [code]
+            if code.upper() == "WD-03":
+                try_codes.append("WD-04")
+            for tc in try_codes:
+                queries = []
+                params: list = []
+                if project_ref:
                     queries.append(
                         """SELECT * FROM project_material_prices
-                           WHERE material_code=? AND city=? AND price_tier=?
-                             AND (unit_norm=? OR unit_norm='' OR ?='')
-                           ORDER BY project_ref DESC LIMIT 1"""
+                           WHERE material_code=? AND project_ref=?
+                             AND (unit_norm=? OR unit_norm='' OR ?='')"""
                     )
-                    params.append((code, city_try, tier_try, un, un))
+                    params.append((tc, project_ref, un, un))
+                for city_try in ([city, ""] if city else [""]):
+                    for tier_try in ([price_tier, "mid"] if price_tier else ["mid"]):
+                        queries.append(
+                            """SELECT * FROM project_material_prices
+                               WHERE material_code=? AND city=? AND price_tier=?
+                                 AND (unit_norm=? OR unit_norm='' OR ?='')
+                               ORDER BY project_ref DESC LIMIT 1"""
+                        )
+                        params.append((tc, city_try, tier_try, un, un))
 
-            row = None
-            for sql, p in zip(queries, params):
-                row = conn.execute(sql, p).fetchone()
-                if row:
-                    break
-            if not row:
-                continue
-            note = (
-                f"[项目主材表]{row['project_name']}·{code}·{row['material_name']}"
-                f" 主材{float(row['material_main']):.2f}/{row['unit_norm']}"
-            )
-            return dict(row), note
+                row = None
+                for sql, p in zip(queries, params):
+                    row = conn.execute(sql, p).fetchone()
+                    if row:
+                        break
+                if not row:
+                    continue
+                note = (
+                    f"[项目主材表]{row['project_name']}·{tc}·{row['material_name']}"
+                    f" 主材{float(row['material_main']):.2f}/{row['unit_norm']}"
+                )
+                if tc != code:
+                    note = f"{note}（{code}→{tc}）"
+                return dict(row), note
     finally:
         conn.close()
     return None, ""

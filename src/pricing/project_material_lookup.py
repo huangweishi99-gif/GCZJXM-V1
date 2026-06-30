@@ -100,7 +100,26 @@ def lookup_project_material_components(
             if r2:
                 prices.append(float(r2.get("material_main") or 0))
         if prices and re.search(r"波打", text_norm):
-            main_val = round(max(prices) * 1.66, 2)
+            primary = (
+                extract_material_codes(name, "")[0]
+                if extract_material_codes(name, "")
+                else st_codes[0]
+            )
+            for sc in st_codes:
+                if sc.upper().startswith(primary.upper().split(".")[0]):
+                    primary = sc
+                    break
+            r2, _ = lookup_project_material_row(
+                primary,
+                feature,
+                unit,
+                city=city,
+                price_tier=tier,
+                project_ref=project_ref,
+                db_path=repo.db_path,
+            )
+            if r2:
+                main_val = round(float(r2["material_main"]) * 1.66, 2)
         elif prices and re.search(r"拼花", text_norm):
             primary = extract_material_codes(name, "")[0] if extract_material_codes(name, "") else st_codes[0]
             for sc in st_codes:
@@ -136,10 +155,11 @@ def lookup_project_material_components(
         }, f"[工序拆价·{code}金属饰面+玻镁基层]主材=表价；人工{labor:.0f}；{note}"
 
     if prefix == "MR" and re.search(r"阻燃板|轻钢龙骨", text_norm):
+        aux = 93.0 if re.search(r"不锈钢线条", text_norm) else 35.0
         return {
             "material_main": main_val,
             "material_loss_rate": 0.0,
-            "material_aux": 35.0,
+            "material_aux": aux,
             "labor": 110.0,
             "machinery": 15.0,
         }, f"[工序拆价·{code}银镜+基层]主材=表价；人工110；{note}"

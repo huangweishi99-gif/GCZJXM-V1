@@ -242,7 +242,18 @@ class KnowledgeRepository:
         conn = self.conn()
         learned = 0
         skipped = 0
+        replaced = 0
         try:
+            old_rows = conn.execute(
+                "SELECT id FROM projects WHERE source_file=? AND project_type=?",
+                (wb.file_path, project_type),
+            ).fetchall()
+            for old in old_rows:
+                oid = int(old["id"])
+                conn.execute("DELETE FROM cost_records WHERE source_project_id=?", (oid,))
+                conn.execute("DELETE FROM projects WHERE id=?", (oid,))
+                replaced += 1
+
             cur = conn.execute(
                 """INSERT INTO projects
                    (name, project_type, source_file, region, city, price_tier, remark)
@@ -284,6 +295,7 @@ class KnowledgeRepository:
             "total_lines": len(wb.lines),
             "learned_records": learned,
             "skipped_no_cost": skipped,
+            "replaced_projects": replaced,
             "format": wb.format_hint,
             "anatomy": anatomy_stats,
         }

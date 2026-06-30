@@ -168,6 +168,25 @@ def _component_total(comps: Mapping[str, Any]) -> float:
     return component_total(comps)
 
 
+def _finalize_judgment(
+    result: ComponentJudgment, name: str, feature: str
+) -> ComponentJudgment:
+    from src.pricing.material_process_price import apply_projection_paint_direct
+
+    before = result.as_components()
+    comps = apply_projection_paint_direct(before, name, feature)
+    if float(comps.get("material_aux") or 0) == float(before.get("material_aux") or 0) and float(
+        comps.get("machinery") or 0
+    ) == float(before.get("machinery") or 0):
+        return result
+    result.material_aux = float(comps.get("material_aux") or 0)
+    result.machinery = float(comps.get("machinery") or 0)
+    result.cost_unit_price = _component_total(result.as_components())
+    if not any("投影面" in n for n in result.notes):
+        result.notes.append("[投影面涂料]合价=主材+人工")
+    return result
+
+
 def _reconcile_components_with_stored_total(
     comps: dict,
     stored_total: float,
@@ -301,6 +320,8 @@ def _apply_line_components(
     craft: CraftMatch,
     role: Optional[str],
     *,
+    name: str = "",
+    feature: str = "",
     name_score: float = 0.0,
     weak_min: float = 0.75,
     weak_name_min: float = 0.8,
@@ -322,7 +343,7 @@ def _apply_line_components(
     result.auto_fill_ok = allow_auto and auto_ok
     result.notes.append(note)
     result.warnings = _validate_expectations(craft, result.as_components(), role)
-    return result
+    return _finalize_judgment(result, name, feature)
 
 
 def judge_line_components(
@@ -398,6 +419,9 @@ def judge_line_components(
     if block_auto:
         result.warnings.append(feat_reason)
 
+    def _done(r: ComponentJudgment) -> ComponentJudgment:
+        return _finalize_judgment(r, name, feature)
+
     # --- 层 0a：定制柜体（㎡/套）优先于主材编号，避免误套 ST/WD 表价 ---
     if is_custom_furniture_candidate(name, feature, unit):
         furn_early, furn_note = lookup_custom_furniture_price(
@@ -416,7 +440,7 @@ def judge_line_components(
             result.notes.append(furn_note)
             result.auto_fill_ok = _auto(result.confidence >= auto_min)
             result.warnings = _validate_expectations(craft, result.as_components(), role)
-            return result
+            return _done(result)
 
     # --- 层 0b：定制门整项（㎡）优先于 WD/MT 表价误套 ---
     door_whole, door_whole_note = lookup_door_whole_line_price(
@@ -435,7 +459,7 @@ def judge_line_components(
         result.notes.append(door_whole_note)
         result.auto_fill_ok = _auto(result.confidence >= auto_min)
         result.warnings = _validate_expectations(craft, result.as_components(), role)
-        return result
+        return _done(result)
 
     # --- 层 0：项目主材编号表（名称/特征含 PT-01、ST-04 → 售楼处主材料价）---
     from src.knowledge.project_materials import extract_material_codes
@@ -463,7 +487,7 @@ def judge_line_components(
             result.notes.append(proj_note)
             result.auto_fill_ok = _auto(result.confidence >= auto_min)
             result.warnings = _validate_expectations(craft, result.as_components(), role)
-            return result
+            return _done(result)
 
     # --- 层 1：整项历史 ---
     exclude_ids = {exclude_standard_item_id} if exclude_standard_item_id else None
@@ -509,7 +533,7 @@ def judge_line_components(
                 result.notes.append(note)
                 result.auto_fill_ok = _auto(True)
                 result.warnings = _validate_expectations(craft, result.as_components(), role)
-                return result
+                return _done(result)
         result.notes.append(f"整项参照置信 {line_conf:.0%}<{auto_min:.0%}：{note}")
 
     # --- 层 1c：不锈钢/古铜线条按展开面(mm)（优先于弱整项，避免泛化 MT 名称抢价）---
@@ -530,7 +554,7 @@ def judge_line_components(
         result.notes.append(trim_note)
         result.auto_fill_ok = False
         result.warnings = _validate_expectations(craft, result.as_components(), role)
-        return result
+        return _done(result)
 
     # --- 层 1d：定制门/门套（樘）按名称尺寸查价库 ---
     door_comps, door_note = lookup_custom_door_price(name, feature, unit, repo, ctx)
@@ -550,7 +574,7 @@ def judge_line_components(
         result.notes.append(door_note)
         result.auto_fill_ok = False
         result.warnings = _validate_expectations(craft, result.as_components(), role)
-        return result
+        return _done(result)
 
     # --- 层 1e：定制家具/吧台（套）按尺寸查价库 ---
     furn_comps, furn_note = lookup_custom_furniture_price(
@@ -569,7 +593,7 @@ def judge_line_components(
         result.notes.append(furn_note)
         result.auto_fill_ok = False
         result.warnings = _validate_expectations(craft, result.as_components(), role)
-        return result
+        return _done(result)
 
     # --- 层 1b：弱整项（≥75% 或名称强命中）取历史全量人材机 ---
     mkt_city = ctx.city if ctx else ""
@@ -586,12 +610,16 @@ def judge_line_components(
             # 仅当整项置信低于 review 且有市场参考时，让市场价优先
             prefer_market = bool(market and line_conf < review_min)
             if not prefer_market:
-                return _apply_line_components(
+                return _done(
+                    _apply_line_components(
                     result, weak_comps, line_conf, auto_min, weak_note, craft, role,
+                    name=name,
+                    feature=feature,
                     name_score=cands[0].get("name_score", 0),
                     weak_min=weak_min,
                     weak_name_min=weak_name_min,
                     allow_auto=not block_auto,
+                    )
                 )
 
     # --- 层 1f：涂料工序拆价（优先于平面市场参考价）---
@@ -629,7 +657,7 @@ def judge_line_components(
             result.notes.append(proc_note)
             result.auto_fill_ok = _auto(result.confidence >= auto_min)
             result.warnings = _validate_expectations(craft, result.as_components(), role)
-            return result
+            return _done(result)
 
     # --- 层 2：市场参考价（须名称+特征+单位均达标，禁止无特征平面套价）---
     if market and not block_auto:
@@ -651,7 +679,7 @@ def judge_line_components(
         result.notes.append(f"[市场参考{scope}] {market.note}（规则:{market.rule_id}）")
         result.auto_fill_ok = _auto(market.confidence >= auto_min)
         result.warnings = _validate_expectations(craft, result.as_components(), role)
-        return result
+        return _done(result)
 
     # --- 层 3：工艺价型库 ---
     conn = repo.conn()
@@ -699,7 +727,7 @@ def judge_line_components(
             if profile_conf >= auto_min:
                 result.auto_fill_ok = _auto(True)
                 result.warnings = _validate_expectations(craft, result.as_components(), role)
-                return result
+                return _done(result)
             result.notes.append(f"工艺价型置信 {profile_conf:.0%}，建议人工复核")
         else:
             result.notes.append(
@@ -744,7 +772,7 @@ def judge_line_components(
                 if hybrid_conf >= auto_min - 0.02:
                     result.auto_fill_ok = _auto(True)
                 result.warnings = _validate_expectations(craft, result.as_components(), role)
-                return result
+                return _done(result)
 
     # --- 层 5：仅整项弱匹配或模板提示 ---
     if comps:
@@ -775,7 +803,7 @@ def judge_line_components(
         result.auto_fill_ok = _auto(auto_ok)
         result.notes.append(note or "弱匹配整项，建议人工核对")
         result.warnings = _validate_expectations(craft, result.as_components(), role)
-        return result
+        return _done(result)
 
     result.confidence = 0.35
     result.source = "unresolved"

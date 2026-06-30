@@ -101,7 +101,17 @@ def lookup_project_material_components(
             if r2:
                 prices.append(float(r2.get("material_main") or 0))
         if prices and re.search(r"波打", text_norm):
-            main_val = round(min(prices) * 1.66, 2)
+            ref_r, _ = lookup_project_material_row(
+                "ST-01",
+                feature,
+                unit,
+                city=city,
+                price_tier=tier,
+                project_ref=project_ref,
+                db_path=repo.db_path,
+            )
+            base = float(ref_r["material_main"]) if ref_r else min(prices)
+            main_val = round(base * 1.66, 2)
         elif prices and re.search(r"拼花", text_norm):
             primary = extract_material_codes(name, "")[0] if extract_material_codes(name, "") else st_codes[0]
             for sc in st_codes:
@@ -127,7 +137,7 @@ def lookup_project_material_components(
     from src.pricing.material_process_price import analyze_paint_process
 
     if prefix == "MT" and re.search(r"玻镁板|方通|镀锌方通", text_norm):
-        labor = 110.0 if "门套" in name else 85.0
+        labor = 110.0 if re.search(r"门套|金属饰面|不锈钢", text_norm) else 85.0
         return {
             "material_main": main_val,
             "material_loss_rate": 0.0,

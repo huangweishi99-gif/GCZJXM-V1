@@ -155,6 +155,19 @@ def _apply_direct_cost_mode(comps: dict) -> dict:
     return comps
 
 
+def apply_projection_paint_direct(comps: dict, name: str, feature: str) -> dict:
+    """地库/简易项「投影面」涂料：合价=主材+人工，辅材机械归零。"""
+    text = normalize_name(f"{name}\n{feature}")
+    if "投影面" not in text:
+        return comps
+    if not re.search(r"涂料|乳胶漆|无机|面漆|腻子|PT-", text):
+        return comps
+    out = dict(comps)
+    out["material_aux"] = 0.0
+    out["machinery"] = 0.0
+    return out
+
+
 def _decompose_from_scope(
     scope: PaintProcessScope,
     material_unit_price: float,
@@ -274,8 +287,11 @@ def lookup_paint_by_feature(
     use_texture = scope.texture_finish
     finish_price = tier_prices["texture_inorganic"] if use_texture else tier_prices["latex"]
     comps, note = _decompose_from_scope(scope, finish_price)
+    text = normalize_name(f"{name}\n{feature}")
     if scope.light_coat_only:
         return _apply_direct_cost_mode(comps), note
+    if "投影面" in text and scope.has_primer and scope.top_coats >= 2 and not scope.texture_finish:
+        return apply_projection_paint_direct(comps, name, feature), note
     return comps, note
 
 

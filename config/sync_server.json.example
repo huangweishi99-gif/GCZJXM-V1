@@ -1,0 +1,11 @@
+{
+  "api_token": "",
+  "remote_jobs_enabled": true,
+  "allowed_projects": [
+    "haide_sales",
+    "haide_basement",
+    "costco",
+    "shenhai_dasha"
+  ],
+  "_comment": "复制为 config/sync_server.json 后填写 api_token；勿将含 Token 的文件 push 到 GitHub"
+}

@@ -15,6 +15,7 @@ from src.knowledge.facts import (
     upsert_material_fact_from_line,
 )
 from src.knowledge.metadata import ProjectMetadata, infer_metadata
+from src.knowledge.cost_split import needs_component_split, split_whole_price_components
 from src.knowledge.query import PricingContext, filter_cost_records, query_line_price_fact
 from src.normalize.feature_extract import extract_feature_profile
 from src.normalize.text import (
@@ -170,7 +171,20 @@ class KnowledgeRepository:
                 line.profit or 0,
             ]
             cost = sum(parts) if any(parts) else 0.0
+        mm = float(line.material_main or 0)
+        ma = float(line.material_aux or 0)
+        la = float(line.labor or 0)
+        mc = float(line.machinery or 0)
         loss = line.material_loss_rate or 0
+        if needs_component_split(cost, mm, ma, la, mc):
+            split = split_whole_price_components(
+                line.name, line.feature or "", line.unit or "", float(cost)
+            )
+            mm = float(split["material_main"])
+            ma = float(split["material_aux"])
+            la = float(split["labor"])
+            mc = float(split["machinery"])
+            loss = float(split.get("material_loss_rate") or 0)
         cur = conn.execute(
             """INSERT INTO cost_records
                (standard_item_id, source_project_id, source_line_id,
@@ -181,11 +195,11 @@ class KnowledgeRepository:
                 standard_item_id,
                 project_id,
                 line_id,
-                line.material_main or 0,
+                mm,
                 loss,
-                line.material_aux or 0,
-                line.labor or 0,
-                line.machinery or 0,
+                ma,
+                la,
+                mc,
                 line.management or 0,
                 line.profit or 0,
                 cost,
@@ -196,7 +210,7 @@ class KnowledgeRepository:
         proj = conn.execute(
             "SELECT city, price_tier FROM projects WHERE id=?", (project_id,)
         ).fetchone()
-        if proj and (line.material_main or 0) > 0:
+        if proj and mm > 0:
             upsert_material_fact_from_line(
                 conn,
                 line.name,
@@ -204,7 +218,7 @@ class KnowledgeRepository:
                 line.unit or "",
                 proj["city"] or "",
                 proj["price_tier"] or "mid",
-                float(line.material_main or 0),
+                mm,
                 float(loss),
             )
         rebuild_line_price_facts(conn, standard_item_id)

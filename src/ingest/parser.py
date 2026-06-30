@@ -9,10 +9,12 @@ import pandas as pd
 
 from src.ingest.detector import (
     SheetLayout,
+    _row_quantity,
     detect_sheet_layout,
     is_pricing_row,
     should_skip_sheet,
 )
+from src.ingest.formula_eval import row_quantity_from_ws
 from src.ingest.line_types import ParsedLine, ParsedWorkbook, cell_str, to_float
 from src.ingest.unit_price_analysis import (
     enrich_from_boq_features,
@@ -31,7 +33,11 @@ def _get(row: Tuple[Any, ...], mapping: dict, key: str, alt: Optional[str] = Non
     return row[idx]
 
 
-def _parse_sheet(df: pd.DataFrame, sheet_name: str) -> Tuple[List[ParsedLine], Optional[SheetLayout]]:
+def _parse_sheet(
+    df: pd.DataFrame,
+    sheet_name: str,
+    ws=None,
+) -> Tuple[List[ParsedLine], Optional[SheetLayout]]:
     layout = detect_sheet_layout(df, sheet_name)
     if layout is None:
         return [], None
@@ -39,11 +45,20 @@ def _parse_sheet(df: pd.DataFrame, sheet_name: str) -> Tuple[List[ParsedLine], O
     lines: List[ParsedLine] = []
     section_stack: List[str] = []
     m = layout.column_map
+    floor_cols = layout.floor_qty_columns
 
     for i in range(layout.data_start_row, len(df)):
         row = tuple(df.iloc[i].tolist())
+        excel_row = i + 1
 
-        if not is_pricing_row(row, m):
+        if ws is not None:
+            qty_ws = row_quantity_from_ws(ws, excel_row, m, floor_cols)
+            pricing_ok = is_pricing_row(row, m, floor_cols, ws=ws, excel_row=excel_row)
+        else:
+            qty_ws = None
+            pricing_ok = is_pricing_row(row, m, floor_cols)
+
+        if not pricing_ok:
             name = _cell_str(_get(row, m, "name"))
             unit = _cell_str(_get(row, m, "unit"))
             if name and not unit:
@@ -72,10 +87,11 @@ def _parse_sheet(df: pd.DataFrame, sheet_name: str) -> Tuple[List[ParsedLine], O
         if cost_up is None and any(x is not None for x in (mm, la, ma, mc)):
             cost_up = (mm or 0) * (1 + (loss or 0)) + (la or 0) + (ma or 0) + (mc or 0)
         listed_up = col("unit_price")
-        if listed_up is not None and listed_up > 0:
-            cost_up = listed_up
-        elif (cost_up is None or cost_up == 0) and listed_up:
-            cost_up = listed_up
+        if not m.get("_cost_side"):
+            if listed_up is not None and listed_up > 0:
+                cost_up = listed_up
+            elif (cost_up is None or cost_up == 0) and listed_up:
+                cost_up = listed_up
 
         feat = _cell_str(_get(row, m, "feature"))
         spec = _cell_str(_get(row, m, "spec")) if "spec" in m else ""
@@ -84,9 +100,20 @@ def _parse_sheet(df: pd.DataFrame, sheet_name: str) -> Tuple[List[ParsedLine], O
         if sheet_name and feat and not feat.startswith("["):
             feat = f"[{sheet_name}] {feat}"
 
-        qty = col("quantity")
+        qty = qty_ws if qty_ws is not None else _row_quantity(row, m, floor_cols)
         if qty is None and col("unit_price") is not None:
             qty = 1.0
+        if floor_cols and qty is not None:
+            parts = []
+            for idx, label in floor_cols:
+                if idx >= len(row):
+                    continue
+                v = _to_float(row[idx])
+                if v is not None:
+                    parts.append(f"{label}:{v}")
+            if parts:
+                extra = "[分层工程量]" + " ".join(parts)
+                feat = f"{feat}\n{extra}" if feat else extra
         cost_amt = col("cost_amount")
         if cost_amt is None and cost_up is not None and qty is not None:
             cost_amt = round(cost_up * qty, 2)
@@ -156,11 +183,19 @@ def parse_workbook(path: str | Path) -> ParsedWorkbook:
     layouts: List[SheetLayout] = []
     analysis_lines: List[ParsedLine] = []
 
+    try:
+        from openpyxl import load_workbook
+
+        oxl = load_workbook(path, data_only=False)
+    except Exception:
+        oxl = None
+
     for sn in xl.sheet_names:
         if should_skip_sheet(sn) or _is_analysis_sheet(sn):
             continue
         df = pd.read_excel(xl, sheet_name=sn, header=None)
-        parsed, layout = _parse_sheet(df, sn)
+        ws = oxl[sn] if oxl and sn in oxl.sheetnames else None
+        parsed, layout = _parse_sheet(df, sn, ws=ws)
         if layout:
             layouts.append(layout)
         all_lines.extend(parsed)

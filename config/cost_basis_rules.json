@@ -1,0 +1,14 @@
+{
+  "_comment": "价库合价与用户成本区口径：多数项÷default_net_divisor 为净价",
+  "default_net_divisor": 1.1,
+  "gross_name_patterns": [
+    "MT-0\\d.*金属饰面"
+  ],
+  "gross_unit_name_rules": [
+    {
+      "unit": "m",
+      "name_pattern": "AM-0\\d",
+      "_note": "线性 AM 灯槽/收边：价库合价已是净价"
+    }
+  ]
+}

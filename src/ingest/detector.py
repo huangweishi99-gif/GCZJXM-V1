@@ -7,6 +7,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
+from src.ingest.formula_eval import row_quantity_from_ws
+
 # 字段别名（成本列须在 unit_price 之前，避免「材料成本单价」误匹配「单价」）
 FIELD_ALIASES: Dict[str, List[str]] = {
     "seq": ["序号", "项号", "编码序号", "编号"],
@@ -44,7 +46,7 @@ FIELD_ALIASES: Dict[str, List[str]] = {
     "material_aux": ["辅材费", "辅材"],
     "machinery": ["机械费", "机械"],
     "cost_amount": ["成本合价", "材料成本总价", "人工成本总价"],
-    "cost_unit_price": ["成本单价", "成本价", "不含税单价"],
+    "cost_unit_price": ["成本单价", "成本价"],
     "unit_price": [
         "综合单价（不含税）",
         "综合单价(不含税)",
@@ -64,6 +66,23 @@ FIELD_ALIASES: Dict[str, List[str]] = {
 _PRIMARY_KEYS = ("name", "unit", "quantity")
 # 或 name+unit（工程量可能在下一行子表头才出现）
 _FALLBACK_KEYS = ("name", "unit")
+
+# Excel 元数据 max_column 偶发虚高（如 16384），列映射与追加成本区须截断
+MAX_REASONABLE_COL = 120
+
+# 右侧追加成本区列序（与 inplace_bidder.COST_FIELDS 一致）
+_APPENDED_COST_FIELDS = (
+    "cost_unit_price",
+    "material_main_cost",
+    "material_loss_rate_cost",
+    "labor_cost",
+    "material_aux_cost",
+    "machinery_cost",
+    "cost_amount",
+    "management",
+    "profit",
+    "tax",
+)
 
 SKIP_SHEET_KEYWORDS = (
     "封面",
@@ -145,6 +164,42 @@ def _score_header_row(row_values: List[Any]) -> Tuple[int, Dict[str, int]]:
     return score, mapping
 
 
+def _sanitize_column_map(mapping: Dict[str, int]) -> Dict[str, int]:
+    """去掉虚高列号；成本单价不得与综合单价同列。"""
+    out = dict(mapping)
+    up = out.get("unit_price")
+    cpu = out.get("cost_unit_price")
+    if up is not None and cpu is not None and up == cpu:
+        del out["cost_unit_price"]
+    for k, v in list(out.items()):
+        if k.startswith("_"):
+            continue
+        if isinstance(v, int) and v > MAX_REASONABLE_COL:
+            del out[k]
+    return out
+
+
+def _detect_appended_cost_block(main_row: List[Any], sub_row: List[Any]) -> Dict[str, int]:
+    """识别备注列右侧追加的投标成本区（清单询表等）。"""
+    for row in (sub_row, main_row):
+        for idx, v in enumerate(row):
+            if idx < 8:
+                continue
+            h = _norm_header(v)
+            if not h:
+                continue
+            if h in ("成本单价", "成本价") or (
+                "成本单价" in h and "综合" not in h and "分析" not in h
+            ):
+                block: Dict[str, int] = {"_cost_side": 1}
+                for j, key in enumerate(_APPENDED_COST_FIELDS):
+                    ci = idx + j
+                    if ci < len(row):
+                        block[key] = ci
+                return block
+    return {}
+
+
 def _merge_subheader(
     main: Dict[str, int], sub: Dict[str, int], main_row: List[Any], sub_row: List[Any]
 ) -> Dict[str, int]:
@@ -214,7 +269,18 @@ def _merge_subheader(
             out["cost_unit_price"] = cpus[1]
             out["_cost_side"] = 1
 
-    return out
+    total_col, floor_cols = _detect_multi_floor_quantity(main_row, sub_row)
+    if total_col is not None:
+        out["quantity"] = total_col
+        out["_multi_floor_qty"] = 1
+    if floor_cols:
+        out["_floor_qty_count"] = len(floor_cols)
+
+    block = _detect_appended_cost_block(main_row, sub_row)
+    if block:
+        out.update(block)
+
+    return _sanitize_column_map(out)
 
 
 @dataclass
@@ -224,7 +290,42 @@ class SheetLayout:
     subheader_row: Optional[int]
     data_start_row: int
     column_map: Dict[str, int] = field(default_factory=dict)
+    floor_qty_columns: List[Tuple[int, str]] = field(default_factory=list)
     has_cost_block: bool = False
+
+
+def _detect_multi_floor_quantity(main_row: List[Any], sub_row: List[Any]) -> Tuple[Optional[int], List[Tuple[int, str]]]:
+    """识别 -1/-2 层工程量列与合计工程量列（地库等多楼层清单）。"""
+    total_col: Optional[int] = None
+    floor_cols: List[Tuple[int, str]] = []
+    for row in (main_row, sub_row):
+        for i, v in enumerate(row):
+            h = _norm_header(v)
+            if not h or "工程量" not in h:
+                continue
+            if "合计" in h:
+                total_col = i
+                continue
+            if re.search(r"-?\d+层", h):
+                floor_cols.append((i, str(v).strip().replace("\n", "")))
+    seen = set()
+    uniq: List[Tuple[int, str]] = []
+    for item in floor_cols:
+        if item[0] not in seen:
+            seen.add(item[0])
+            uniq.append(item)
+    return total_col, uniq
+
+
+def _is_rate_subheader_row(row: List[Any]) -> bool:
+    """次行若为 A/B/C 费率占位，则数据区再下一行开始。"""
+    cells = [_norm_header(v) for v in row[:14] if _norm_header(v)]
+    if not cells:
+        return False
+    if set(cells) <= {"A", "B", "C", "D", "E", "F"}:
+        return True
+    joined = "".join(cells)
+    return "A" in joined and "B" in joined and len(cells) <= 6
 
 
 def detect_sheet_layout(df: pd.DataFrame, sheet_name: str) -> Optional[SheetLayout]:
@@ -246,10 +347,12 @@ def detect_sheet_layout(df: pd.DataFrame, sheet_name: str) -> Optional[SheetLayo
     sub_row_idx = None
     merged = dict(best_map)
     main_row = df.iloc[best_row].tolist()
+    sub_row: List[Any] = main_row
     merged = _merge_subheader(best_map, {}, main_row, main_row)
 
     if best_row + 1 < len(df):
         sub = df.iloc[best_row + 1].tolist()
+        sub_row = sub
         sub_score, sub_map = _score_header_row(sub)
         sub_joined = " ".join(_norm_header(v) for v in sub if _norm_header(v))
         is_subheader = (
@@ -258,11 +361,15 @@ def detect_sheet_layout(df: pd.DataFrame, sheet_name: str) -> Optional[SheetLayo
             or "含税单价" in sub_joined
             or ("单价" in sub_joined and "合价" in sub_joined)
             or ("unit_price" in sub_map and "quantity" not in sub_map)
+            or _is_rate_subheader_row(sub)
         )
         if is_subheader:
             sub_row_idx = best_row + 1
             merged = _merge_subheader(best_map, sub_map, main_row, sub)
 
+    total_col, floor_cols = _detect_multi_floor_quantity(main_row, sub_row)
+    if total_col is not None:
+        merged["quantity"] = total_col
     data_start = (sub_row_idx or best_row) + 1
     has_cost = any(
         k in merged
@@ -275,13 +382,16 @@ def detect_sheet_layout(df: pd.DataFrame, sheet_name: str) -> Optional[SheetLayo
         )
     )
 
+    merged = _sanitize_column_map(merged)
+
     return SheetLayout(
         sheet_name=sheet_name,
         header_row=best_row,
         subheader_row=sub_row_idx,
         data_start_row=data_start,
         column_map=merged,
-        has_cost_block=has_cost,
+        floor_qty_columns=floor_cols,
+        has_cost_block=has_cost or bool(merged.get("_cost_side")),
     )
 
 
@@ -296,11 +406,41 @@ def _parse_qty(v: Any) -> Optional[float]:
         return None
 
 
-def is_pricing_row(row: Tuple[Any, ...], column_map: Dict[str, int]) -> bool:
+def _row_quantity(
+    row: Tuple[Any, ...],
+    column_map: Dict[str, int],
+    floor_cols: Optional[List[Tuple[int, str]]] = None,
+) -> Optional[float]:
+    qty_i = column_map.get("quantity")
+    if qty_i is not None and qty_i < len(row):
+        q = _parse_qty(row[qty_i])
+        if q is not None:
+            return q
+    if floor_cols:
+        total = 0.0
+        found = False
+        for idx, _ in floor_cols:
+            if idx >= len(row):
+                continue
+            v = _parse_qty(row[idx])
+            if v is not None:
+                total += v
+                found = True
+        return total if found else None
+    return None
+
+
+def is_pricing_row(
+    row: Tuple[Any, ...],
+    column_map: Dict[str, int],
+    floor_cols: Optional[List[Tuple[int, str]]] = None,
+    *,
+    ws=None,
+    excel_row: Optional[int] = None,
+) -> bool:
     """有名称 + 单位 + (工程量 或 综合单价) → 需要报价。"""
     name_i = column_map.get("name")
     unit_i = column_map.get("unit")
-    qty_i = column_map.get("quantity")
     if name_i is None or unit_i is None:
         return False
     name = _norm_header(row[name_i] if name_i < len(row) else "")
@@ -312,7 +452,10 @@ def is_pricing_row(row: Tuple[Any, ...], column_map: Dict[str, int]) -> bool:
     if "小计" in name.replace(" ", ""):
         return False
 
-    qty_ok = qty_i is not None and _parse_qty(row[qty_i] if qty_i < len(row) else None) is not None
+    if ws is not None and excel_row is not None:
+        qty_ok = row_quantity_from_ws(ws, excel_row, column_map, floor_cols) is not None
+    else:
+        qty_ok = _row_quantity(row, column_map, floor_cols) is not None
 
     up_i = column_map.get("unit_price")
     if up_i is None:

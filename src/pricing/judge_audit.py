@@ -13,7 +13,9 @@ from src.knowledge.query import PricingContext
 from src.knowledge.repository import KnowledgeRepository
 from src.normalize.craft_classifier import classify_craft
 from src.pricing.component_judge import judge_line_components
+from src.pricing.cost_basis import get_net_divisor
 from src.pricing.engine import PricingEngine
+from src.pricing.reconcile import component_total, reconcile_components_with_stored_total
 
 _COMPONENTS = ("material_main", "material_aux", "labor", "machinery")
 
@@ -30,6 +32,7 @@ class AuditSample:
     price_tier: str
     actual: Dict[str, float]
     actual_total: float
+    material_loss_rate: float = 0.0
 
 
 @dataclass
@@ -85,7 +88,8 @@ def load_audit_samples(
                COALESCE(bl.unit, si.unit_norm) AS unit,
                COALESCE(p.city, '') AS city,
                COALESCE(p.price_tier, 'mid') AS price_tier,
-               cr.material_main, cr.material_aux, cr.labor, cr.machinery, cr.cost_unit_price
+               cr.material_main, cr.material_aux, cr.labor, cr.machinery,
+               cr.material_loss_rate, cr.cost_unit_price
         FROM cost_records cr
         JOIN standard_items si ON si.id = cr.standard_item_id
         LEFT JOIN boq_lines bl ON bl.id = cr.source_line_id
@@ -119,12 +123,34 @@ def load_audit_samples(
                 price_tier=r["price_tier"] or "mid",
                 actual=actual,
                 actual_total=total,
+                material_loss_rate=float(r["material_loss_rate"] or 0),
             )
         )
     if limit and len(samples) > limit:
         step = max(1, len(samples) // limit)
         samples = samples[::step][:limit]
     return samples
+
+
+def _expected_display_total(
+    sample: AuditSample,
+    *,
+    net_divisor: float,
+) -> float:
+    """与用户成本区一致的目标合价（含净价/毛价口径）。"""
+    comps = {
+        **sample.actual,
+        "material_loss_rate": sample.material_loss_rate,
+    }
+    out = reconcile_components_with_stored_total(
+        comps,
+        sample.actual_total,
+        net_divisor=net_divisor,
+        unit=sample.unit,
+        name=sample.name,
+        feature=sample.feature,
+    )
+    return component_total(out)
 
 
 def _evaluate_row(
@@ -134,14 +160,18 @@ def _evaluate_row(
     rel_tol: float,
     abs_tol: float,
     total_rel_tol: float,
+    net_divisor: float,
 ) -> AuditRowResult:
     pred = judgment.as_components()
-    pred_total = sum(pred.get(k) or 0 for k in _COMPONENTS)
+    pred_total = component_total(
+        {**pred, "material_loss_rate": judgment.material_loss_rate}
+    )
+    expected_total = _expected_display_total(sample, net_divisor=net_divisor)
     comp_ok = {
         k: _component_ok(pred.get(k) or 0, sample.actual.get(k) or 0, rel_tol=rel_tol, abs_tol=abs_tol)
         for k in _COMPONENTS
     }
-    total_ok = _rel_err(pred_total, sample.actual_total) <= total_rel_tol
+    total_ok = _rel_err(pred_total, expected_total) <= total_rel_tol
     core_ok = comp_ok["material_main"] and comp_ok["labor"]
     strict_ok = all(comp_ok.values()) and total_ok
     return AuditRowResult(
@@ -177,6 +207,7 @@ def run_judge_audit(
     conn = get_connection(db_path)
     repo = KnowledgeRepository(db_path)
     engine = PricingEngine(db_path)
+    net_divisor = get_net_divisor(repo.settings.get("pricing", {}))
     try:
         samples = load_audit_samples(conn, limit=limit, project_id=project_id)
     finally:
@@ -199,7 +230,10 @@ def run_judge_audit(
             exclude_standard_item_id=ex,
         )
         results.append(
-            _evaluate_row(s, j, rel_tol=rel_tol, abs_tol=abs_tol, total_rel_tol=total_rel_tol)
+            _evaluate_row(
+                s, j, rel_tol=rel_tol, abs_tol=abs_tol, total_rel_tol=total_rel_tol,
+                net_divisor=net_divisor,
+            )
         )
 
     n = len(results)
@@ -248,6 +282,8 @@ def run_judge_audit(
         }
         summary["target_80_met"] = summary["accuracy_auto_fill_only"]["core_main_labor"] >= 0.80
 
+    summary["target_80_total_all"] = summary["accuracy_all"]["total_cost"] >= 0.80
+
     by_src: Dict[str, List[AuditRowResult]] = {}
     by_craft: Dict[str, List[AuditRowResult]] = {}
     for r in results:
@@ -271,7 +307,7 @@ def run_judge_audit(
         }
 
     if export_path:
-        _export_audit_excel(results, Path(export_path), summary)
+        _export_audit_excel(results, Path(export_path), summary, net_divisor=net_divisor)
 
     return summary
 
@@ -280,6 +316,8 @@ def _export_audit_excel(
     results: List[AuditRowResult],
     path: Path,
     summary: dict,
+    *,
+    net_divisor: float = 1.1,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -307,6 +345,9 @@ def _export_audit_excel(
                 "实_机械": s.actual["machinery"],
                 "判_机械": r.pred.get("machinery"),
                 "实_合计": s.actual_total,
+                "期望_合计": round(
+                    _expected_display_total(s, net_divisor=net_divisor), 2
+                ),
                 "判_合计": round(r.pred_total, 2),
                 "合计OK": r.total_ok,
                 "核心OK": r.core_ok,

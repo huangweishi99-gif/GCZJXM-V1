@@ -169,6 +169,31 @@ CREATE TABLE IF NOT EXISTS material_catalog (
 
 CREATE INDEX IF NOT EXISTS idx_mat_catalog_name ON material_catalog(name_norm);
 
+-- 项目主材编号价表（售楼处主材料.xlsx 等）
+CREATE TABLE IF NOT EXISTS project_material_prices (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    material_code   TEXT NOT NULL,
+    material_name   TEXT NOT NULL,
+    name_norm       TEXT NOT NULL,
+    spec_text       TEXT,
+    use_area        TEXT,
+    unit_norm       TEXT NOT NULL,
+    material_main   REAL NOT NULL,
+    category        TEXT,
+    project_name    TEXT NOT NULL,
+    project_ref     TEXT NOT NULL,
+    city            TEXT NOT NULL DEFAULT '',
+    price_tier      TEXT NOT NULL DEFAULT 'mid',
+    source_file     TEXT,
+    remark          TEXT,
+    UNIQUE(material_code, project_ref, unit_norm)
+);
+
+CREATE INDEX IF NOT EXISTS idx_proj_mat_code
+    ON project_material_prices(material_code, city, price_tier);
+CREATE INDEX IF NOT EXISTS idx_proj_mat_ref
+    ON project_material_prices(project_ref);
+
 -- 定额子目库（广联达消耗量标准，待 OCR/录入）
 CREATE TABLE IF NOT EXISTS quota_items (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -322,6 +347,9 @@ def init_database(db_path: Optional[str | Path] = None) -> Path:
         conn.executescript(SCHEMA)
         _migrate(conn)
         rebuild_standard_items_table(conn)
+        from src.sync.corrections import ensure_sync_tables
+
+        ensure_sync_tables(conn)
         conn.commit()
     finally:
         conn.close()

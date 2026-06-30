@@ -56,6 +56,13 @@ def normalize_name(name: str | None) -> str:
     return s
 
 
+# 招标导入附加元数据（不参与做法匹配）
+_FEATURE_META_LINE = re.compile(
+    r"^\[(?:分层工程量|[^]]*(?:工程量清单|清单))[^\]]*\]",
+    re.I,
+)
+
+
 def normalize_feature(feature: str | None) -> str:
     if feature is None:
         return ""
@@ -67,6 +74,11 @@ def normalize_feature(feature: str | None) -> str:
     lines = []
     for line in s.split("\n"):
         line = line.strip()
+        if not line:
+            continue
+        if _FEATURE_META_LINE.match(line) or line.startswith("[分层工程量]"):
+            continue
+        line = re.sub(r"^\[[^\]]+\]\s*", "", line)
         line = re.sub(r"^(\d+)[.、．]\s*", r"\1.", line)
         if line:
             lines.append(line)

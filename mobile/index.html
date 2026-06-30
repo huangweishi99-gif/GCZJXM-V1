@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#1a365d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>组价同步</title>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --card: #fff;
+      --primary: #1a365d;
+      --accent: #3182ce;
+      --danger: #c53030;
+      --muted: #718096;
+      --ok: #276749;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+      background: var(--bg);
+      color: #1a202c;
+      padding-bottom: 72px;
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 { font-size: 17px; font-weight: 600; }
+    header p { font-size: 12px; opacity: 0.85; margin-top: 4px; }
+    .bar {
+      display: flex;
+      gap: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    select, input, textarea, button {
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e0;
+      padding: 8px 10px;
+    }
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.secondary { background: #edf2f7; color: #2d3748; }
+    button:disabled { opacity: 0.5; }
+    .tabs { display: flex; gap: 4px; }
+    .tabs button { flex: 1; padding: 6px; font-size: 13px; }
+    .tabs button.active { background: var(--primary); }
+    .list { padding: 8px 12px; }
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    .card h3 { font-size: 15px; line-height: 1.4; margin-bottom: 6px; }
+    .meta { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+    .badge-warn { background: #fefcbf; color: #744210; }
+    .badge-ok { background: #c6f6d5; color: var(--ok); }
+    .prices { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; font-size: 13px; }
+    .prices span { color: var(--muted); }
+    .form { padding: 12px; }
+    .form label { display: block; font-size: 12px; color: var(--muted); margin: 8px 0 4px; }
+    .form input, .form textarea { width: 100%; }
+    .form textarea { min-height: 72px; resize: vertical; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2d3748;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity .3s;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; }
+    nav.bottom {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      display: flex;
+      background: #fff;
+      border-top: 1px solid #e2e8f0;
+    }
+    nav.bottom button {
+      flex: 1;
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 14px 4px;
+      font-size: 12px;
+    }
+    nav.bottom button.active { color: var(--accent); background: #ebf8ff; }
+    .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+    .setup { padding: 16px; }
+    .setup p { font-size: 13px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>工程造价 · 手机同步</h1>
+    <p id="statusLine">连接中…</p>
+  </header>
+
+  <div id="setupPanel" class="setup" style="display:none">
+    <p>局域网：填电脑 WiFi 地址。外网远程：电脑和手机装 <b>Tailscale</b>，填电脑 Tailscale IP（100.x.x.x）。</p>
+    <p>电脑保持开机并运行：<code>python app.py sync serve</code></p>
+    <label>服务地址</label>
+    <input id="apiBase" placeholder="http://100.x.x.x:8765 或 http://192.168.x.x:8765" style="width:100%;margin:8px 0" />
+    <label>API Token（远程 deliver 必填）</label>
+    <input id="apiToken" placeholder="python app.py sync token 生成" style="width:100%;margin:8px 0" type="password" />
+    <button onclick="saveApiBase()">保存并连接</button>
+  </div>
+
+  <div id="mainPanel" style="display:none">
+    <div class="bar">
+      <select id="projectSelect" onchange="loadLines()"></select>
+      <div class="tabs">
+        <button id="tabAll" class="active secondary" onclick="setFilter('all')">全部</button>
+        <button id="tabWorst" class="secondary" onclick="setFilter('worst')">大偏差</button>
+      </div>
+      <button class="secondary" onclick="refreshBundle()">刷新</button>
+    </div>
+    <div id="listView" class="list"></div>
+    <div id="editView" class="form" style="display:none"></div>
+    <div id="pendingView" class="list" style="display:none"></div>
+    <div id="remoteView" class="form" style="display:none">
+      <p class="meta" style="margin-bottom:12px">远程指挥电脑跑 deliver（电脑须开机 + sync serve 运行中）</p>
+      <label>项目</label>
+      <select id="remoteProject" style="width:100%;margin-bottom:8px"></select>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="remoteDeliver()">跑 deliver（组价+导出）</button>
+        <button class="secondary" onclick="remoteCalibrate()">跑 calibrate（对比金标准）</button>
+        <button class="secondary" onclick="remotePull()">pull 校正到电脑 JSON</button>
+      </div>
+      <label style="margin-top:12px">任务状态</label>
+      <pre id="jobLog" style="font-size:12px;background:#edf2f7;padding:10px;border-radius:8px;white-space:pre-wrap;max-height:200px;overflow:auto">暂无任务</pre>
+    </div>
+  </div>
+
+  <nav class="bottom" id="bottomNav" style="display:none">
+    <button class="active" onclick="showTab('list')">清单</button>
+    <button onclick="showTab('pending')">待同步</button>
+    <button onclick="showTab('remote')">远程</button>
+    <button onclick="showTab('setup')">设置</button>
+  </nav>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const STORAGE_KEY = 'cost_sync_api_base';
+    const TOKEN_KEY = 'cost_sync_api_token';
+    let apiBase = localStorage.getItem(STORAGE_KEY) || '';
+    let apiToken = localStorage.getItem(TOKEN_KEY) || '';
+    let bundle = null;
+    let currentProject = null;
+    let lineFilter = 'all';
+    let editingLine = null;
+    let displayLines = [];
+
+    function api(path, opts = {}) {
+      const url = apiBase.replace(/\/$/, '') + path;
+      const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+      if (apiToken) headers['X-API-Token'] = apiToken;
+      return fetch(url, {
+        headers,
+        ...opts,
+      }).then(async r => {
+        if (!r.ok) throw new Error(await r.text() || r.statusText);
+        const ct = r.headers.get('content-type') || '';
+        return ct.includes('json') ? r.json() : r.text();
+      });
+    }
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    function saveApiBase() {
+      apiBase = document.getElementById('apiBase').value.trim().replace(/\/$/, '');
+      apiToken = document.getElementById('apiToken').value.trim();
+      if (!apiBase) return toast('请填写地址');
+      localStorage.setItem(STORAGE_KEY, apiBase);
+      localStorage.setItem(TOKEN_KEY, apiToken);
+      init();
+    }
+
+    function saveTokenFromSetup() {
+      apiToken = document.getElementById('apiToken').value.trim();
+      localStorage.setItem(TOKEN_KEY, apiToken);
+    }
+
+    function showSetup() {
+      document.getElementById('setupPanel').style.display = 'block';
+      document.getElementById('mainPanel').style.display = 'none';
+      document.getElementById('apiBase').value = apiBase;
+      document.getElementById('apiToken').value = apiToken;
+    }
+
+    function showMain() {
+      document.getElementById('setupPanel').style.display = 'none';
+      document.getElementById('mainPanel').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+    }
+
+    async function init() {
+      if (!apiBase) { showSetup(); return; }
+      try {
+        const h = await api('/api/health');
+        document.getElementById('statusLine').textContent =
+          `已连接 · rev ${h.revision} · ${h.principle}`;
+        showMain();
+        await refreshBundle(false);
+      } catch (e) {
+        document.getElementById('statusLine').textContent = '连接失败';
+        toast('无法连接: ' + e.message);
+        showSetup();
+      }
+    }
+
+    async function refreshBundle(rebuild = true) {
+      toast(rebuild ? '正在刷新…' : '加载中…');
+      const q = rebuild ? '?refresh=1' : '';
+      bundle = await api('/api/sync/bundle' + q);
+      const sel = document.getElementById('projectSelect');
+      sel.innerHTML = '';
+      (bundle.projects || []).forEach(p => {
+        const o = document.createElement('option');
+        o.value = p.id;
+        o.textContent = `${p.label} (${p.line_count})`;
+        sel.appendChild(o);
+      });
+      if (bundle.projects && bundle.projects.length) {
+        currentProject = bundle.projects[0].id;
+        sel.value = currentProject;
+        fillRemoteProjects();
+      }
+      loadLines();
+      loadPending();
+      toast('已更新 rev ' + bundle.revision);
+    }
+
+    function setFilter(f) {
+      lineFilter = f;
+      document.getElementById('tabAll').classList.toggle('active', f === 'all');
+      document.getElementById('tabWorst').classList.toggle('active', f === 'worst');
+      loadLines();
+    }
+
+    function loadLines() {
+      currentProject = document.getElementById('projectSelect').value;
+      const proj = (bundle.projects || []).find(p => p.id === currentProject);
+      if (!proj) return;
+      let lines = proj.lines || [];
+      if (lineFilter === 'worst') {
+        lines = lines.filter(l => l.pct_diff != null && Math.abs(l.pct_diff) > 10);
+      }
+      displayLines = lines.slice(0, 150);
+      const el = document.getElementById('listView');
+      if (!displayLines.length) {
+        el.innerHTML = '<div class="empty">暂无清单行</div>';
+        return;
+      }
+      el.innerHTML = displayLines.map((ln, i) => lineCard(ln, i)).join('');
+    }
+
+    function lineCard(ln, idx) {
+      const diff = ln.pct_diff;
+      const badge = diff != null && Math.abs(diff) > 10
+        ? `<span class="badge badge-warn">偏差 ${diff}%</span>`
+        : `<span class="badge badge-ok">正常</span>`;
+      const ai = ln.ai || {};
+      const gold = ln.gold || {};
+      return `<div class="card" onclick="openEdit(${idx})">
+        <h3>${esc(ln.name)}</h3>
+        <div class="meta">${badge} 单位: <b>${esc(ln.unit)}</b></div>
+        <div class="meta" style="margin-top:4px">${esc((ln.feature||'').slice(0,120))}${(ln.feature||'').length>120?'…':''}</div>
+        <div class="prices">
+          <div><span>AI合价</span><br><b>${fmt(ai.cost_unit)}</b></div>
+          <div><span>金标准</span><br><b>${fmt(gold.cost_unit)}</b></div>
+          <div><span>主材</span><br>${fmt(ai.material_main)}</div>
+          <div><span>人工</span><br>${fmt(ai.labor)}</div>
+        </div>
+      </div>`;
+    }
+
+    function openEdit(idx) {
+      editingLine = displayLines[idx];
+      if (!editingLine) return;
+      const proj = (bundle.projects || []).find(p => p.id === currentProject);
+      const el = document.getElementById('editView');
+      document.getElementById('listView').style.display = 'none';
+      el.style.display = 'block';
+      const ai = editingLine.ai || {};
+      el.innerHTML = `
+        <button class="secondary" style="margin-bottom:12px" onclick="closeEdit()">← 返回列表</button>
+        <h3 style="margin-bottom:8px">${esc(editingLine.name)}</h3>
+        <div class="meta">单位: ${esc(editingLine.unit)} · ${esc(proj?.city||'')} ${esc(proj?.tier||'')}</div>
+        <label>项目特征</label>
+        <textarea id="fFeature" readonly>${esc(editingLine.feature||'')}</textarea>
+        <div class="grid2">
+          <div><label>主材</label><input id="fMain" type="number" step="0.01" value="${ai.material_main??''}"></div>
+          <div><label>辅材</label><input id="fAux" type="number" step="0.01" value="${ai.material_aux??''}"></div>
+          <div><label>人工</label><input id="fLabor" type="number" step="0.01" value="${ai.labor??''}"></div>
+          <div><label>机械</label><input id="fMach" type="number" step="0.01" value="${ai.machinery??''}"></div>
+        </div>
+        <label>备注</label>
+        <input id="fNote" placeholder="校正说明">
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button onclick="submitCorrection()">提交校正</button>
+          <button class="secondary" onclick="reJudge()">重新组价</button>
+        </div>
+        <div id="judgeOut" class="meta" style="margin-top:12px"></div>`;
+    }
+
+    function closeEdit() {
+      document.getElementById('editView').style.display = 'none';
+      document.getElementById('listView').style.display = 'block';
+      editingLine = null;
+    }
+
+    async function submitCorrection() {
+      if (!editingLine) return;
+      const body = {
+        project_id: currentProject,
+        dedupe_key: editingLine.dedupe_key,
+        name: editingLine.name,
+        feature: editingLine.feature || '',
+        unit: editingLine.unit,
+        quantity: editingLine.quantity,
+        material_main: num('fMain'),
+        material_aux: num('fAux'),
+        labor: num('fLabor'),
+        machinery: num('fMach'),
+        note: document.getElementById('fNote').value,
+        device_id: navigator.userAgent.slice(0, 80),
+      };
+      await api('/api/corrections', { method: 'POST', body: JSON.stringify(body) });
+      toast('已保存，待桌面导出');
+      closeEdit();
+      loadPending();
+    }
+
+    async function reJudge() {
+      const proj = (bundle.projects || []).find(p => p.id === currentProject);
+      const body = {
+        name: editingLine.name,
+        feature: editingLine.feature || '',
+        unit: editingLine.unit,
+        city: proj?.city || '',
+        tier: proj?.tier || 'mid',
+      };
+      const j = await api('/api/judge', { method: 'POST', body: JSON.stringify(body) });
+      document.getElementById('fMain').value = j.material_main ?? '';
+      document.getElementById('fAux').value = j.material_aux ?? '';
+      document.getElementById('fLabor').value = j.labor ?? '';
+      document.getElementById('fMach').value = j.machinery ?? '';
+      document.getElementById('judgeOut').innerHTML =
+        `来源: ${esc(j.source)} · 置信 ${j.confidence} · ${esc((j.notes||[]).join(' '))}`;
+      toast('已重新组价');
+    }
+
+    async function loadPending() {
+      const rows = await api('/api/corrections?status=pending');
+      const el = document.getElementById('pendingView');
+      if (!rows.length) {
+        el.innerHTML = '<div class="empty">暂无待同步校正</div>';
+        return;
+      }
+      el.innerHTML = rows.map(r => `
+        <div class="card">
+          <h3>${esc(r.name)}</h3>
+          <div class="meta">${esc(r.project_id)} · ${esc(r.unit)} · ${esc(r.created_at)}</div>
+          <div class="prices">
+            <div><span>主材</span><br>${fmt(r.material_main)}</div>
+            <div><span>人工</span><br>${fmt(r.labor)}</div>
+          </div>
+        </div>`).join('');
+    }
+
+    function fillRemoteProjects() {
+      const sel = document.getElementById('remoteProject');
+      if (!sel) return;
+      sel.innerHTML = '';
+      (bundle?.projects || []).forEach(p => {
+        const o = document.createElement('option');
+        o.value = p.id;
+        o.textContent = p.label;
+        sel.appendChild(o);
+      });
+      if (currentProject) sel.value = currentProject;
+    }
+
+    function logJob(msg) {
+      const el = document.getElementById('jobLog');
+      if (el) el.textContent = msg;
+    }
+
+    async function pollJob(jobId) {
+      for (let i = 0; i < 120; i++) {
+        const j = await api('/api/jobs/' + jobId);
+        logJob(JSON.stringify(j, null, 2));
+        if (j.status === 'done') {
+          toast('任务完成');
+          await refreshBundle(true);
+          return j;
+        }
+        if (j.status === 'failed') {
+          toast('任务失败');
+          return j;
+        }
+        await new Promise(r => setTimeout(r, 2000));
+      }
+      toast('任务超时，请稍后查看');
+    }
+
+    async function remoteDeliver() {
+      if (!apiToken) return toast('请先在设置页填写 Token');
+      const pid = document.getElementById('remoteProject').value;
+      toast('已提交 deliver…');
+      const j = await api('/api/jobs/deliver', {
+        method: 'POST',
+        body: JSON.stringify({ project_id: pid }),
+      });
+      await pollJob(j.id);
+    }
+
+    async function remoteCalibrate() {
+      if (!apiToken) return toast('请先在设置页填写 Token');
+      const pid = document.getElementById('remoteProject').value;
+      toast('已提交 calibrate…');
+      const j = await api('/api/jobs/calibrate', {
+        method: 'POST',
+        body: JSON.stringify({ project_id: pid, learn: false }),
+      });
+      await pollJob(j.id);
+    }
+
+    async function remotePull() {
+      if (!apiToken) return toast('请先在设置页填写 Token');
+      const pid = document.getElementById('remoteProject').value;
+      const j = await api('/api/jobs/pull?project_id=' + encodeURIComponent(pid), { method: 'POST' });
+      await pollJob(j.id);
+    }
+
+    function showTab(tab) {
+      document.querySelectorAll('nav.bottom button').forEach((b,i) => {
+        b.classList.toggle('active',
+          (tab==='list'&&i===0)||(tab==='pending'&&i===1)||(tab==='remote'&&i===2)||(tab==='setup'&&i===3));
+      });
+      if (tab === 'setup') { showSetup(); return; }
+      showMain();
+      document.getElementById('listView').style.display = tab === 'list' ? 'block' : 'none';
+      document.getElementById('editView').style.display = 'none';
+      document.getElementById('pendingView').style.display = tab === 'pending' ? 'block' : 'none';
+      document.getElementById('remoteView').style.display = tab === 'remote' ? 'block' : 'none';
+      if (tab === 'pending') loadPending();
+      if (tab === 'list') loadLines();
+      if (tab === 'remote') fillRemoteProjects();
+    }
+
+    function num(id) {
+      const v = document.getElementById(id).value;
+      return v === '' ? null : parseFloat(v);
+    }
+    function fmt(v) { return v == null || v === '' ? '—' : Number(v).toFixed(2); }
+    function esc(s) {
+      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+    }
+
+    init();
+  </script>
+</body>
+</html>

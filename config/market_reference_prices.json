@@ -4,6 +4,38 @@
   "default_tier": "mid",
   "rules": [
     {
+      "id": "stone_crystallization",
+      "name_keywords": ["晶面", "结晶", "晶面处理", "石材保养", "石材结晶"],
+      "units": ["㎡", "m2"],
+      "material_main": 15,
+      "material_aux": 0.5,
+      "labor": 40,
+      "machinery": 0.3,
+      "source_note": "市场参考：石材晶面/结晶处理（保养剂+人工）"
+    },
+    {
+      "id": "wall_gypsum_paint",
+      "name_keywords": ["涂料", "无机涂料", "乳胶漆"],
+      "feature_keywords": ["石膏板", "轻钢龙骨"],
+      "require_feature_keywords": true,
+      "units": ["㎡", "m2"],
+      "material_main": 85,
+      "material_aux": 56,
+      "labor": 110,
+      "machinery": 2,
+      "source_note": "市场参考：墙面轻钢龙骨+双层石膏板+腻子涂料综合"
+    },
+    {
+      "id": "stone_dry_hang",
+      "name_keywords": ["干挂", "干挂石材", "背栓"],
+      "units": ["㎡", "m2"],
+      "material_main": 380,
+      "material_aux": 120,
+      "labor": 150,
+      "machinery": 8,
+      "source_note": "市场参考：石材干挂含钢架人工"
+    },
+    {
       "id": "tile_600_floor",
       "name_keywords": ["块料楼地面", "地砖"],
       "feature_keywords": ["600*600", "600×600", "600*600"],
@@ -77,6 +109,62 @@
       "source_note": "市场参考：石门槛按延长米m计量，含石材+粘结+防水处理约160元/m"
     },
     {
+      "id": "plastic_pipe_dn50",
+      "name_keywords": ["塑料管"],
+      "feature_keywords": ["DN50", "dn50"],
+      "units": ["m", "米"],
+      "material_main": 10,
+      "material_aux": 0.5,
+      "labor": 20,
+      "machinery": 0.3,
+      "source_note": "市场参考：HDPE/PVC排水管DN50"
+    },
+    {
+      "id": "plastic_pipe_dn100",
+      "name_keywords": ["塑料管"],
+      "feature_keywords": ["DN100", "dn100"],
+      "units": ["m", "米"],
+      "material_main": 45,
+      "material_aux": 2,
+      "labor": 40,
+      "machinery": 0.5,
+      "source_note": "市场参考：PVC排水管DN100"
+    },
+    {
+      "id": "ceiling_slot_labor",
+      "name_keywords": ["天棚面开槽", "顶面开槽", "开槽"],
+      "exclude_name_keywords": ["不锈钢", "石材"],
+      "units": ["m", "米"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 30,
+      "machinery": 0.5,
+      "source_note": "市场参考：天棚面开槽人工"
+    },
+    {
+      "id": "tile_wall_adhesive_ct",
+      "name_keywords": ["瓷砖墙面", "墙砖", "CT-04", "米白色瓷砖墙面"],
+      "feature_keywords": ["瓷砖胶", "胶粘"],
+      "units": ["㎡", "m2"],
+      "material_main": 45,
+      "material_aux": 16.5,
+      "labor": 45,
+      "machinery": 0.5,
+      "source_note": "市场参考：瓷砖胶墙面（砖材另计，深海CT-04口径）"
+    },
+    {
+      "id": "paint_inorganic_1b2t",
+      "name_keywords": ["无机涂料", "PT-01", "PT-02"],
+      "feature_keywords": ["一底两面", "一底二面"],
+      "exclude_feature_keywords": ["肌理"],
+      "units": ["㎡", "m2"],
+      "material_main": 5.5,
+      "material_aux": 6,
+      "labor": 19.5,
+      "machinery": 0.2,
+      "source_note": "市场参考：无机涂料一底两面+腻子（非肌理整价）"
+    },
+    {
       "id": "ceramic_wall",
       "name_keywords": ["块料墙面", "墙砖", "墙面砖"],
       "units": ["㎡", "m2"],
@@ -90,6 +178,7 @@
       "id": "paint_ceiling",
       "name_keywords": ["无机涂料", "乳胶漆", "天棚涂料", "涂料"],
       "feature_keywords": ["天棚", "顶棚"],
+      "exclude_feature_keywords": ["墙面", "墙身"],
       "units": ["㎡", "m2"],
       "material_main": 12,
       "material_aux": 3,
@@ -110,13 +199,56 @@
     },
     {
       "id": "wall_paint_plaster",
-      "name_keywords": ["涂料饰面", "乳胶漆", "无机涂料", "墙面涂料", "白色涂料"],
+      "name_keywords": ["涂料饰面", "乳胶漆", "无机涂料", "墙面涂料", "白色涂料", "墙面乳胶漆"],
+      "exclude_feature_keywords": ["石膏板", "轻钢龙骨"],
       "units": ["㎡", "m2"],
       "material_main": 8,
       "material_aux": 9,
       "labor": 28,
       "machinery": 1,
       "source_note": "市场参考：墙面腻子+涂料饰面"
+    },
+    {
+      "id": "magnesium_board_wall",
+      "name_keywords": ["玻镁板", "玻璃镁", "玻镁"],
+      "feature_keywords": ["墙面", "墙身", "墙板"],
+      "units": ["㎡", "m2"],
+      "material_main": 50,
+      "material_aux": 120,
+      "labor": 75,
+      "machinery": 1.5,
+      "source_note": "市场参考：玻镁板墙面含龙骨辅材（地库/车库常用）"
+    },
+    {
+      "id": "magnesium_board_ceiling",
+      "name_keywords": ["玻镁板", "玻璃镁", "玻镁"],
+      "feature_keywords": ["吊顶", "侧板", "天棚"],
+      "units": ["㎡", "m2"],
+      "material_main": 45,
+      "material_aux": 130,
+      "labor": 80,
+      "machinery": 1.5,
+      "source_note": "市场参考：玻镁板吊顶/侧板"
+    },
+    {
+      "id": "metal_ceiling_am",
+      "name_keywords": ["AM-01", "AM-02", "AM-03", "不锈钢天花", "铝板天花", "铝板灯槽", "铝格栅", "格栅吊顶"],
+      "units": ["㎡", "m2", "m", "米"],
+      "material_main": 255,
+      "material_aux": 85,
+      "labor": 135,
+      "machinery": 2,
+      "source_note": "市场参考：不锈钢/铝板造型天花（含灯槽）"
+    },
+    {
+      "id": "stone_wet_tile_ct",
+      "name_keywords": ["ST-04", "湿贴", "石材湿贴"],
+      "units": ["㎡", "m2"],
+      "material_main": 420,
+      "material_aux": 95,
+      "labor": 125,
+      "machinery": 3,
+      "source_note": "市场参考：石材湿贴墙面/地面"
     },
     {
       "id": "ceiling_gypsum",
@@ -141,14 +273,37 @@
     },
     {
       "id": "stainless_trim",
-      "name_keywords": ["不锈钢"],
-      "feature_keywords": ["50mm", "收边", "嵌条"],
+      "name_keywords": ["不锈钢线条", "不锈钢嵌条", "不锈钢收边"],
+      "feature_keywords": ["展开面", "50mm", "收边", "嵌条"],
+      "require_feature_keywords": true,
+      "exclude_name_keywords": ["包边", "踢脚线", "开槽"],
       "units": ["m", "米"],
       "material_main": 52,
       "material_aux": 6,
       "labor": 18,
       "machinery": 1,
-      "source_note": "市场参考：不锈钢线条/收边"
+      "source_note": "市场参考：不锈钢线条/收边（需展开面或嵌条特征）"
+    },
+    {
+      "id": "mt05_edge_wrap",
+      "name_keywords": ["MT-05", "包边"],
+      "units": ["m", "米"],
+      "material_main": 101,
+      "material_aux": 4,
+      "labor": 35,
+      "machinery": 0.5,
+      "source_note": "市场参考：MT-05喷砂不锈钢包边（深海口径）"
+    },
+    {
+      "id": "mt05_stainless_profile",
+      "name_keywords": ["MT-05喷砂黑钛不锈钢"],
+      "exclude_name_keywords": ["包边", "开槽"],
+      "units": ["m", "米"],
+      "material_main": 66,
+      "material_aux": 5,
+      "labor": 45,
+      "machinery": 0.5,
+      "source_note": "市场参考：MT-05不锈钢饰面线条（含基层）"
     },
     {
       "id": "glass_mirror",
@@ -170,6 +325,1457 @@
       "labor": 65,
       "machinery": 3,
       "source_note": "市场参考：户外铝板雨棚"
+    },
+    {
+      "id": "demolition_ceiling",
+      "name_keywords": ["天花拆除", "吊顶拆除", "矿棉板", "铝扣板"],
+      "feature_keywords": ["拆除"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 10,
+      "machinery": 0.5,
+      "source_note": "市场参考：石膏板/矿棉/铝扣板天花拆除（海德公馆校正样本）"
+    },
+    {
+      "id": "demolition_floor_concrete",
+      "name_keywords": ["混凝土地面拆除", "混凝土拆除"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 51,
+      "machinery": 8,
+      "source_note": "市场参考：混凝土地面拆除含小型机械"
+    },
+    {
+      "id": "demolition_floor_tile",
+      "name_keywords": ["地砖", "石材地面", "地面拆除"],
+      "feature_keywords": ["拆除"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 27,
+      "machinery": 2,
+      "source_note": "市场参考：地砖/石材地面拆除"
+    },
+    {
+      "id": "demolition_floor_epoxy",
+      "name_keywords": ["环氧"],
+      "feature_keywords": ["拆除", "地面"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 10,
+      "machinery": 1.5,
+      "source_note": "市场参考：环氧树脂地面刨铣拆除"
+    },
+    {
+      "id": "demolition_floor_carpet",
+      "name_keywords": ["地毯", "胶地板"],
+      "feature_keywords": ["拆除"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 12,
+      "machinery": 1,
+      "source_note": "市场参考：地毯/胶地板地面拆除"
+    },
+    {
+      "id": "demolition_wall_masonry",
+      "name_keywords": ["砌筑", "墙体拆除"],
+      "feature_keywords": ["拆除"],
+      "units": ["m³", "m3"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 165,
+      "machinery": 5,
+      "source_note": "市场参考：砌筑墙体拆除"
+    },
+    {
+      "id": "demolition_wall_partition",
+      "name_keywords": ["石膏板", "隔墙", "水泥压力板"],
+      "feature_keywords": ["拆除"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 19,
+      "machinery": 1,
+      "source_note": "市场参考：石膏板/压力板隔墙拆除"
+    },
+    {
+      "id": "demolition_window",
+      "name_keywords": ["外窗", "拆除外窗", "拆除窗"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 11,
+      "machinery": 0.5,
+      "source_note": "市场参考：外窗拆除"
+    },
+    {
+      "id": "demolition_partition",
+      "name_keywords": ["隔断拆除"],
+      "feature_keywords": ["拆除"],
+      "units": ["间", "个", "㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 24,
+      "machinery": 0.5,
+      "source_note": "市场参考：卫生间/办公隔断拆除"
+    },
+    {
+      "id": "demolition_fixture",
+      "name_keywords": ["台盆拆除", "固定家具拆除", "洁具拆除"],
+      "units": ["个", "套"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 17,
+      "machinery": 0.3,
+      "source_note": "市场参考：台盆/固定家具/洁具拆除"
+    },
+    {
+      "id": "demolition_stair",
+      "name_keywords": ["钢楼梯", "楼梯拆除", "台阶拆除"],
+      "units": ["t", "项", "㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 35,
+      "machinery": 8,
+      "source_note": "市场参考：楼梯/台阶/钢楼梯拆除"
+    },
+    {
+      "id": "demolition_railing",
+      "name_keywords": ["拆除", "栏杆"],
+      "units": ["m"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 12,
+      "machinery": 0.3,
+      "source_note": "市场参考：金属栏杆/扶手拆除"
+    },
+    {
+      "id": "demolition_electrical",
+      "name_keywords": ["电气工程拆除", "电气拆除"],
+      "units": ["项", "㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 5,
+      "labor": 45,
+      "machinery": 2,
+      "source_note": "市场参考：电气工程拆除（按项/面积综合）"
+    },
+    {
+      "id": "demolition_generic",
+      "name_keywords": ["拆除"],
+      "material_main": 0,
+      "material_aux": 1,
+      "labor": 15,
+      "machinery": 1,
+      "confidence": 0.72,
+      "source_note": "市场参考：拆除工程综合兜底"
+    },
+    {
+      "id": "hvac_diffuser",
+      "name_keywords": ["风口"],
+      "units": ["个"],
+      "material_main": 78,
+      "material_aux": 5,
+      "labor": 18,
+      "machinery": 0,
+      "source_note": "市场参考：空调风口（含材料安装）"
+    },
+    {
+      "id": "hvac_air_curtain",
+      "name_keywords": ["风幕"],
+      "units": ["台", "套"],
+      "material_main": 1450,
+      "material_aux": 50,
+      "labor": 280,
+      "machinery": 0,
+      "source_note": "市场参考：风幕机含安装（海德/地库样本）"
+    },
+    {
+      "id": "hvac_exhaust_fan",
+      "name_keywords": ["排风扇"],
+      "units": ["台"],
+      "material_main": 380,
+      "material_aux": 8,
+      "labor": 85,
+      "machinery": 0,
+      "source_note": "市场参考：排风扇含安装"
+    },
+    {
+      "id": "hvac_duct_pvc",
+      "name_keywords": ["排风管道", "排风管"],
+      "feature_keywords": ["PVC", "pvc"],
+      "units": ["m"],
+      "material_main": 95,
+      "material_aux": 12,
+      "labor": 55,
+      "machinery": 0,
+      "source_note": "市场参考：PVC排风管道"
+    },
+    {
+      "id": "hvac_duct_galv",
+      "name_keywords": ["排风管道"],
+      "feature_keywords": ["镀锌"],
+      "units": ["㎡", "m2"],
+      "material_main": 185,
+      "material_aux": 18,
+      "labor": 85,
+      "machinery": 2,
+      "source_note": "市场参考：镀锌铁皮排风管道"
+    },
+    {
+      "id": "site_fence_outdoor",
+      "name_keywords": ["围挡"],
+      "feature_keywords": ["室外", "搭建"],
+      "units": ["㎡", "m2"],
+      "material_main": 52,
+      "material_aux": 5,
+      "labor": 48,
+      "machinery": 2,
+      "source_note": "市场参考：室外2m高施工围挡"
+    },
+    {
+      "id": "metal_railing_new",
+      "name_keywords": ["新增", "栏杆", "扶手"],
+      "units": ["m"],
+      "material_main": 420,
+      "material_aux": 15,
+      "labor": 145,
+      "machinery": 2,
+      "source_note": "市场参考：新增金属栏杆扶手"
+    },
+    {
+      "id": "light_slot_linear",
+      "name_keywords": ["灯槽"],
+      "units": ["m", "米"],
+      "material_main": 15,
+      "material_aux": 8,
+      "labor": 46,
+      "machinery": 1,
+      "source_note": "市场参考：石膏板灯槽按延长米"
+    },
+    {
+      "id": "light_slot_area",
+      "name_keywords": ["灯槽"],
+      "units": ["㎡", "m2"],
+      "material_main": 195,
+      "material_aux": 25,
+      "labor": 94,
+      "machinery": 2,
+      "source_note": "市场参考：灯槽按面积计量"
+    },
+    {
+      "id": "copper_trim_bar",
+      "name_keywords": ["实心铜条", "铜条"],
+      "units": ["m", "米"],
+      "material_main": 19,
+      "material_aux": 0.5,
+      "labor": 12,
+      "machinery": 0.2,
+      "source_note": "市场参考：实心铜条收边"
+    },
+    {
+      "id": "plaster_molding",
+      "name_keywords": ["石膏线条", "石膏线"],
+      "units": ["m", "米"],
+      "material_main": 158,
+      "material_aux": 5,
+      "labor": 18,
+      "machinery": 0.5,
+      "source_note": "市场参考：成品石膏线条"
+    },
+    {
+      "id": "socket_outlet",
+      "name_keywords": ["插座"],
+      "units": ["个"],
+      "material_main": 70,
+      "material_aux": 5,
+      "labor": 35,
+      "machinery": 0,
+      "source_note": "市场参考：开关插座面板安装"
+    },
+    {
+      "id": "socket_outlet_set",
+      "name_keywords": ["插座"],
+      "units": ["套"],
+      "material_main": 5,
+      "material_aux": 1,
+      "labor": 22,
+      "machinery": 0,
+      "source_note": "市场参考：插座按套计量"
+    },
+    {
+      "id": "groove_chisel",
+      "name_keywords": ["凿", "切割槽", "压槽"],
+      "units": ["m", "米"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 20,
+      "machinery": 2,
+      "source_note": "市场参考：墙面地面凿槽/压槽"
+    },
+    {
+      "id": "plaster_mortar_level",
+      "name_keywords": ["水泥砂浆找平", "砂浆找平"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 18,
+      "labor": 28,
+      "machinery": 0.5,
+      "source_note": "市场参考：水泥砂浆找平层"
+    },
+    {
+      "id": "joint_mesh_tape",
+      "name_keywords": ["缝贴", "贴纸带", "网格带", "防裂带"],
+      "units": ["㎡", "m2"],
+      "material_main": 1,
+      "material_aux": 1,
+      "labor": 8,
+      "machinery": 0.2,
+      "source_note": "市场参考：接缝贴网格/纸带刮平"
+    },
+    {
+      "id": "aluminum_skirting",
+      "name_keywords": ["AL-", "踢脚线", "型材踢脚"],
+      "units": ["m", "米"],
+      "material_main": 22,
+      "material_aux": 2,
+      "labor": 8,
+      "machinery": 0.2,
+      "source_note": "市场参考：铝合金型材踢脚线"
+    },
+    {
+      "id": "metal_window_wrap",
+      "name_keywords": ["窗套"],
+      "feature_keywords": ["不锈钢", "古铜", "MT"],
+      "units": ["㎡", "m2"],
+      "material_main": 450,
+      "material_aux": 40,
+      "labor": 110,
+      "machinery": 2,
+      "source_note": "市场参考：不锈钢/古铜窗套饰面"
+    },
+    {
+      "id": "fire_hydrant_hidden_door",
+      "name_keywords": ["消防栓暗门", "消火栓暗门", "消防栓门", "消火栓门", "强弱电井暗门"],
+      "units": ["㎡", "m2", "樘"],
+      "material_main": 85,
+      "material_aux": 15,
+      "labor": 165,
+      "machinery": 2,
+      "source_note": "市场参考：消防栓/电井暗门（不含面层）"
+    },
+    {
+      "id": "decorative_light_linear",
+      "name_keywords": ["装饰灯"],
+      "units": ["m", "米"],
+      "material_main": 13,
+      "material_aux": 2,
+      "labor": 45,
+      "machinery": 0.5,
+      "source_note": "市场参考：装饰灯带/灯槽线（按米）"
+    },
+    {
+      "id": "decorative_light_set",
+      "name_keywords": ["装饰灯"],
+      "units": ["套", "个"],
+      "material_main": 35,
+      "material_aux": 5,
+      "labor": 12,
+      "machinery": 0,
+      "source_note": "市场参考：装饰灯（按套/个）"
+    },
+    {
+      "id": "support_hanger",
+      "name_keywords": ["支/吊架", "吊架", "基础型钢"],
+      "units": ["kg"],
+      "material_main": 4,
+      "material_aux": 0.5,
+      "labor": 6,
+      "machinery": 0.5,
+      "source_note": "市场参考：支吊架/型钢（元/kg）"
+    },
+    {
+      "id": "curtain_box",
+      "name_keywords": ["窗帘盒"],
+      "units": ["m", "米"],
+      "material_main": 14,
+      "material_aux": 12,
+      "labor": 36,
+      "machinery": 0.5,
+      "source_note": "市场参考：窗帘盒（按延长米）"
+    },
+    {
+      "id": "ceiling_access_panel",
+      "name_keywords": ["检修口"],
+      "units": ["个"],
+      "material_main": 75,
+      "material_aux": 5,
+      "labor": 18,
+      "machinery": 0,
+      "source_note": "市场参考：天花检修口"
+    },
+    {
+      "id": "downlight",
+      "name_keywords": ["筒灯"],
+      "units": ["套", "个"],
+      "material_main": 98,
+      "material_aux": 8,
+      "labor": 28,
+      "machinery": 0,
+      "source_note": "市场参考：筒灯含安装"
+    },
+    {
+      "id": "spotlight",
+      "name_keywords": ["射灯"],
+      "units": ["套", "个"],
+      "material_main": 120,
+      "material_aux": 8,
+      "labor": 18,
+      "machinery": 0,
+      "source_note": "市场参考：射灯含安装"
+    },
+    {
+      "id": "led_strip",
+      "name_keywords": ["灯带", "COB"],
+      "units": ["m", "米"],
+      "material_main": 35,
+      "material_aux": 5,
+      "labor": 18,
+      "machinery": 0,
+      "source_note": "市场参考：LED/COB灯带"
+    },
+    {
+      "id": "electrical_panel_box",
+      "name_keywords": ["配电箱", "配电柜", "开关箱"],
+      "units": ["台", "套", "个"],
+      "material_main": 2500,
+      "material_aux": 180,
+      "labor": 380,
+      "machinery": 15,
+      "source_note": "市场参考：成套配电箱柜"
+    },
+    {
+      "id": "fire_sprinkler_head",
+      "name_keywords": ["喷头", "水喷淋"],
+      "units": ["个"],
+      "material_main": 88,
+      "material_aux": 8,
+      "labor": 18,
+      "machinery": 0,
+      "source_note": "市场参考：喷淋喷头含安装"
+    },
+    {
+      "id": "fire_smoke_detector",
+      "name_keywords": ["烟感"],
+      "units": ["个"],
+      "material_main": 155,
+      "material_aux": 10,
+      "labor": 115,
+      "machinery": 0,
+      "source_note": "市场参考：烟感探测器含安装"
+    },
+    {
+      "id": "weak_rack",
+      "name_keywords": ["弱电机柜", "网络机柜"],
+      "units": ["台"],
+      "material_main": 1000,
+      "material_aux": 50,
+      "labor": 270,
+      "machinery": 0,
+      "source_note": "市场参考：弱电/网络机柜"
+    },
+    {
+      "id": "elevator_metal_head",
+      "name_keywords": ["门头"],
+      "feature_keywords": ["不锈钢", "电梯", "MT"],
+      "units": ["㎡", "m2"],
+      "material_main": 450,
+      "material_aux": 35,
+      "labor": 110,
+      "machinery": 2,
+      "source_note": "市场参考：电梯不锈钢门头"
+    },
+    {
+      "id": "sanitary_accessory",
+      "name_keywords": ["小便器", "烘手器", "皂液器", "卫生纸架", "衣钩", "垃圾桶", "马桶盖清洁器", "香薰", "纸巾架"],
+      "units": ["组", "套", "个"],
+      "material_main": 420,
+      "material_aux": 30,
+      "labor": 80,
+      "machinery": 0,
+      "source_note": "市场参考：卫生间五金/洁具附件"
+    },
+    {
+      "id": "metal_cladding_mt",
+      "name_keywords": ["MT-", "MT－", "古铜不锈钢饰面", "喷砂香槟金"],
+      "units": ["㎡", "m2"],
+      "material_main": 450,
+      "material_aux": 40,
+      "labor": 110,
+      "machinery": 2,
+      "source_note": "市场参考：古铜/香槟金不锈钢饰面（按面积）"
+    },
+    {
+      "id": "wood_veneer_panel",
+      "name_keywords": ["木饰面", "WD-"],
+      "units": ["㎡", "m2", "平方"],
+      "material_main": 620,
+      "material_aux": 85,
+      "labor": 75,
+      "machinery": 2,
+      "source_note": "市场参考：木饰面板（海德/会所常用）"
+    },
+    {
+      "id": "panel_board_code",
+      "name_keywords": ["PA-", "LM-", "免漆板", "防火板", "双饰面"],
+      "units": ["㎡", "m2", "平方"],
+      "material_main": 220,
+      "material_aux": 25,
+      "labor": 45,
+      "machinery": 1,
+      "source_note": "市场参考：免漆板/防火板/双饰面板"
+    },
+    {
+      "id": "stone_hole_cut",
+      "name_keywords": ["石材开洞", "石材开孔"],
+      "units": ["个"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 10,
+      "machinery": 38,
+      "source_note": "市场参考：石材开洞/开孔"
+    },
+    {
+      "id": "cable_tray",
+      "name_keywords": ["桥架"],
+      "units": ["m", "米"],
+      "material_main": 28,
+      "material_aux": 5,
+      "labor": 25,
+      "machinery": 0,
+      "source_note": "市场参考：弱电/强电桥架"
+    },
+    {
+      "id": "wood_floor_install",
+      "name_keywords": ["木地板", "实木地板", "复合地板", "铺木地板"],
+      "exclude_name_keywords": ["拆除"],
+      "units": ["㎡", "m2"],
+      "material_main": 285,
+      "material_aux": 18,
+      "labor": 36,
+      "machinery": 2,
+      "source_note": "市场参考：木地板铺装"
+    },
+    {
+      "id": "carpet_floor",
+      "name_keywords": ["地毯", "FA-01", "除尘地毯"],
+      "exclude_name_keywords": ["拆除"],
+      "units": ["㎡", "m2"],
+      "material_main": 225,
+      "material_aux": 15,
+      "labor": 35,
+      "machinery": 1,
+      "source_note": "市场参考：地毯/铝合金除尘地毯"
+    },
+    {
+      "id": "fire_hydrant_set",
+      "name_keywords": ["室内消火栓", "消火栓箱"],
+      "units": ["套", "个"],
+      "material_main": 600,
+      "material_aux": 50,
+      "labor": 195,
+      "machinery": 0,
+      "source_note": "市场参考：室内消火栓成套"
+    },
+    {
+      "id": "emergency_light",
+      "name_keywords": ["应急照明灯", "应急灯", "疏散指示", "安全出口"],
+      "units": ["套", "个"],
+      "material_main": 110,
+      "material_aux": 8,
+      "labor": 38,
+      "machinery": 0,
+      "source_note": "市场参考：应急照明/疏散指示"
+    },
+    {
+      "id": "fluorocarbon_aluminum",
+      "name_keywords": ["氟碳", "铝单板"],
+      "units": ["㎡", "m2"],
+      "material_main": 280,
+      "material_aux": 35,
+      "labor": 85,
+      "machinery": 3,
+      "source_note": "市场参考：氟碳铝单板幕墙/饰面"
+    },
+    {
+      "id": "glass_partition_install",
+      "name_keywords": ["玻璃隔断", "钢化玻璃隔断"],
+      "units": ["㎡", "m2"],
+      "material_main": 320,
+      "material_aux": 45,
+      "labor": 95,
+      "machinery": 3,
+      "source_note": "市场参考：玻璃隔断安装"
+    },
+    {
+      "id": "soft_wrap_panel",
+      "name_keywords": ["软包", "硬包"],
+      "units": ["㎡", "m2"],
+      "material_main": 380,
+      "material_aux": 55,
+      "labor": 120,
+      "machinery": 2,
+      "source_note": "市场参考：软包/硬包墙面"
+    },
+    {
+      "id": "hvac_diffuser_named",
+      "name_keywords": ["空调风口", "百叶风口", "散流器"],
+      "units": ["个"],
+      "material_main": 78,
+      "material_aux": 5,
+      "labor": 18,
+      "machinery": 0,
+      "source_note": "市场参考：空调风口（全称匹配）"
+    },
+    {
+      "id": "specialty_panel_sf",
+      "name_keywords": ["SF-", "SF－", "软瓷", "透光片"],
+      "units": ["㎡", "m2", "平方"],
+      "material_main": 480,
+      "material_aux": 45,
+      "labor": 85,
+      "machinery": 2,
+      "source_note": "市场参考：SF系列特色饰面/透光片"
+    },
+    {
+      "id": "specialty_panel_ac",
+      "name_keywords": ["AC-", "AC－", "透光板"],
+      "units": ["㎡", "m2", "平方"],
+      "material_main": 180,
+      "material_aux": 25,
+      "labor": 55,
+      "machinery": 2,
+      "source_note": "市场参考：AC系列透光/装饰板"
+    },
+    {
+      "id": "electrical_junction_box",
+      "name_keywords": ["接线盒"],
+      "units": ["个"],
+      "material_main": 3,
+      "material_aux": 0.5,
+      "labor": 3.5,
+      "machinery": 0,
+      "source_note": "市场参考：接线盒安装"
+    },
+    {
+      "id": "electrical_wiring",
+      "name_keywords": ["配线"],
+      "units": ["m", "米"],
+      "material_main": 2.5,
+      "material_aux": 0.5,
+      "labor": 2,
+      "machinery": 0,
+      "source_note": "市场参考：管内/槽内配线"
+    },
+    {
+      "id": "light_switch",
+      "name_keywords": ["开关", "按钮"],
+      "exclude_name_keywords": ["低压", "消防", "移位"],
+      "units": ["个", "套"],
+      "material_main": 45,
+      "material_aux": 3,
+      "labor": 35,
+      "machinery": 0,
+      "source_note": "市场参考：照明开关面板"
+    },
+    {
+      "id": "washbasin",
+      "name_keywords": ["洗脸盆", "洗手盆"],
+      "units": ["组", "套", "个"],
+      "material_main": 450,
+      "material_aux": 35,
+      "labor": 85,
+      "machinery": 0,
+      "source_note": "市场参考：洗脸盆/洗手盆成套"
+    },
+    {
+      "id": "service_sink",
+      "name_keywords": ["洗涤盆"],
+      "units": ["组", "套"],
+      "material_main": 280,
+      "material_aux": 25,
+      "labor": 65,
+      "machinery": 0,
+      "source_note": "市场参考：不锈钢洗涤盆"
+    },
+    {
+      "id": "curtain_fabric",
+      "name_keywords": ["窗帘", "遮光帘", "卷帘"],
+      "exclude_name_keywords": ["盒"],
+      "units": ["㎡", "m2", "m"],
+      "material_main": 55,
+      "material_aux": 8,
+      "labor": 25,
+      "machinery": 0,
+      "source_note": "市场参考：成品窗帘/卷帘"
+    },
+    {
+      "id": "fire_engineering",
+      "name_keywords": ["消防工程"],
+      "exclude_name_keywords": ["验收", "接入"],
+      "units": ["㎡", "m2"],
+      "material_main": 120,
+      "material_aux": 25,
+      "labor": 280,
+      "machinery": 5,
+      "source_note": "市场参考：消防工程（按面积综合）"
+    },
+    {
+      "id": "fire_extinguisher",
+      "name_keywords": ["灭火器"],
+      "units": ["个"],
+      "material_main": 85,
+      "material_aux": 5,
+      "labor": 15,
+      "machinery": 0,
+      "source_note": "市场参考：灭火器含安装"
+    },
+    {
+      "id": "network_cable_cat6",
+      "name_keywords": ["六类", "网线", "非屏蔽"],
+      "units": ["m", "米", "条"],
+      "material_main": 3.5,
+      "material_aux": 0.3,
+      "labor": 1.5,
+      "machinery": 0,
+      "source_note": "市场参考：六类网线/跳线"
+    },
+    {
+      "id": "acrylic_panel",
+      "name_keywords": ["亚克力"],
+      "units": ["㎡", "m2", "平方"],
+      "material_main": 420,
+      "material_aux": 35,
+      "labor": 75,
+      "machinery": 2,
+      "source_note": "市场参考：亚克力板/灯箱"
+    },
+    {
+      "id": "design_fee",
+      "name_keywords": ["设计费", "图纸设计"],
+      "units": ["㎡", "m2", "项"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 80,
+      "machinery": 0,
+      "confidence": 0.72,
+      "source_note": "市场参考：方案/图纸设计费"
+    },
+    {
+      "id": "backfill_ceramsite_sump",
+      "name_keywords": ["沉箱陶粒", "陶粒回填"],
+      "units": ["㎡", "m2", "m³", "m3"],
+      "material_main": 65,
+      "material_aux": 12,
+      "labor": 28,
+      "machinery": 5,
+      "source_note": "市场参考：沉箱陶粒回填"
+    },
+    {
+      "id": "explosion_proof_light",
+      "name_keywords": ["防爆灯", "防爆型"],
+      "units": ["套", "个"],
+      "material_main": 180,
+      "material_aux": 12,
+      "labor": 55,
+      "machinery": 0,
+      "source_note": "市场参考：防爆灯具/插座"
+    },
+    {
+      "id": "waste_bin",
+      "name_keywords": ["垃圾桶", "垃圾箱", "收纳盒", "废纸收纳"],
+      "units": ["个", "组"],
+      "material_main": 120,
+      "material_aux": 8,
+      "labor": 25,
+      "machinery": 0,
+      "source_note": "市场参考：垃圾桶/收纳盒"
+    },
+    {
+      "id": "mosu_panel",
+      "name_keywords": ["摩素", "摩素板"],
+      "units": ["㎡", "m2", "平方"],
+      "material_main": 380,
+      "material_aux": 45,
+      "labor": 65,
+      "machinery": 2,
+      "source_note": "市场参考：摩素板饰面（WD系列）"
+    },
+    {
+      "id": "low_voltage_switchgear",
+      "name_keywords": ["低压电气", "低压开关"],
+      "units": ["项"],
+      "material_main": 3200,
+      "material_aux": 280,
+      "labor": 850,
+      "machinery": 45,
+      "source_note": "市场参考：低压电气开关工程（按项）"
+    },
+    {
+      "id": "toilet_partition",
+      "name_keywords": ["卫生间隔断", "厕格隔断"],
+      "exclude_name_keywords": ["拆除"],
+      "units": ["㎡", "m2", "樘"],
+      "material_main": 420,
+      "material_aux": 55,
+      "labor": 95,
+      "machinery": 2,
+      "source_note": "市场参考：卫生间隔断安装"
+    },
+    {
+      "id": "decorative_screen",
+      "name_keywords": ["装饰屏风", "屏风"],
+      "exclude_name_keywords": ["拆除"],
+      "units": ["㎡", "m2"],
+      "material_main": 1850,
+      "material_aux": 120,
+      "labor": 280,
+      "machinery": 5,
+      "source_note": "市场参考：装饰屏风（按面积）"
+    },
+    {
+      "id": "wash_counter",
+      "name_keywords": ["洗手台"],
+      "exclude_name_keywords": ["镜柜", "拆除"],
+      "units": ["m", "m2", "套"],
+      "material_main": 850,
+      "material_aux": 95,
+      "labor": 185,
+      "machinery": 3,
+      "source_note": "市场参考：洗手台/台面安装"
+    },
+    {
+      "id": "bar_counter_area",
+      "name_keywords": ["吧台", "水吧台"],
+      "exclude_name_keywords": ["拆除"],
+      "units": ["㎡", "m2"],
+      "material_main": 1850,
+      "material_aux": 180,
+      "labor": 320,
+      "machinery": 5,
+      "source_note": "市场参考：吧台/水吧台柜（按面积）"
+    },
+    {
+      "id": "logo_sign",
+      "name_keywords": ["LOGO", "logo", "标识"],
+      "exclude_name_keywords": ["拆除"],
+      "units": ["项", "个", "㎡", "m2"],
+      "material_main": 650,
+      "material_aux": 45,
+      "labor": 180,
+      "machinery": 2,
+      "source_note": "市场参考：LOGO/标识安装加固"
+    },
+    {
+      "id": "extinguisher_box",
+      "name_keywords": ["灭火器箱"],
+      "units": ["个", "组"],
+      "material_main": 95,
+      "material_aux": 8,
+      "labor": 35,
+      "machinery": 0,
+      "source_note": "市场参考：灭火器箱"
+    },
+    {
+      "id": "shower_fixture",
+      "name_keywords": ["淋浴"],
+      "exclude_name_keywords": ["拆除"],
+      "units": ["套", "m"],
+      "material_main": 280,
+      "material_aux": 25,
+      "labor": 85,
+      "machinery": 0,
+      "source_note": "市场参考：淋浴凳/五金"
+    },
+    {
+      "id": "threshold_stone",
+      "name_keywords": ["门槛石", "过门石", "石门槛"],
+      "units": ["㎡", "m2", "m"],
+      "material_main": 420,
+      "material_aux": 45,
+      "labor": 95,
+      "machinery": 2,
+      "source_note": "市场参考：门槛石"
+    },
+    {
+      "id": "access_control",
+      "name_keywords": ["门禁", "人脸考勤"],
+      "units": ["台", "个", "套"],
+      "material_main": 1650,
+      "material_aux": 85,
+      "labor": 195,
+      "machinery": 0,
+      "source_note": "市场参考：门禁/考勤系统"
+    },
+    {
+      "id": "cctv_point",
+      "name_keywords": ["监控点位", "监控"],
+      "units": ["个", "套"],
+      "material_main": 250,
+      "material_aux": 15,
+      "labor": 95,
+      "machinery": 0,
+      "source_note": "市场参考：监控点位含安装"
+    },
+    {
+      "id": "mirror_cabinet",
+      "name_keywords": ["镜柜"],
+      "units": ["套", "个"],
+      "material_main": 4200,
+      "material_aux": 180,
+      "labor": 320,
+      "machinery": 0,
+      "source_note": "市场参考：镜柜/镜柜一体"
+    },
+    {
+      "id": "hvac_fcu",
+      "name_keywords": ["风机盘管"],
+      "units": ["台", "套"],
+      "material_main": 2800,
+      "material_aux": 180,
+      "labor": 420,
+      "machinery": 25,
+      "source_note": "市场参考：风机盘管含安装（按制冷量综合）"
+    },
+    {
+      "id": "hvac_air_damper",
+      "name_keywords": ["风量调节阀", "风量调节"],
+      "units": ["个", "m"],
+      "material_main": 185,
+      "material_aux": 15,
+      "labor": 95,
+      "machinery": 0,
+      "source_note": "市场参考：风量调节阀"
+    },
+    {
+      "id": "hvac_duct_check_valve",
+      "name_keywords": ["风管止回阀", "止回阀"],
+      "units": ["个", "m"],
+      "material_main": 220,
+      "material_aux": 18,
+      "labor": 110,
+      "machinery": 0,
+      "source_note": "市场参考：风管止回阀"
+    },
+    {
+      "id": "hvac_decorative_diffuser",
+      "name_keywords": ["装饰风口", "条形空调风口", "条形风口"],
+      "units": ["个", "m", "米"],
+      "material_main": 520,
+      "material_aux": 35,
+      "labor": 95,
+      "machinery": 0,
+      "source_note": "市场参考：装饰/条形空调风口"
+    },
+    {
+      "id": "hvac_galvanized_duct",
+      "name_keywords": ["碳钢通风", "通风管道", "镀锌风管"],
+      "exclude_name_keywords": ["排风", "PVC"],
+      "units": ["㎡", "m2", "M²", "m"],
+      "material_main": 95,
+      "material_aux": 12,
+      "labor": 55,
+      "machinery": 2,
+      "source_note": "市场参考：碳钢/镀锌通风管道"
+    },
+    {
+      "id": "hvac_fan",
+      "name_keywords": ["离心风机", "排风机", "边墙式排风"],
+      "units": ["台", "套"],
+      "material_main": 650,
+      "material_aux": 45,
+      "labor": 185,
+      "machinery": 8,
+      "source_note": "市场参考：离心/边墙排风机"
+    },
+    {
+      "id": "electrical_conduit",
+      "name_keywords": ["配管"],
+      "units": ["m", "米"],
+      "material_main": 8,
+      "material_aux": 2,
+      "labor": 12,
+      "machinery": 0,
+      "source_note": "市场参考：JDG/电线管配管"
+    },
+    {
+      "id": "electrical_power_cable",
+      "name_keywords": ["电力电缆"],
+      "exclude_name_keywords": ["头"],
+      "units": ["m", "米"],
+      "material_main": 65,
+      "material_aux": 5,
+      "labor": 18,
+      "machinery": 0,
+      "source_note": "市场参考：电力电缆敷设"
+    },
+    {
+      "id": "plumbing_valve",
+      "name_keywords": ["球阀", "过滤器", "排气阀", "恒温阀", "软接头", "截止阀"],
+      "units": ["个"],
+      "material_main": 34,
+      "material_aux": 12,
+      "labor": 25,
+      "machinery": 0,
+      "source_note": "市场参考：管道阀门/过滤器"
+    },
+    {
+      "id": "floor_drain",
+      "name_keywords": ["地漏"],
+      "exclude_name_keywords": ["开孔", "孔槽", "孔位"],
+      "units": ["个", "套"],
+      "material_main": 35,
+      "material_aux": 5,
+      "labor": 18,
+      "machinery": 0,
+      "source_note": "市场参考：地漏安装"
+    },
+    {
+      "id": "cement_skirting",
+      "name_keywords": ["水泥砂浆踢脚"],
+      "units": ["㎡", "m2", "m"],
+      "material_main": 0,
+      "material_aux": 22,
+      "labor": 28,
+      "machinery": 0.5,
+      "source_note": "市场参考：水泥砂浆踢脚线"
+    },
+    {
+      "id": "laminate_floor",
+      "name_keywords": ["强化地板"],
+      "units": ["㎡", "m2"],
+      "material_main": 125,
+      "material_aux": 12,
+      "labor": 38,
+      "machinery": 1,
+      "source_note": "市场参考：强化复合地板"
+    },
+    {
+      "id": "soft_booth_seat",
+      "name_keywords": ["软包卡座"],
+      "units": ["m", "米", "㎡", "m2"],
+      "material_main": 850,
+      "material_aux": 65,
+      "labor": 185,
+      "machinery": 2,
+      "source_note": "市场参考：软包卡座"
+    },
+    {
+      "id": "magnetic_track_light",
+      "name_keywords": ["磁吸轨道"],
+      "units": ["m", "米", "套"],
+      "material_main": 85,
+      "material_aux": 8,
+      "labor": 35,
+      "machinery": 0,
+      "source_note": "市场参考：磁吸轨道灯"
+    },
+    {
+      "id": "control_module_box",
+      "name_keywords": ["控制模块"],
+      "units": ["个", "套", "台"],
+      "material_main": 380,
+      "material_aux": 25,
+      "labor": 95,
+      "machinery": 0,
+      "source_note": "市场参考：弱电/广播控制模块"
+    },
+    {
+      "id": "metal_luminous_letter",
+      "name_keywords": ["金属发光字", "发光字"],
+      "units": ["个", "套"],
+      "material_main": 75,
+      "material_aux": 8,
+      "labor": 28,
+      "machinery": 0,
+      "source_note": "市场参考：金属发光字"
+    },
+    {
+      "id": "smoke_barrier",
+      "name_keywords": ["挡烟垂壁", "挡烟"],
+      "units": ["㎡", "m2"],
+      "material_main": 185,
+      "material_aux": 25,
+      "labor": 95,
+      "machinery": 2,
+      "source_note": "市场参考：挡烟垂壁"
+    },
+    {
+      "id": "ceiling_bracing",
+      "name_keywords": ["转换层", "反支撑", "反向支撑"],
+      "units": ["㎡", "m2", "t"],
+      "material_main": 45,
+      "material_aux": 12,
+      "labor": 55,
+      "machinery": 3,
+      "source_note": "市场参考：天花转换层/反支撑"
+    },
+    {
+      "id": "white_acrylic_wall",
+      "name_keywords": ["白色亚克力"],
+      "units": ["㎡", "m2"],
+      "material_main": 480,
+      "material_aux": 45,
+      "labor": 85,
+      "machinery": 2,
+      "source_note": "市场参考：墙面白色亚克力"
+    },
+    {
+      "id": "white_stainless_wall",
+      "name_keywords": ["白色不锈钢"],
+      "units": ["㎡", "m2"],
+      "material_main": 320,
+      "material_aux": 35,
+      "labor": 75,
+      "machinery": 2,
+      "source_note": "市场参考：墙面白色不锈钢"
+    },
+    {
+      "id": "grab_bar",
+      "name_keywords": ["安全扶手", "折叠浴凳", "晾衣杆"],
+      "units": ["个", "套", "m", "米"],
+      "material_main": 85,
+      "material_aux": 5,
+      "labor": 25,
+      "machinery": 0,
+      "source_note": "市场参考：卫浴扶手/浴凳/晾衣杆"
+    },
+    {
+      "id": "hvac_air_outlet_area",
+      "name_keywords": ["空调风口"],
+      "units": ["㎡", "m2"],
+      "material_main": 450,
+      "material_aux": 40,
+      "labor": 110,
+      "machinery": 0,
+      "source_note": "市场参考：空调风口（按面积）"
+    },
+    {
+      "id": "white_matte_panel",
+      "name_keywords": ["白色亚光", "亚光板"],
+      "units": ["㎡", "m2"],
+      "material_main": 280,
+      "material_aux": 35,
+      "labor": 65,
+      "machinery": 2,
+      "source_note": "市场参考：墙面白色亚光板"
+    },
+    {
+      "id": "stainless_door_frame",
+      "name_keywords": ["不锈钢门套", "门套"],
+      "feature_keywords": ["不锈钢", "电梯"],
+      "units": ["㎡", "m2"],
+      "material_main": 450,
+      "material_aux": 40,
+      "labor": 110,
+      "machinery": 2,
+      "source_note": "市场参考：不锈钢/电梯门套"
+    },
+    {
+      "id": "outdoor_unit_base",
+      "name_keywords": ["主机基础", "室外主机"],
+      "units": ["m", "m3", "m³", "项"],
+      "material_main": 280,
+      "material_aux": 45,
+      "labor": 185,
+      "machinery": 25,
+      "source_note": "市场参考：室外空调主机基础"
+    },
+    {
+      "id": "pressure_test",
+      "name_keywords": ["水压试验", "系统调试"],
+      "units": ["系统", "项"],
+      "material_main": 0,
+      "material_aux": 50,
+      "labor": 1850,
+      "machinery": 45,
+      "source_note": "市场参考：水压试验/系统调试"
+    },
+    {
+      "id": "embedded_steel",
+      "name_keywords": ["预埋", "后埋铁件", "铁件"],
+      "exclude_name_keywords": ["开孔", "孔槽"],
+      "units": ["kg", "t"],
+      "material_main": 8,
+      "material_aux": 0.5,
+      "labor": 5,
+      "machinery": 0.5,
+      "source_note": "市场参考：预埋/后埋铁件"
+    },
+    {
+      "id": "cable_termination",
+      "name_keywords": ["电缆头"],
+      "units": ["个"],
+      "material_main": 28,
+      "material_aux": 3,
+      "labor": 22,
+      "machinery": 0,
+      "source_note": "市场参考：电力电缆头制作安装"
+    },
+    {
+      "id": "translucent_film_ceiling",
+      "name_keywords": ["透光膜"],
+      "units": ["㎡", "m2"],
+      "material_main": 285,
+      "material_aux": 35,
+      "labor": 75,
+      "machinery": 2,
+      "source_note": "市场参考：透光膜天棚"
+    },
+    {
+      "id": "lightweight_block_wall",
+      "name_keywords": ["轻质砖", "轻质砌块"],
+      "units": ["m³", "m3", "㎡", "m2"],
+      "material_main": 420,
+      "material_aux": 55,
+      "labor": 185,
+      "machinery": 5,
+      "source_note": "市场参考：轻质砖/砌块隔墙"
+    },
+    {
+      "id": "wall_plaster_general",
+      "name_keywords": ["一般抹灰", "墙面抹灰"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 12,
+      "labor": 22,
+      "machinery": 0.5,
+      "source_note": "市场参考：墙面一般抹灰"
+    },
+    {
+      "id": "scaffolding",
+      "name_keywords": ["脚手架"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 2,
+      "labor": 18,
+      "machinery": 1,
+      "source_note": "市场参考：脚手架搭拆"
+    },
+    {
+      "id": "masonry_opening",
+      "name_keywords": ["开门洞", "开洞"],
+      "feature_keywords": ["砌体", "修补"],
+      "units": ["㎡", "m2", "个"],
+      "material_main": 15,
+      "material_aux": 8,
+      "labor": 65,
+      "machinery": 8,
+      "source_note": "市场参考：砌体墙开门洞"
+    },
+    {
+      "id": "bamboo_charcoal_panel",
+      "name_keywords": ["竹炭纤维", "竹炭板"],
+      "units": ["㎡", "m2"],
+      "material_main": 320,
+      "material_aux": 45,
+      "labor": 75,
+      "machinery": 2,
+      "source_note": "市场参考：竹炭纤维板墙面"
+    },
+    {
+      "id": "ac_control_panel",
+      "name_keywords": ["空调控制面板", "温控面板"],
+      "units": ["个", "套"],
+      "material_main": 95,
+      "material_aux": 8,
+      "labor": 35,
+      "machinery": 0,
+      "source_note": "市场参考：空调控制面板"
+    },
+    {
+      "id": "panel_light_600",
+      "name_keywords": ["平板灯", "600*600"],
+      "units": ["套", "个"],
+      "material_main": 125,
+      "material_aux": 8,
+      "labor": 38,
+      "machinery": 0,
+      "source_note": "市场参考：600平板灯"
+    },
+    {
+      "id": "tri_proof_light",
+      "name_keywords": ["三防灯"],
+      "units": ["套", "个"],
+      "material_main": 130,
+      "material_aux": 8,
+      "labor": 38,
+      "machinery": 0,
+      "source_note": "市场参考：三防灯"
+    },
+    {
+      "id": "led_display",
+      "name_keywords": ["LED显示屏", "显示屏"],
+      "units": ["㎡", "m2"],
+      "material_main": 3850,
+      "material_aux": 180,
+      "labor": 420,
+      "machinery": 15,
+      "source_note": "市场参考：LED显示屏"
+    },
+    {
+      "id": "network_switch",
+      "name_keywords": ["交换机", "路由器", "防火墙"],
+      "units": ["台", "套"],
+      "material_main": 2200,
+      "material_aux": 120,
+      "labor": 280,
+      "machinery": 0,
+      "source_note": "市场参考：网络交换机/路由"
+    },
+    {
+      "id": "rvv_cable",
+      "name_keywords": ["RVV", "rvv"],
+      "units": ["m", "米"],
+      "material_main": 4.5,
+      "material_aux": 0.3,
+      "labor": 1.5,
+      "machinery": 0,
+      "source_note": "市场参考：RVV软电缆"
+    },
+    {
+      "id": "fiber_patch_cord",
+      "name_keywords": ["光纤跳线", "跳线"],
+      "units": ["条", "m", "米"],
+      "material_main": 28,
+      "material_aux": 2,
+      "labor": 8,
+      "machinery": 0,
+      "source_note": "市场参考：光纤跳线"
+    },
+    {
+      "id": "evacuation_sign_light",
+      "name_keywords": ["疏散", "安全出口"],
+      "feature_keywords": ["灯", "指示"],
+      "units": ["套", "个"],
+      "material_main": 110,
+      "material_aux": 8,
+      "labor": 38,
+      "machinery": 0,
+      "source_note": "市场参考：疏散指示/标志灯"
+    },
+    {
+      "id": "galvanized_angle_steel",
+      "name_keywords": ["镀锌角钢", "角钢"],
+      "units": ["kg", "m", "t"],
+      "material_main": 9,
+      "material_aux": 0.5,
+      "labor": 4,
+      "machinery": 0.3,
+      "source_note": "市场参考：镀锌角钢"
+    },
+    {
+      "id": "putty_hang_waterproof",
+      "name_keywords": ["挂耐水腻子", "耐水腻子"],
+      "units": ["㎡", "m2"],
+      "material_main": 7.6,
+      "material_aux": 3.8,
+      "labor": 7.2,
+      "machinery": 0.2,
+      "source_note": "市场参考：墙面/天棚挂耐水腻子"
+    },
+    {
+      "id": "ceiling_opening_hole",
+      "name_keywords": ["天棚面开孔", "顶棚开孔", "吊顶开孔"],
+      "units": ["个"],
+      "material_main": 4.2,
+      "material_aux": 0.5,
+      "labor": 3.6,
+      "machinery": 0,
+      "source_note": "市场参考：天棚/吊顶面开孔"
+    },
+    {
+      "id": "fire_canvas_flex_duct",
+      "name_keywords": ["防火帆布软接", "帆布软接"],
+      "units": ["㎡", "m2", "m", "米"],
+      "material_main": 20,
+      "material_aux": 59,
+      "labor": 71,
+      "machinery": 2,
+      "source_note": "市场参考：防火帆布软接"
+    },
+    {
+      "id": "hidden_door",
+      "name_keywords": ["隐形门"],
+      "units": ["㎡", "m2", "樘", "套"],
+      "material_main": 137,
+      "material_aux": 37,
+      "labor": 155,
+      "machinery": 2,
+      "source_note": "市场参考：隐形门"
+    },
+    {
+      "id": "steel_structure_t",
+      "name_keywords": ["钢构件"],
+      "units": ["t", "吨"],
+      "material_main": 520,
+      "material_aux": 0,
+      "labor": 2050,
+      "machinery": 80,
+      "source_note": "市场参考：钢构件制安"
+    },
+    {
+      "id": "block_wall_masonry",
+      "name_keywords": ["砌块墙", "混凝土砌块"],
+      "units": ["m3", "m³"],
+      "material_main": 120,
+      "material_aux": 0,
+      "labor": 62,
+      "machinery": 2,
+      "source_note": "市场参考：砌块墙砌筑"
+    },
+    {
+      "id": "urinal_partition",
+      "name_keywords": ["小便斗隔断", "小便器隔断"],
+      "units": ["个", "套"],
+      "material_main": 204,
+      "material_aux": 5,
+      "labor": 50,
+      "machinery": 0,
+      "source_note": "市场参考：小便斗隔断"
+    },
+    {
+      "id": "squat_toilet",
+      "name_keywords": ["蹲便器"],
+      "units": ["个", "套"],
+      "material_main": 491,
+      "material_aux": 5,
+      "labor": 100,
+      "machinery": 0,
+      "source_note": "市场参考：蹲便器安装"
+    },
+    {
+      "id": "plaster_fiberglass_mesh",
+      "name_keywords": ["抹灰玻纤网", "玻纤网格布"],
+      "units": ["㎡", "m2"],
+      "material_main": 0,
+      "material_aux": 2.3,
+      "labor": 0,
+      "machinery": 0,
+      "source_note": "市场参考：抹灰玻纤网"
+    },
+    {
+      "id": "earth_disposal",
+      "name_keywords": ["余方弃置", "土方外运"],
+      "units": ["m3", "m³"],
+      "material_main": 0,
+      "material_aux": 0,
+      "labor": 0.4,
+      "machinery": 47,
+      "source_note": "市场参考：余方弃置/土方外运"
     }
   ]
 }

@@ -6,7 +6,9 @@ from typing import Any, Dict, Mapping, Optional, Tuple
 from src.knowledge.query import PricingContext
 from src.knowledge.repository import KnowledgeRepository
 from src.match.engine import MatchThresholds
+from src.normalize.text import normalize_unit
 from src.pricing.engine import PricingEngine
+from src.pricing.line_identity import check_pricing_identity, units_must_match
 from src.pricing.material_lookup import MaterialPriceLookup
 
 
@@ -14,18 +16,28 @@ def _line_reference_ok(
     c: dict,
     th: MatchThresholds,
     cfg: dict,
+    *,
+    query_unit: str = "",
 ) -> Tuple[bool, str]:
-    """整项参照须名称、特征均有相似度，不能只看综合分。"""
+    """整项参照须名称、特征、单位均有相似度/一致，不能只看综合分。"""
     ref = cfg.get("reference_line", {})
     name_min = ref.get("name_min", 0.55)
     feature_min = ref.get("feature_min", 0.42)
     total_min = ref.get("total_min", 0.58)
     tag_min = ref.get("tag_min", 0.45)
 
+    if query_unit and c.get("unit"):
+        if not units_must_match(query_unit, c["unit"]):
+            return False, f"单位不一致({normalize_unit(query_unit)} vs {normalize_unit(c['unit'])})"
+
     has_feature = bool((c.get("feature") or "").strip())
 
     if c.get("conflicts"):
         return False, "做法标签冲突"
+
+    strong_ok, _ = _line_reference_ok_strong_name(c, query_unit=query_unit)
+    if strong_ok:
+        return True, "同名称强匹配"
 
     if c["name_score"] < name_min:
         return False, f"名称相似度{c['name_score']:.0%}不足（需≥{name_min:.0%}）"
@@ -43,6 +55,24 @@ def _line_reference_ok(
         return False, f"综合{c['total_score']:.0%}不足"
 
     return True, ""
+
+
+def _line_reference_ok_strong_name(
+    c: dict,
+    *,
+    query_unit: str = "",
+) -> Tuple[bool, str]:
+    """项目名称几乎一致 + 特征较像 + 单位一致 → 可整项参照（定制门/玻璃等标签差异大）。"""
+    if c.get("name_score", 0) < 0.98:
+        return False, ""
+    if c.get("feature_score", 0) < 0.65:
+        return False, ""
+    if query_unit and c.get("unit"):
+        if not units_must_match(query_unit, c["unit"]):
+            return False, ""
+    if c.get("conflicts"):
+        return False, ""
+    return True, "同名称强匹配"
 
 
 def resolve_reference_costs(
@@ -72,6 +102,16 @@ def resolve_reference_costs(
     if not reference_fill:
         return None, existing_note or "未匹配"
 
+    id_cfg = repo.settings.get("line_identity", {})
+    ok_id, id_reason = check_pricing_identity(
+        name,
+        feature,
+        unit,
+        require_unit=id_cfg.get("require_unit", True),
+    )
+    if not ok_id:
+        return None, id_reason
+
     cfg = repo.settings.get("pricing", {})
     th = engine.thresholds
     scope = f"（{ctx.scope_note()}）" if ctx else ""
@@ -84,7 +124,7 @@ def resolve_reference_costs(
         exclude_standard_item_ids=exclude_standard_item_ids,
     )
     for c in cands:
-        ok, reason = _line_reference_ok(c, th, cfg)
+        ok, reason = _line_reference_ok(c, th, cfg, query_unit=unit)
         if not ok:
             continue
         sid = c["standard_item_id"]
@@ -127,7 +167,7 @@ def resolve_reference_costs(
         if why:
             return None, (
                 f"无足够相似整项（Top「{why['name']}」名称{why['name_score']:.0%} "
-                f"特征{why['feature_score']:.0%}）；{_line_reference_ok(why, th, cfg)[1]}"
+                f"特征{why['feature_score']:.0%}）；{_line_reference_ok(why, th, cfg, query_unit=unit)[1]}"
             )
         return None, "无历史参照"
 

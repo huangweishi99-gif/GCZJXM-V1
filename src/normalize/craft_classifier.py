@@ -47,16 +47,24 @@ def classify_craft(name: str, feature: str = "", unit: str = "") -> CraftMatch:
         allowed = craft.get("units") or []
         if allowed and unit_n and unit_n not in allowed:
             continue
-        score = 0.0
+        score = float(craft.get("priority") or 0)
+        name_hit = False
         for kw in craft.get("keywords", []):
             kn = normalize_name(kw)
             if not kn:
                 continue
             if kn in name_n:
                 score += 10 + len(kn) * 0.1
+                name_hit = True
             elif kn in combined:
                 score += 5 + len(kn) * 0.05
-        if score <= 0:
+        feat_req = craft.get("feature_keywords") or []
+        if feat_req:
+            feat_hit = any(normalize_name(k) in combined for k in feat_req if k)
+            if not feat_hit:
+                continue
+            score += 20 + len(feat_req) * 3
+        elif not name_hit:
             continue
         if score > best_score:
             best_score = score

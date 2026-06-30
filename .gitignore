@@ -15,6 +15,11 @@ data/exports/**/*.xlsx
 # 广联达定额扫描 PDF（体积>100MB，仅本地学习，待 OCR 后入库）
 清单数据资料/**/广联达定额/*.pdf
 
+# GitHub 单文件上限 100MB：以下大表仅本地保留（金标准可用较小副本或 LFS）
+清单数据资料/AI学习清单/珠海海德公馆售楼处会所-20260627.xlsx
+清单数据资料/AI学习清单/售楼处主材料.xlsx
+清单数据资料/甲方招标清单/珠海海德公馆售楼处会所-清单询.xlsx
+
 # VS Code（本地配置）
 .vscode/
 
@@ -28,3 +33,12 @@ data/exports/**/*.xlsx
 
 # Streamlit
 .streamlit/secrets.toml
+
+# 本地同步密钥与运行时数据（勿提交 GitHub）
+config/sync_server.json
+data/sync/
+.codex_tmp/
+outputs/
+
+# 可选：本地导出 JSON 报告（校准/audit 可本地重跑）
+data/exports/*.json

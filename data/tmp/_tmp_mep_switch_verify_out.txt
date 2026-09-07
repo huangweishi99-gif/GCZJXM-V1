@@ -1,0 +1,35 @@
+开关/插座样本总数: 296
+
+=== 名称含[三联]: 7 行, core OK 4 (57%) ===
+  三联单控开关                                     个   src=mep_install_profile    主材  87.68/ 87.68 OK | 人工  80.21/ 80.21 OK | CORE_OK
+  三联单控开关                                     个   src=mep_install_profile    主材  87.68/  0.00 x | 人工  80.21/159.74 x | FAIL
+  三联单控开关                                     个   src=mep_install_profile    主材  17.00/ 17.00 OK | 人工  13.65/ 10.00 x | FAIL
+  三联单控暗开关                                    个   src=mep_install_profile    主材  45.00/ 45.00 OK | 人工  35.00/ 35.00 OK | CORE_OK
+  三联单控开关                                     个   src=mep_install_profile    主材  17.00/ 14.44 OK | 人工  13.65/ 13.65 OK | CORE_OK
+  三联单控开关                                     个   src=mep_install_profile    主材  17.00/ 14.44 OK | 人工  13.65/ 13.65 OK | CORE_OK
+  三联单控暗开关                                    个   src=mep_install_profile    主材  45.00/ 19.50 x | 人工  35.00/ 12.00 x | FAIL
+
+=== 名称含[双联]: 7 行, core OK 4 (57%) ===
+  双联单控开关                                     个   src=mep_install_profile    主材  72.71/ 72.71 OK | 人工  85.48/ 85.48 OK | CORE_OK
+  双联单控开关                                     个   src=mep_install_profile    主材  72.71/  0.00 x | 人工  85.48/159.74 x | FAIL
+  双联单控开关                                     个   src=mep_install_profile    主材  14.44/ 17.00 OK | 人工  13.56/ 10.00 x | FAIL
+  双联单控暗开关                                    个   src=mep_install_profile    主材  45.00/ 45.00 OK | 人工  35.00/ 35.00 OK | CORE_OK
+  双联单控开关                                     个   src=mep_install_profile    主材  14.44/ 14.44 OK | 人工  13.56/ 13.56 OK | CORE_OK
+  双联单控开关                                     个   src=mep_install_profile    主材  14.44/ 14.44 OK | 人工  13.56/ 13.56 OK | CORE_OK
+  双联单控暗开关                                    个   src=mep_install_profile    主材  45.00/ 18.50 x | 人工  35.00/ 12.00 x | FAIL
+
+=== 名称含[单联]: 12 行, core OK 9 (75%) ===
+  单联单控开关                                     个   src=mep_install_profile    主材  45.00/ 41.23 OK | 人工 100.00/105.23 OK | CORE_OK
+  单联双控开关                                     个   src=mep_install_profile    主材  52.00/ 44.59 OK | 人工 110.00/117.23 OK | CORE_OK
+  单联双控开关                                     个   src=mep_install_profile    主材  52.00/  0.00 x | 人工 110.00/147.71 x | FAIL
+  单联单控开关【防水】                                 个   src=mep_install_profile    主材  45.00/ 48.66 OK | 人工 100.00/ 97.80 OK | CORE_OK
+  单联双控开关【防水】                                 个   src=mep_install_profile    主材  52.00/ 59.13 OK | 人工 110.00/103.17 OK | CORE_OK
+  单联单控开关                                     个   src=mep_install_profile    主材  15.00/ 17.00 OK | 人工  13.00/ 10.00 x | FAIL
+  单联单控暗开关                                    个   src=mep_install_profile    主材  45.00/ 45.00 OK | 人工  35.00/ 35.00 OK | CORE_OK
+  单联单控开关                                     个   src=mep_install_profile    主材  15.00/ 13.54 OK | 人工  13.00/ 12.97 OK | CORE_OK
+  单联双控开关                                     个   src=mep_install_profile    主材  13.54/ 13.54 OK | 人工  12.97/ 12.97 OK | CORE_OK
+  单联单控开关                                     个   src=mep_install_profile    主材  15.00/ 13.54 OK | 人工  13.00/ 12.97 OK | CORE_OK
+  单联双控开关                                     个   src=mep_install_profile    主材  13.54/ 13.54 OK | 人工  12.97/ 12.97 OK | CORE_OK
+  单联单控暗开关                                    个   src=mep_install_profile    主材  45.00/ 17.50 x | 人工  35.00/ 15.00 x | FAIL
+
+=== 全部开关/插座: 296 行, core OK 172 (58%) ===

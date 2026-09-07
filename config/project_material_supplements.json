@@ -12,6 +12,25 @@
       "material_main": 580
     }
   },
+  "haide_basement": {
+    "ST-04A": {
+      "material_name": "石材25厚",
+      "unit_norm": "㎡",
+      "material_main": 580
+    },
+    "ST-04a": {
+      "material_name": "石材25厚",
+      "unit_norm": "㎡",
+      "material_main": 580
+    }
+  },
+  "shenhai_dasha": {
+    "ST-01": {
+      "material_name": "浅灰色大理石",
+      "unit_norm": "㎡",
+      "material_main": 450
+    }
+  },
   "city:珠海": {
     "PT-07": {
       "material_name": "涂料",

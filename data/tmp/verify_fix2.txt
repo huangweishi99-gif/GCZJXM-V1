@@ -1,0 +1,7 @@
+﻿MR[原顶面白色无机涂料|]:  paint_ceiling_white_inorganic main=5.0 labor=5.0 审计校准 2026-08：原顶面白色无机涂料 5x 实_主材4-4.95/实_人工4.69-5
+MR[原顶面白色无机涂料|原顶面批白]:  paint_ceiling_white_inorganic main=5.0 labor=5.0 审计校准 2026-08：原顶面白色无机涂料 5x 实_主材4-4.95/实_人工4.69-5
+SLP[造型石膏板吊顶（标高7.15m）]:  [市场参考]明确小项-造型石膏板吊顶（高标高/多层叠型） {'material_main': 0.0, 'material_loss_rate': 0.0, 'material_aux': 0.0, 'labor': 150.0, 'machinery': 0.0}
+SLP[内顶多层叠型]:  [市场参考]明确小项-造型石膏板吊顶（高标高/多层叠型） {'material_main': 0.0, 'material_loss_rate': 0.0, 'material_aux': 0.0, 'labor': 150.0, 'machinery': 0.0}
+[OK] 造型石膏板吊顶（标高7.15m）               src=special_line_price   判[   0.00/150.00] 期望[   0.00/150.00]
+[OK] 内顶多层叠型                         src=special_line_price   判[   0.00/150.00] 期望[   0.00/150.00]
+[DIFF] 原顶面白色无机涂料                      src=line_match_weak      判[  27.60/  0.00] 期望[   4.95/  4.69]

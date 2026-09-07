@@ -1,0 +1,11 @@
+﻿python : Traceback (most recent call last):
+所在位置 C:\Users\guangwan\AppData\Local\Temp\genie-ps-1787194583318-wy8ekl.ps1:558 字符: 33
++ ...  d:\projects\cost-estimation; python _tmp_opt_targets.py 2>&1 | Out-F ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "D:\projects\cost-estimation\_tmp_opt_targets.py", line 26, in <module>
+    open("data/tmp/opt_targets.txt", "w", encoding="utf-8").write("\n".join(out))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'data/tmp/opt_targets.txt'

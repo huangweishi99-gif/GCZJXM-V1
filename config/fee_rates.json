@@ -1,0 +1,69 @@
+{
+  "version": "2026.08",
+  "说明": "综合单价取费标准（管理费/利润/风险费率）。按 工程类别×企业资质档次 建议；安全文明施工费、规费为不可竞争费用，按地区规定下限计取。依据：GB50500-2013、建标〔2013〕44号、各地计价规则。",
+  "default": {
+    "management_fee_rate": 0.08,
+    "profit_rate": 0.05,
+    "risk_rate": 0.01,
+    "safety_civil_rate": 0.021,
+    "organization_fee_rate": 0.015,
+    "tax_rate": 0.09
+  },
+  "by_category": {
+    "装饰装修": {
+      "management_fee_rate": 0.09,
+      "profit_rate": 0.06,
+      "risk_rate": 0.01
+    },
+    "土建": {
+      "management_fee_rate": 0.07,
+      "profit_rate": 0.05,
+      "risk_rate": 0.015
+    },
+    "安装": {
+      "management_fee_rate": 0.08,
+      "profit_rate": 0.06,
+      "risk_rate": 0.01
+    },
+    "幕墙": {
+      "management_fee_rate": 0.10,
+      "profit_rate": 0.07,
+      "risk_rate": 0.015
+    },
+    "市政": {
+      "management_fee_rate": 0.06,
+      "profit_rate": 0.04,
+      "risk_rate": 0.02
+    }
+  },
+  "by_tier": {
+    "high": {
+      "management_fee_rate": 0.11,
+      "profit_rate": 0.08,
+      "risk_rate": 0.015
+    },
+    "mid": {
+      "management_fee_rate": 0.08,
+      "profit_rate": 0.05,
+      "risk_rate": 0.01
+    },
+    "low": {
+      "management_fee_rate": 0.06,
+      "profit_rate": 0.03,
+      "risk_rate": 0.005
+    }
+  },
+  "by_style": {
+    "batch_fitout": {
+      "说明": "批量精装项目综合费率 12%（管理7%+利润4%+风险1%），江门05户型金标准口径",
+      "management_fee_rate": 0.07,
+      "profit_rate": 0.04,
+      "risk_rate": 0.01
+    }
+  },
+  "不可竞争费用": {
+    "安全文明施工费": "按地区规定下限计取，装饰装修约2%~3%（以分部分项+措施费为基数）",
+    "规费": "五险一金+工伤保险，按社保规定比例，不可下浮",
+    "税金": "增值税一般计税9%，简易计税3%"
+  }
+}

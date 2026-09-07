@@ -1,0 +1,13 @@
+﻿=== 历史库查询 原顶面白色无机涂料 ===
+  standard_line_items err: no such table: standard_line_items
+  project_line_items err: no such table: project_line_items
+
+=== lookup_paint_by_feature ===
+  ({'material_main': 19.8, 'material_loss_rate': 0.0, 'material_aux': 1.2, 'labor': 14.0, 'machinery': 0.2}, '[工序拆价·乳胶漆饰面]腻子0遍；标准涂刷')
+
+=== lookup_misc_finish_fallback ===
+  (None, '')
+
+=== judge notes ===
+ source: line_match_weak conf: 0.79
+ notes: ['对照口径：名称+特征(0字)+单位(㎡)', '整项参照置信 79%<80%：[主材价库]材料价库(paint·深圳·mid)；规格paint（深圳·中档）', '[主材价库]材料价库(paint·深圳·mid)；规格paint', '按「装饰综合」份额模板推算辅材/人工（主材来自价库）', 'material_plus_template层已禁用，继续fall through', '[定额标准] 020501002「墙面无机涂料」（匹配度:40.5%，单位:100㎡）', '[主材价库]材料价库(paint·深圳·mid)；规格paint（深圳·中档）']

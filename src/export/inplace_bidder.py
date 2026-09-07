@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 import pandas as pd
 from openpyxl import load_workbook
+from openpyxl.cell.cell import MergedCell
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
@@ -16,7 +17,7 @@ from src.db.database import get_connection, resolve_db_path
 from src.ingest.detector import SheetLayout, detect_sheet_layout, MAX_REASONABLE_COL
 from src.knowledge.query import PricingContext
 from src.knowledge.repository import KnowledgeRepository
-from src.link.dedupe import make_dedupe_key
+from src.link.dedupe import MasterRowRef, make_dedupe_key, master_cell_formula
 from src.pricing.calc import calc_from_components
 from src.pricing.engine import PricingEngine
 from src.pricing.component_judge import judge_line_components, judge_to_reference_tuple
@@ -50,6 +51,23 @@ COST_HEADERS = (
 
 MASTER_FILL = PatternFill("solid", fgColor="C6EFCE")
 SLAVE_FILL = PatternFill("solid", fgColor="FFF2CC")
+
+
+def _safe_cell(ws, row: int, col: int | None, value) -> None:
+    if not col:
+        return
+    cell = ws.cell(row, col)
+    if isinstance(cell, MergedCell):
+        return
+    cell.value = value
+
+
+def _safe_ref(ws, ref: str, value) -> None:
+    cell = ws[ref]
+    if isinstance(cell, MergedCell):
+        return
+    cell.value = value
+
 
 # 甲方报价表（综合单价=其中合计）：右侧成本区 + G/H/I 桥接，不改 F/J 原公式逻辑
 TENDER_BREAKDOWN_COST_HEADERS = (
@@ -91,6 +109,9 @@ class SheetColumns:
     tender_material: Optional[int] = None
     tender_other: Optional[int] = None
     preserve_tender_breakdown: bool = False
+    preserve_client_quote: bool = False
+    # B2 户型等：综合单价 G=成本单价×$成本单价$1，投标合价 H=工程量×G
+    quote_from_cost: bool = False
 
     def col(self, field: str) -> Optional[int]:
         return getattr(self, field, None)
@@ -174,6 +195,115 @@ def _effective_last_column(ws, layout: SheetLayout) -> int:
             if v is not None and str(v).strip() not in ("", "None"):
                 last = max(last, c)
     return last
+
+
+PRESERVE_APPEND_FIELDS = (
+    "cost_unit_price",
+    "material_main",
+    "material_loss_rate",
+    "labor",
+    "material_aux",
+    "machinery",
+    "cost_amount",
+)
+
+
+PRESERVE_APPEND_HEADERS = (
+    ("cost_unit_price", "成本单价"),
+    ("material_main", "主材"),
+    ("material_loss_rate", "损耗率"),
+    ("labor", "人工"),
+    ("material_aux", "辅材"),
+    ("machinery", "机械"),
+    ("cost_amount", "合价"),
+)
+
+
+def _ensure_preserve_cost_headers(ws, layout: SheetLayout, cols: SheetColumns) -> None:
+    """仅在成本追加列写表头，不触碰甲方列。"""
+    hr = layout.header_row + 1
+    sr = (layout.subheader_row + 1) if layout.subheader_row is not None else hr + 1
+    c0 = cols.cost_unit_price
+    c1 = cols.cost_amount
+    if not c0 or not c1:
+        return
+    cell = ws.cell(hr, c0)
+    if not isinstance(cell, MergedCell):
+        cell.value = "成本单价分析"
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal="center")
+    if c1 > c0:
+        ws.merge_cells(start_row=hr, start_column=c0, end_row=hr, end_column=c1)
+    for field, title in PRESERVE_APPEND_HEADERS:
+        c = cols.col(field)
+        if not c:
+            continue
+        sub = ws.cell(sr, c)
+        if isinstance(sub, MergedCell):
+            continue
+        sub.value = title
+        sub.font = Font(bold=True)
+        sub.alignment = Alignment(horizontal="center", wrap_text=True)
+
+
+def _layout_preserve_append_columns(
+    ws,
+    layout: SheetLayout,
+    *,
+    start_offset: int = 2,
+) -> SheetColumns:
+    """纯甲方表：末列后空 start_offset-1 列，从第 start_offset 列起仅写成本（不动表头）。"""
+    m = layout.column_map
+    cols = SheetColumns()
+    for f in (
+        "seq",
+        "list_code",
+        "name",
+        "feature",
+        "unit",
+        "quantity",
+        "unit_price",
+        "amount",
+        "remark",
+    ):
+        if f in m:
+            setattr(cols, f, m[f] + 1)
+    start = _effective_last_column(ws, layout) + start_offset
+    for i, f in enumerate(PRESERVE_APPEND_FIELDS):
+        setattr(cols, f, start + i)
+    cols.preserve_client_quote = True
+    cols.quote_from_cost = True
+    return cols
+
+
+def setup_append_rate_cell(
+    ws,
+    cols: SheetColumns,
+    *,
+    rate_anchor_sheet: Optional[str] = None,
+) -> None:
+    """成本单价列第 1 行写费率系数；跨 sheet 引用首表（金标准 K1 / ='装修工程'!$K$1）。"""
+    c = cols.col("cost_unit_price")
+    if not c:
+        return
+    letter = get_column_letter(c)
+    if not rate_anchor_sheet or rate_anchor_sheet == ws.title:
+        _safe_cell(ws, 1, c, 1)
+    else:
+        _safe_cell(ws, 1, c, f"='{rate_anchor_sheet}'!${letter}$1")
+
+
+def _write_quote_from_cost_bridge(ws, excel_row: int, cols: SheetColumns) -> None:
+    """综合单价=成本单价×费率；投标合价=工程量×综合单价。"""
+    sr = excel_row
+    cost_l = cols.letter("cost_unit_price")
+    qty_l = cols.letter("quantity")
+    up_l = cols.letter("unit_price")
+    amt_l = cols.letter("amount")
+    if cost_l and up_l:
+        _safe_ref(ws, f"{up_l}{sr}", f"={cost_l}{sr}*${cost_l}$1")
+    if qty_l and up_l and amt_l:
+        _safe_ref(ws, f"{amt_l}{sr}", f"={qty_l}{sr}*{up_l}{sr}")
 
 
 def _layout_to_columns(layout: SheetLayout, max_col: int, ws=None) -> SheetColumns:
@@ -285,19 +415,7 @@ def _resolve_costs(
     reference_fill: bool,
     ctx: Optional[PricingContext] = None,
 ) -> Tuple[Optional[dict], str]:
-    """整项须名称+特征相似；否则按材料规格查主材价。"""
-    has = any(row.get(k) is not None for k in COST_FIELDS[:6])
-    existing = None
-    if has:
-        existing = {
-            "material_main": row.get("material_main") or 0,
-            "material_loss_rate": row.get("material_loss_rate") or 0,
-            "labor": row.get("labor") or 0,
-            "material_aux": row.get("material_aux") or 0,
-            "machinery": row.get("machinery") or 0,
-        }
-    if existing and any(existing.get(k) for k in existing):
-        return existing, row.get("match_note") or ""
+    """导出填价以 judge 为准；pricing_lines 仅作备注，避免引擎误匹配分量固化。"""
     judgment = judge_line_components(
         row["name"],
         row["feature"] or "",
@@ -307,7 +425,21 @@ def _resolve_costs(
         reference_fill=reference_fill,
         ctx=ctx,
     )
-    return judge_to_reference_tuple(judgment)
+    comps, note = judge_to_reference_tuple(judgment)
+    if comps:
+        return comps, note
+    has = any(row.get(k) is not None for k in COST_FIELDS[:6])
+    if has:
+        existing = {
+            "material_main": row.get("material_main") or 0,
+            "material_loss_rate": row.get("material_loss_rate") or 0,
+            "labor": row.get("labor") or 0,
+            "material_aux": row.get("material_aux") or 0,
+            "machinery": row.get("machinery") or 0,
+        }
+        if any(existing.get(k) for k in existing):
+            return existing, row.get("match_note") or note
+    return None, note
 
 
 def _write_master_row(
@@ -346,17 +478,28 @@ def _write_master_row(
     g_amt = cols.letter("amount")
     sr = excel_row
 
-    if cols.col("material_main"):
-        ws.cell(sr, cols.col("material_main"), bd.material_main or None)
-    if cols.col("material_loss_rate"):
-        # 须写 0 而非留空，否则招标表原格残留（如特征序号「4.」）会被公式当损耗率
-        ws.cell(sr, cols.col("material_loss_rate"), bd.material_loss_rate)
-    if cols.col("labor"):
-        ws.cell(sr, cols.col("labor"), bd.labor or None)
-    if cols.col("material_aux"):
-        ws.cell(sr, cols.col("material_aux"), bd.material_aux or None)
-    if cols.col("machinery"):
-        ws.cell(sr, cols.col("machinery"), bd.machinery or None)
+    blank_cost = not any(
+        (
+            bd.material_main,
+            bd.labor,
+            bd.material_aux,
+            bd.machinery,
+            bd.material_loss_rate,
+        )
+    )
+
+    if not blank_cost:
+        if cols.col("material_main"):
+            _safe_cell(ws, sr, cols.col("material_main"), bd.material_main or None)
+        if cols.col("material_loss_rate"):
+            # 须写 0 而非留空，否则招标表原格残留（如特征序号「4.」）会被公式当损耗率
+            _safe_cell(ws, sr, cols.col("material_loss_rate"), bd.material_loss_rate)
+        if cols.col("labor"):
+            _safe_cell(ws, sr, cols.col("labor"), bd.labor or None)
+        if cols.col("material_aux"):
+            _safe_cell(ws, sr, cols.col("material_aux"), bd.material_aux or None)
+        if cols.col("machinery"):
+            _safe_cell(ws, sr, cols.col("machinery"), bd.machinery or None)
 
     if cols.preserve_tender_breakdown:
         _write_tender_breakdown_bridge(ws, sr, cols)
@@ -379,38 +522,48 @@ def _write_master_row(
         return
 
     if main_l and loss_l and labor_l and aux_l and mach_l and cost_l:
-        ws[f"{cost_l}{sr}"] = (
-            f"={main_l}{sr}+{main_l}{sr}*{loss_l}{sr}"
-            f"+{labor_l}{sr}+{aux_l}{sr}+{mach_l}{sr}"
+        _safe_ref(
+            ws,
+            f"{cost_l}{sr}",
+            (
+                f"={main_l}{sr}+{main_l}{sr}*{loss_l}{sr}"
+                f"+{labor_l}{sr}+{aux_l}{sr}+{mach_l}{sr}"
+            ),
         )
 
     if cost_l and q_col and cost_amt_l:
-        ws[f"{cost_amt_l}{sr}"] = f"={cost_l}{sr}*{q_col}{sr}"
+        _safe_ref(ws, f"{cost_amt_l}{sr}", f"={cost_l}{sr}*{q_col}{sr}")
+
+    if cols.preserve_client_quote:
+        if cols.quote_from_cost:
+            _write_quote_from_cost_bridge(ws, sr, cols)
+        return
 
     if main_l and mgmt_l and profit_l and tax_l:
         base = (
             f"({main_l}{sr}+{main_l}{sr}*{loss_l}{sr}"
             f"+{labor_l}{sr}+{aux_l}{sr}+{mach_l}{sr})"
         )
-        ws[f"{mgmt_l}{sr}"] = f"={base}*${mgmt_l}$4"
-        ws[f"{profit_l}{sr}"] = f"=({base}+{mgmt_l}{sr})*${profit_l}$4"
-        ws[f"{tax_l}{sr}"] = f"=({base}+{mgmt_l}{sr}+{profit_l}{sr})*${tax_l}$4"
+        _safe_ref(ws, f"{mgmt_l}{sr}", f"={base}*${mgmt_l}$4")
+        _safe_ref(ws, f"{profit_l}{sr}", f"=({base}+{mgmt_l}{sr})*${profit_l}$4")
+        _safe_ref(ws, f"{tax_l}{sr}", f"=({base}+{mgmt_l}{sr}+{profit_l}{sr})*${tax_l}$4")
 
     if cost_l and f_up and mgmt_l and profit_l and tax_l:
-        ws[f"{f_up}{sr}"] = f"={cost_l}{sr}+{mgmt_l}{sr}+{profit_l}{sr}+{tax_l}{sr}"
+        _safe_ref(ws, f"{f_up}{sr}", f"={cost_l}{sr}+{mgmt_l}{sr}+{profit_l}{sr}+{tax_l}{sr}")
 
     if f_up and g_amt and q_col and (not cost_amt_l or g_amt != cost_amt_l):
-        ws[f"{g_amt}{sr}"] = f"={q_col}{sr}*{f_up}{sr}"
+        _safe_ref(ws, f"{g_amt}{sr}", f"={q_col}{sr}*{f_up}{sr}")
 
     if remark and cols.col("remark"):
         existing = ws.cell(sr, cols.col("remark")).value
         if not existing:
             ws.cell(sr, cols.col("remark"), remark[:500])
 
-    for field in COST_FIELDS + ("unit_price", "amount"):
-        c = cols.col(field)
-        if c:
-            ws.cell(sr, c).fill = MASTER_FILL
+    if not cols.preserve_client_quote:
+        for field in COST_FIELDS + ("unit_price", "amount"):
+            c = cols.col(field)
+            if c:
+                ws.cell(sr, c).fill = MASTER_FILL
 
 
 def _write_tender_breakdown_bridge(ws, excel_row: int, cols: SheetColumns) -> None:
@@ -431,30 +584,73 @@ def _write_tender_breakdown_bridge(ws, excel_row: int, cols: SheetColumns) -> No
     j_l = cols.letter("amount")
 
     if n_l and o_l and p_l and q_l and r_l and m_l:
-        ws[f"{m_l}{sr}"] = (
-            f"={n_l}{sr}+{n_l}{sr}*{o_l}{sr}+{p_l}{sr}+{q_l}{sr}+{r_l}{sr}"
+        _safe_ref(
+            ws,
+            f"{m_l}{sr}",
+            f"={n_l}{sr}+{n_l}{sr}*{o_l}{sr}+{p_l}{sr}+{q_l}{sr}+{r_l}{sr}",
         )
     if m_l and e_l and s_l:
-        ws[f"{s_l}{sr}"] = f"={e_l}{sr}*{m_l}{sr}"
+        _safe_ref(ws, f"{s_l}{sr}", f"={e_l}{sr}*{m_l}{sr}")
     if p_l and g_l:
-        ws[f"{g_l}{sr}"] = f"={p_l}{sr}*$P$1"
+        _safe_ref(ws, f"{g_l}{sr}", f"={p_l}{sr}*$P$1")
     if n_l and o_l and q_l and r_l and h_l:
-        ws[f"{h_l}{sr}"] = (
-            f"=({n_l}{sr}+{n_l}{sr}*{o_l}{sr})*$N$1+{q_l}{sr}*$Q$1+{r_l}{sr}"
+        _safe_ref(
+            ws,
+            f"{h_l}{sr}",
+            f"=({n_l}{sr}+{n_l}{sr}*{o_l}{sr})*$N$1+{q_l}{sr}*$Q$1+{r_l}{sr}",
         )
     if m_l and i_l:
-        ws[f"{i_l}{sr}"] = f"={m_l}{sr}*$M$1"
+        _safe_ref(ws, f"{i_l}{sr}", f"={m_l}{sr}*$M$1")
   # 仅恢复/保持招标综合单价与合价公式，不写入成本投标价
     if f_l and g_l and h_l and i_l:
-        ws[f"{f_l}{sr}"] = f"={g_l}{sr}+{h_l}{sr}+{i_l}{sr}"
+        _safe_ref(ws, f"{f_l}{sr}", f"={g_l}{sr}+{h_l}{sr}+{i_l}{sr}")
     if j_l and f_l and e_l:
-        ws[f"{j_l}{sr}"] = f"={f_l}{sr}*{e_l}{sr}"
+        _safe_ref(ws, f"{j_l}{sr}", f"={f_l}{sr}*{e_l}{sr}")
 
 
-def _link_slave_row(ws, excel_row: int, master_row: int, cols: SheetColumns) -> None:
-    """重复行：同表链接到母行（lj 思路）。"""
+def _link_slave_row(ws, excel_row: int, master: MasterRowRef, cols: SheetColumns) -> None:
+    """重复行：链接到工作簿内母行（同表或跨表）。"""
     if cols.preserve_tender_breakdown:
-        _link_slave_row_tender_breakdown(ws, excel_row, master_row, cols)
+        _link_slave_row_tender_breakdown(ws, excel_row, master, cols)
+        return
+
+    local = ws.title
+    sr = excel_row
+
+    if cols.preserve_client_quote:
+        # 人材机链母行；成本单价/合价与综合单价用本行公式（金标准 B2）
+        for field in (
+            "material_main",
+            "material_loss_rate",
+            "labor",
+            "material_aux",
+            "machinery",
+        ):
+            c = cols.col(field)
+            m = cols.letter(field)
+            if c and m:
+                _safe_cell(ws, sr, c, master_cell_formula(master, m, local))
+        main_l = cols.letter("material_main")
+        loss_l = cols.letter("material_loss_rate")
+        labor_l = cols.letter("labor")
+        aux_l = cols.letter("material_aux")
+        mach_l = cols.letter("machinery")
+        cost_l = cols.letter("cost_unit_price")
+        qty_l = cols.letter("quantity")
+        cost_amt_l = cols.letter("cost_amount")
+        if main_l and loss_l and labor_l and aux_l and mach_l and cost_l:
+            _safe_ref(
+                ws,
+                f"{cost_l}{sr}",
+                (
+                    f"={main_l}{sr}+{main_l}{sr}*{loss_l}{sr}"
+                    f"+{labor_l}{sr}+{aux_l}{sr}+{mach_l}{sr}"
+                ),
+            )
+        if cost_l and qty_l and cost_amt_l:
+            _safe_ref(ws, f"{cost_amt_l}{sr}", f"={cost_l}{sr}*{qty_l}{sr}")
+        if cols.quote_from_cost:
+            _write_quote_from_cost_bridge(ws, sr, cols)
         return
 
     link_fields = (
@@ -471,20 +667,22 @@ def _link_slave_row(ws, excel_row: int, master_row: int, cols: SheetColumns) -> 
         "unit_price",
         "amount",
     )
-    fill = SLAVE_FILL
     for field in link_fields:
         c = cols.col(field)
         m = cols.letter(field)
         if c and m:
-            ws.cell(excel_row, c, f"={m}${master_row}")
-            ws.cell(excel_row, c).fill = fill
+            _safe_cell(ws, excel_row, c, master_cell_formula(master, m, local))
+            cell = ws.cell(excel_row, c)
+            if not isinstance(cell, MergedCell):
+                cell.fill = SLAVE_FILL
 
 
 def _link_slave_row_tender_breakdown(
-    ws, excel_row: int, master_row: int, cols: SheetColumns
+    ws, excel_row: int, master: MasterRowRef, cols: SheetColumns
 ) -> None:
-    """甲方报价表重复行：成本区绝对链接母行，其中/综合单价/合价保持行内桥接公式。"""
+    """甲方报价表重复行：成本区链接母行，其中/综合单价/合价保持行内桥接公式。"""
     sr = excel_row
+    local = ws.title
     for field in (
         "material_main",
         "material_loss_rate",
@@ -497,12 +695,16 @@ def _link_slave_row_tender_breakdown(
         c = cols.col(field)
         m = cols.letter(field)
         if c and m:
-            ws.cell(sr, c, f"={m}${master_row}")
-            ws.cell(sr, c).fill = SLAVE_FILL
+            _safe_cell(ws, sr, c, master_cell_formula(master, m, local))
+            cell = ws.cell(sr, c)
+            if not isinstance(cell, MergedCell):
+                cell.fill = SLAVE_FILL
     _write_tender_breakdown_bridge(ws, sr, cols)
     for c in (cols.tender_labor, cols.tender_material, cols.tender_other, cols.unit_price, cols.amount):
         if c:
-            ws.cell(sr, c).fill = SLAVE_FILL
+            cell = ws.cell(sr, c)
+            if not isinstance(cell, MergedCell):
+                cell.fill = SLAVE_FILL
 
 
 def fill_tender_inplace(
@@ -561,11 +763,14 @@ def fill_tender_inplace(
         by_sheet.setdefault(r["sheet_name"], []).append(dict(r))
 
     linked = 0
+    cross_linked = 0
     filled = 0
     used_tender_breakdown = False
+    wb_masters: Dict[str, MasterRowRef] = {}
 
-    for sheet_name, sheet_rows in by_sheet.items():
-        if sheet_name not in wb.sheetnames:
+    for sheet_name in wb.sheetnames:
+        sheet_rows = by_sheet.get(sheet_name)
+        if not sheet_rows:
             continue
         ws = wb[sheet_name]
         df = pd.read_excel(out, sheet_name=sheet_name, header=None)
@@ -580,37 +785,45 @@ def fill_tender_inplace(
         else:
             _ensure_cost_headers(ws, layout, cols)
 
-        masters: Dict[str, int] = {}
         for row in sheet_rows:
             excel_row = int(row["row_index"]) + 1
             nn, un, sig = make_dedupe_key(row["name"], row["feature"] or "", row["unit"])
             key = f"{nn}|{sig}|{un}"
 
-            if key not in masters:
+            if key not in wb_masters:
+                wb_masters[key] = MasterRowRef(sheet_name, excel_row)
                 components, note = _resolve_costs(
                     row, engine, repo, reference_fill, ctx=ctx
                 )
                 if components:
                     qty = float(row["quantity"] or 0)
+                    if qty > 0 and cols.col("quantity"):
+                        qcell = ws.cell(excel_row, cols.col("quantity"))
+                        if not isinstance(qcell, MergedCell):
+                            cur = qcell.value
+                            if cur is None or (isinstance(cur, str) and cur.startswith("=")):
+                                qcell.value = qty
                     _write_master_row(ws, excel_row, cols, components, qty, note)
-                    masters[key] = excel_row
                     filled += 1
                 else:
                     if note and cols.col("remark"):
                         ws.cell(excel_row, cols.col("remark"), note[:500])
             else:
-                _link_slave_row(ws, excel_row, masters[key], cols)
+                _link_slave_row(ws, excel_row, wb_masters[key], cols)
                 linked += 1
+                if wb_masters[key].sheet != sheet_name:
+                    cross_linked += 1
 
     meta = wb.create_sheet("_组价说明")
     meta.append(["工程", job["project_name"]])
     meta.append(["组价任务", job_id])
     meta.append(["母行填价", filled])
     meta.append(["链接重复行", linked])
+    meta.append(["跨表链接行", cross_linked])
     note = (
-        "甲方报价表：综合单价=其中合计；成本区填数后 G/H/I 桥接；重复项链接母行"
+        "甲方报价表：综合单价=其中合计；成本区填数后 G/H/I 桥接；重复项链接母行（可跨 sheet）"
         if used_tender_breakdown
-        else "保留原表；成本区按投标方需求表头填价；相同项链接到首次出现行"
+        else "保留原表；成本区按投标方需求表头填价；相同项链接到工作簿内首次出现行（可跨 sheet）"
     )
     meta.append(["说明", note])
 

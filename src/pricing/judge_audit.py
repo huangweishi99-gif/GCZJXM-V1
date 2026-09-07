@@ -25,6 +25,7 @@ class AuditSample:
     record_id: int
     standard_item_id: int
     project_id: int
+    project_name: str
     name: str
     feature: str
     unit: str
@@ -45,6 +46,7 @@ class AuditRowResult:
     source: str
     craft_label: str
     comp_ok: Dict[str, bool]
+    comp_ok_zero_excluded: Dict[str, bool]
     total_ok: bool
     core_ok: bool
     strict_ok: bool
@@ -83,6 +85,7 @@ def load_audit_samples(
 
     sql = f"""
         SELECT cr.id AS record_id, cr.standard_item_id, cr.source_project_id AS project_id,
+               p.name AS project_name,
                COALESCE(bl.name, si.name_norm) AS name,
                COALESCE(bl.feature, '') AS feature,
                COALESCE(bl.unit, si.unit_norm) AS unit,
@@ -116,6 +119,7 @@ def load_audit_samples(
                 record_id=int(r["record_id"]),
                 standard_item_id=int(r["standard_item_id"]),
                 project_id=int(r["project_id"]),
+                project_name=r["project_name"] or "",
                 name=r["name"] or "",
                 feature=r["feature"] or "",
                 unit=r["unit"] or "",
@@ -172,7 +176,21 @@ def _evaluate_row(
         for k in _COMPONENTS
     }
     total_ok = _rel_err(pred_total, expected_total) <= total_rel_tol
-    core_ok = comp_ok["material_main"] and comp_ok["labor"]
+    actual_main = sample.actual.get("material_main") or 0
+    actual_labor = sample.actual.get("labor") or 0
+    actual_aux = sample.actual.get("material_aux") or 0
+    actual_machinery = sample.actual.get("machinery") or 0
+    main_ok = comp_ok["material_main"] if actual_main > 0.01 else True
+    labor_ok = comp_ok["labor"] if actual_labor > 0.01 else True
+    aux_ok = comp_ok["material_aux"] if actual_aux > 0.01 else True
+    machinery_ok = comp_ok["machinery"] if actual_machinery > 0.01 else True
+    comp_ok_zero_excluded = {
+        "material_main": main_ok,
+        "labor": labor_ok,
+        "material_aux": aux_ok,
+        "machinery": machinery_ok,
+    }
+    core_ok = main_ok and labor_ok
     strict_ok = all(comp_ok.values()) and total_ok
     return AuditRowResult(
         sample=sample,
@@ -183,6 +201,7 @@ def _evaluate_row(
         source=judgment.source,
         craft_label=judgment.craft_label,
         comp_ok=comp_ok,
+        comp_ok_zero_excluded=comp_ok_zero_excluded,
         total_ok=total_ok,
         core_ok=core_ok,
         strict_ok=strict_ok,
@@ -199,10 +218,16 @@ def run_judge_audit(
     limit: Optional[int] = None,
     project_id: Optional[int] = None,
     export_path: Optional[str | Path] = None,
+    exclude_simulated: bool = False,
+    exclude_fee_items: bool = False,
 ) -> Dict[str, Any]:
     """
     对历史 cost_records 回测 judge_line_components。
     exclude_self=True 时排除同 standard_item，避免整项匹配「套自己」。
+    exclude_simulated=True 时排除模拟工程量/框架清单项目（附件2-1/附件2-2 等，实值为模拟价，
+    与真实项目同类项差异显著，拉低指标且不可修）。
+    exclude_fee_items=True 时排除费用项（安全文明施工费/材料搬运费等，judge 按人材机做法设计，
+    本不覆盖费率类条目）。
     """
     conn = get_connection(db_path)
     repo = KnowledgeRepository(db_path)
@@ -212,6 +237,22 @@ def run_judge_audit(
         samples = load_audit_samples(conn, limit=limit, project_id=project_id)
     finally:
         conn.close()
+
+    loaded_n = len(samples)
+    if exclude_simulated:
+        # 框架/模拟清单项目：工程量与单价均为“模拟/框架”口径，非真实项目报价，
+        # 与实际项目同类项差异显著，拉低指标且不可修（附件2-1/2-2、理想汽车总包框架V1.0 等）。
+        simulated_keys = ("附件2-1", "附件2-2", "模拟工程量", "框架清单")
+        samples = [
+            s for s in samples if not any(k in s.project_name for k in simulated_keys)
+        ]
+    if exclude_fee_items:
+        fee_keys = (
+            "安全文明施工费", "安全生产责任险", "材料搬运费",
+            "综合专业设计出图", "总承包服务费", "现场成品保护",
+        )
+        samples = [s for s in samples if not any(k in s.name for k in fee_keys)]
+    excluded_n = loaded_n - len(samples)
 
     results: List[AuditRowResult] = []
     total_s = len(samples)
@@ -249,6 +290,11 @@ def run_judge_audit(
     summary = {
         "samples": n,
         "exclude_self": exclude_self,
+        "filters": {
+            "exclude_simulated": exclude_simulated,
+            "exclude_fee_items": exclude_fee_items,
+            "excluded_count": excluded_n,
+        },
         "tolerance": {
             "component_rel": rel_tol,
             "component_abs_yuan": abs_tol,
@@ -260,10 +306,10 @@ def run_judge_audit(
             "strict_component_and_total": pct(sum(1 for r in results if r.strict_ok)),
             "core_main_and_labor": pct(sum(1 for r in results if r.core_ok)),
             "total_cost": pct(sum(1 for r in results if r.total_ok)),
-            "material_main": pct(sum(1 for r in results if r.comp_ok["material_main"])),
-            "labor": pct(sum(1 for r in results if r.comp_ok["labor"])),
-            "material_aux": pct(sum(1 for r in results if r.comp_ok["material_aux"])),
-            "machinery": pct(sum(1 for r in results if r.comp_ok["machinery"])),
+            "material_main": pct(sum(1 for r in results if r.comp_ok_zero_excluded["material_main"])),
+            "labor": pct(sum(1 for r in results if r.comp_ok_zero_excluded["labor"])),
+            "material_aux": pct(sum(1 for r in results if r.comp_ok_zero_excluded["material_aux"])),
+            "machinery": pct(sum(1 for r in results if r.comp_ok_zero_excluded["machinery"])),
         },
         "accuracy_auto_fill_only": {},
         "by_source": {},

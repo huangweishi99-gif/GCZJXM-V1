@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import statistics
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -14,7 +15,11 @@ from src.knowledge.facts import (
     rebuild_material_price_facts,
     upsert_material_fact_from_line,
 )
-from src.knowledge.metadata import ProjectMetadata, infer_metadata
+from src.knowledge.metadata import (
+    ProjectMetadata,
+    infer_metadata,
+    pair_meta_by_source,
+)
 from src.knowledge.cost_split import needs_component_split, split_whole_price_components
 from src.knowledge.query import PricingContext, filter_cost_records, query_line_price_fact
 from src.normalize.feature_extract import extract_feature_profile
@@ -24,6 +29,19 @@ from src.normalize.text import (
     normalize_name,
     normalize_unit,
 )
+
+
+def _gold_source_keys() -> set:
+    """project_pairs 中登记为金标准的源文件（归一化路径集合）。
+
+    只有这些文件的成本样本才被视为「已闭环定稿」，聚合价库时优先采用。
+    """
+    return {k for k, v in pair_meta_by_source().items() if v.get("is_gold")}
+
+
+def _source_key(file_path: str | Path) -> str:
+    """源文件归一化键（相对/绝对、盘符大小写统一），用于幂等与元数据匹配。"""
+    return os.path.normcase(str(Path(file_path).resolve()))
 
 
 def _load_settings() -> dict:
@@ -238,21 +256,41 @@ class KnowledgeRepository:
         fp = Path(file_path)
         wb = parse_workbook(fp)
         name = project_name or wb.project_name
+        # 文件名关键字推断不出城市时（如「云湾花园…投标清单」没有城市字样），
+        # 退回 project_pairs 人工登记的城市，避免定稿样本落入「通用桶」、
+        # 以某地价格参与其它城市报价。
+        src_key = _source_key(fp)
+        pair_meta = pair_meta_by_source().get(src_key) or {}
+        if city is None and pair_meta.get("city"):
+            city = str(pair_meta["city"])
+            city_source = "pairs"
+        else:
+            city_source = "param" if city is not None else "inferred"
         meta = infer_metadata(fp, name, city=city, price_tier=price_tier)
         conn = self.conn()
         learned = 0
         skipped = 0
         replaced = 0
         try:
+            # 幂等：同一源文件（无论以相对/绝对/大小写形式录入）只保留一个 project，
+            # 否则重复学习会让成本样本与材料价 sample_count 翻倍。
             old_rows = conn.execute(
-                "SELECT id FROM projects WHERE source_file=? AND project_type=?",
-                (wb.file_path, project_type),
+                "SELECT id, source_file FROM projects WHERE project_type=? AND source_file IS NOT NULL",
+                (project_type,),
             ).fetchall()
             for old in old_rows:
-                oid = int(old["id"])
-                conn.execute("DELETE FROM cost_records WHERE source_project_id=?", (oid,))
-                conn.execute("DELETE FROM projects WHERE id=?", (oid,))
-                replaced += 1
+                of = old["source_file"]
+                if not of:
+                    continue
+                try:
+                    of_key = os.path.normcase(str(Path(of).resolve()))
+                except Exception:
+                    of_key = ""
+                if of_key and of_key == src_key:
+                    oid = int(old["id"])
+                    conn.execute("DELETE FROM cost_records WHERE source_project_id=?", (oid,))
+                    conn.execute("DELETE FROM projects WHERE id=?", (oid,))
+                    replaced += 1
 
             cur = conn.execute(
                 """INSERT INTO projects
@@ -261,7 +299,7 @@ class KnowledgeRepository:
                 (
                     name,
                     project_type,
-                    wb.file_path,
+                    str(fp.resolve()),
                     meta.city,
                     meta.city,
                     meta.price_tier,
@@ -281,6 +319,14 @@ class KnowledgeRepository:
                 else:
                     skipped += 1
 
+            # 定稿标记：仅 project_pairs 登记为金标准的文件算已闭环定稿，
+            # 价库聚合时优先采用；其余历史资料仅作补充样本。
+            is_gold = 1 if src_key in _gold_source_keys() else 0
+            conn.execute(
+                "UPDATE cost_records SET is_verified=? WHERE source_project_id=?",
+                (is_gold, pid),
+            )
+
             anatomy_stats = run_post_learn_anatomy(conn, pid, fp, meta)
             conn.commit()
         finally:
@@ -290,6 +336,8 @@ class KnowledgeRepository:
             "project_id": pid,
             "project_name": name,
             "city": meta.city,
+            "city_source": city_source,
+            "pair_id": str(pair_meta.get("pair_id") or ""),
             "price_tier": meta.price_tier,
             "scope": meta.label(),
             "total_lines": len(wb.lines),
@@ -317,6 +365,9 @@ class KnowledgeRepository:
         fp = Path(file_path)
         wb = parse_workbook(fp)
         name = project_name or wb.project_name
+        pair_meta = pair_meta_by_source().get(_source_key(fp)) or {}
+        if city is None and pair_meta.get("city"):
+            city = str(pair_meta["city"])
         meta = infer_metadata(fp, name, city=city, price_tier=price_tier)
         conn = self.conn()
         try:

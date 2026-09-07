@@ -1,0 +1,77 @@
+﻿{
+ "װ���ۺ�": {
+  "count": 185,
+  "core_ok_rate": 0.7081,
+  "auto_fill_rate": 0.5351
+ },
+ "ǽ������ʯ���+Ϳ��": {
+  "count": 38,
+  "core_ok_rate": 0.7632,
+  "auto_fill_rate": 0.8158
+ },
+ "�����/��ͭ����": {
+  "count": 22,
+  "core_ok_rate": 0.9545,
+  "auto_fill_rate": 1.0
+ },
+ "���ز���": {
+  "count": 12,
+  "core_ok_rate": 0.9167,
+  "auto_fill_rate": 1.0
+ },
+ "��������": {
+  "count": 11,
+  "core_ok_rate": 0.8182,
+  "auto_fill_rate": 1.0
+ },
+ "�յ����": {
+  "count": 10,
+  "core_ok_rate": 0.7,
+  "auto_fill_rate": 1.0
+ },
+ "��������": {
+  "count": 10,
+  "core_ok_rate": 0.8,
+  "auto_fill_rate": 0.7
+ },
+ "�������": {
+  "count": 9,
+  "core_ok_rate": 0.6667,
+  "auto_fill_rate": 0.8889
+ },
+ "�������": {
+  "count": 9,
+  "core_ok_rate": 0.8889,
+  "auto_fill_rate": 0.8889
+ },
+ "ʯ��ʪ��": {
+  "count": 9,
+  "core_ok_rate": 0.8889,
+  "auto_fill_rate": 1.0
+ },
+ "�Ʋ�": {
+  "count": 9,
+  "core_ok_rate": 0.8889,
+  "auto_fill_rate": 1.0
+ },
+ "����": {
+  "count": 8,
+  "core_ok_rate": 0.75,
+  "auto_fill_rate": 1.0
+ },
+ "����Ϳ��": {
+  "count": 8,
+  "core_ok_rate": 1.0,
+  "auto_fill_rate": 1.0
+ },
+ "ʯ�ľ���/�ᾧ": {
+  "count": 8,
+  "core_ok_rate": 1.0,
+  "auto_fill_rate": 1.0
+ },
+ "�������": {
+  "count": 7,
+  "core_ok_rate": 0.5714,
+  "auto_fill_rate": 0.5714
+ }
+}

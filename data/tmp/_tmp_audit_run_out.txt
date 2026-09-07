@@ -1,0 +1,26 @@
+samples=3000  auto_fill_rate=0.7603
+  strict_component_and_total: 0.423
+  core_main_and_labor: 0.6727
+  total_cost: 0.7003
+  material_main: 0.769
+  labor: 0.7503
+  material_aux: 0.722
+  machinery: 0.6737
+--- by_source ---
+  market_reference                 n= 1047  core=0.668  strict=0.324
+  mep_install_profile              n=  452  core=0.557  strict=0.299
+  special_line_price               n=  283  core=0.700  strict=0.445
+  line_match                       n=  281  core=0.719  strict=0.601
+  project_material_code            n=  239  core=0.958  strict=0.653
+  line_match_weak                  n=  230  core=0.600  strict=0.422
+  metal_trim_profile               n=  171  core=0.871  strict=0.866
+  decorative_diffuser_length       n=   94  core=0.649  strict=0.479
+  residential_finish_profile       n=   54  core=0.315  strict=0.167
+  plastic_pipe_dn                  n=   42  core=0.357  strict=0.191
+  lighting_fixture_code            n=   33  core=0.636  strict=0.212
+  unresolved                       n=   29  core=0.000  strict=0.000
+  custom_door_profile              n=   12  core=0.750  strict=0.750
+  ceiling_cl_paint                 n=   11  core=0.818  strict=0.818
+  paint_process                    n=    9  core=1.000  strict=0.222
+  composite_furniture_line         n=    8  core=0.750  strict=0.750
+  custom_furniture_profile         n=    5  core=0.800  strict=0.800

@@ -13,7 +13,7 @@ from src.ingest.formula_eval import row_quantity_from_ws
 FIELD_ALIASES: Dict[str, List[str]] = {
     "seq": ["序号", "项号", "编码序号", "编号"],
     "list_code": ["项目编码", "清单编码", "清单编号"],
-    "name": ["项目名称", "分部分项名称", "分部分项", "分区分类描述", "名称", "材料名称"],
+    "name": ["项目名称", "分部分项名称", "分部分项", "分区分类描述", "名称", "材料名称", "项目", "项目内容"],
     "feature": [
         "项目特征描述",
         "项目特征",
@@ -35,6 +35,7 @@ FIELD_ALIASES: Dict[str, List[str]] = {
         "数量",
     ],
     "material_main": [
+        "主材单价",
         "材料成本单价",
         "材料计划成本单价",
         "材料费",
@@ -43,7 +44,7 @@ FIELD_ALIASES: Dict[str, List[str]] = {
     ],
     "material_loss_rate": ["主材损耗率", "损耗率"],
     "labor": ["人工成本单价", "人工费", "人工"],
-    "material_aux": ["辅材费", "辅材"],
+    "material_aux": ["辅材费", "辅材及机械费", "辅材+机械费", "辅材及机械", "辅材"],
     "machinery": ["机械费", "机械"],
     "cost_amount": ["成本合价", "材料成本总价", "人工成本总价"],
     "cost_unit_price": ["成本单价", "成本价"],
@@ -123,6 +124,11 @@ def _match_field(header: str, field: str) -> bool:
                 continue
             if a == "成本单价" and ("材料" in h or "人工" in h):
                 continue
+            if field == "unit_price" and ("构成" in h or "组成" in h):
+                continue
+            if field == "machinery" and "辅材" in h:
+                # "辅材+机械费/辅材及机械费" 合并列归辅材，不重复归机械
+                continue
             if field == "quantity" and ("规则" in h or "适用范围" in h):
                 continue
             if field == "feature" and "适用范围" in h:
@@ -188,7 +194,7 @@ def _detect_appended_cost_block(main_row: List[Any], sub_row: List[Any]) -> Dict
             h = _norm_header(v)
             if not h:
                 continue
-            if h in ("成本单价", "成本价") or (
+            if h in ("成本单价", "成本价", "单价合计") or (
                 "成本单价" in h and "综合" not in h and "分析" not in h
             ):
                 block: Dict[str, int] = {"_cost_side": 1}
@@ -278,7 +284,36 @@ def _merge_subheader(
 
     block = _detect_appended_cost_block(main_row, sub_row)
     if block:
+        cost_start = int(block.get("cost_unit_price") or 999)
+        tender_keys = (
+            "labor",
+            "material_main",
+            "machinery",
+            "material_aux",
+            "material_loss_rate",
+        )
+        # 成本区表头（辅材/机械）可能覆盖左侧「其中」列，先保留左区映射
+        for key in tender_keys:
+            idx = out.get(key)
+            if isinstance(idx, int) and idx < cost_start:
+                out[f"{key}_tender"] = idx
+                continue
+            for row_values in (main_row, sub_row):
+                found = None
+                for i, v in enumerate(row_values):
+                    if i >= cost_start:
+                        break
+                    if _match_field(v, key):
+                        found = i
+                        break
+                if found is not None:
+                    out[f"{key}_tender"] = found
+                    break
         out.update(block)
+        for key in tender_keys:
+            tkey = f"{key}_tender"
+            if tkey in out:
+                out[key] = out[tkey]
 
     return _sanitize_column_map(out)
 
@@ -328,6 +363,43 @@ def _is_rate_subheader_row(row: List[Any]) -> bool:
     return "A" in joined and "B" in joined and len(cells) <= 6
 
 
+def _build_merged_header(header_rows: List[List[Any]]) -> List[Any]:
+    """把跨多行的表头按列纵向拼接成一个虚拟表头行。
+
+    跳过纯数字（费率/编号占位）与含"="的公式说明文本（如"主材费d=e*(1+f)"），
+    避免污染列识别；同一列多行文本以空格连接。
+    """
+    ncols = max(len(r) for r in header_rows)
+    merged: List[Any] = [""] * ncols
+    for hr in header_rows:
+        for j, v in enumerate(hr):
+            if v is None or (isinstance(v, float) and pd.isna(v)):
+                continue
+            s = str(v).strip()
+            if not s:
+                continue
+            if re.fullmatch(r"[0-9.,%\-]+", s):
+                continue
+            if "=" in s:
+                continue
+            merged[j] = (str(merged[j]) + " " + s).strip()
+    return merged
+
+
+def _looks_like_data_row(row: List[Any]) -> bool:
+    """判断是否为数据行（用于停止表头向下扫描）。"""
+    if row and _parse_qty(row[0]) is not None:
+        return True
+    name_hit = any(_match_field(v, "name") for v in row[:6])
+    if not name_hit:
+        return False
+    unit_hit = any(_match_field(v, "unit") for v in row)
+    qty_hit = any(
+        (_parse_qty(v) or 0) > 0 for v in row[6:14]
+    )
+    return unit_hit or qty_hit
+
+
 def detect_sheet_layout(df: pd.DataFrame, sheet_name: str) -> Optional[SheetLayout]:
     best_score = 0
     best_row = None
@@ -350,7 +422,30 @@ def detect_sheet_layout(df: pd.DataFrame, sheet_name: str) -> Optional[SheetLayo
     sub_row: List[Any] = main_row
     merged = _merge_subheader(best_map, {}, main_row, main_row)
 
-    if best_row + 1 < len(df):
+    # 多行表头：向下扫描连续表头行，拼接后统一识别人材机/损耗等子列
+    # （典型：批量精装投标报价表 r3 一级表头 + r4 综合单价构成 + r5/r6 人工/辅材/主材明细）
+    header_rows = [main_row]
+    scan_i = best_row + 1
+    while scan_i < len(df) and scan_i <= best_row + 5:
+        cand = df.iloc[scan_i].tolist()
+        if _looks_like_data_row(cand):
+            break
+        if not any(
+            v is not None
+            and not (isinstance(v, float) and pd.isna(v))
+            and str(v).strip()
+            for v in cand
+        ):
+            break
+        header_rows.append(cand)
+        scan_i += 1
+    if len(header_rows) > 1:
+        merged_row = _build_merged_header(header_rows)
+        sub_row = merged_row
+        _, sub_map = _score_header_row(merged_row)
+        merged = _merge_subheader(best_map, sub_map, main_row, merged_row)
+        sub_row_idx = scan_i - 1
+    elif best_row + 1 < len(df):
         sub = df.iloc[best_row + 1].tolist()
         sub_row = sub
         sub_score, sub_map = _score_header_row(sub)
@@ -454,6 +549,8 @@ def is_pricing_row(
 
     if ws is not None and excel_row is not None:
         qty_ok = row_quantity_from_ws(ws, excel_row, column_map, floor_cols) is not None
+        if not qty_ok:
+            qty_ok = _row_quantity(row, column_map, floor_cols) is not None
     else:
         qty_ok = _row_quantity(row, column_map, floor_cols) is not None
 
@@ -464,6 +561,21 @@ def is_pricing_row(
     if up_i is not None and up_i < len(row):
         p = _parse_qty(row[up_i])
         price_ok = p is not None and p > 0
+
+    if not qty_ok and not price_ok:
+        for cost_key in (
+            "labor_cost",
+            "material_main_cost",
+            "material_aux_cost",
+            "machinery_cost",
+            "cost_unit_price",
+        ):
+            ci = column_map.get(cost_key)
+            if ci is None or ci >= len(row):
+                continue
+            cv = _parse_qty(row[ci])
+            if cv is not None and cv > 0:
+                return True
 
     return qty_ok or price_ok
 

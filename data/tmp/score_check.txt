@@ -1,0 +1,214 @@
+[7729] name='吸音板吊顶' unit='㎡' city='中山' tier='mid'
+    feature='[JJ18] 1.沥青防水涂料2厚\n2.C50轻钢龙骨沿板底及梁表面@600×600纵横铺设固定\n3.玻璃棉毡50厚贴于板底及梁表面，面覆盖玻璃纤维网\n4.穿孔水泥纤维增强板覆面，面涂A级无机涂料\n5.使用部位：空调机房、通风机房、制冷机、水泵房、发电机房等内墙面。\n其他详图纸'
+    ACT m=0.0 l=125.0 a=0.0 mech=0.0 total=125.0
+      15.5 acoustic_panel_ceiling                 m=0 l=125 a=0 mech=0
+      15.3 acoustic_panel                         m=165 l=80 a=20 mech=2
+[11334] name='木纹蜂窝铝板吊顶' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.轻钢龙骨+阻燃板基层+木纹蜂窝铝板+预留成品检修口（含检修口采购安装）\n2.规格：1200*2400mm，厚度4mm\n3.综合考虑灯具开孔，不再另计，其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=480.3 l=91.94 a=0.0 mech=3.73 total=575.97
+      15.8 ceiling_aluminum_honeycomb             m=520 l=91.94 a=0 mech=3.73
+      15.4 honeycomb_aluminum                     m=510 l=150 a=30 mech=10
+[12425] name='木纹蜂窝铝板吊顶' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.轻钢龙骨+阻燃板基层+木纹蜂窝铝板+预留成品检修口（含检修口采购安装） \n2.规格：1200*2400mm，厚度4mm\n3.综合考虑灯具开孔，不再另计，其他详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=560.3 l=91.94 a=0.0 mech=3.73 total=655.97
+      15.8 ceiling_aluminum_honeycomb             m=520 l=91.94 a=0 mech=3.73
+      15.4 honeycomb_aluminum                     m=510 l=150 a=30 mech=10
+[6622] name='修补筒灯孔' unit='个' city='' tier='mid'
+    feature='[2.1-装饰工程] 1.轻钢龙骨加固\n2.石膏板修补\n3.面层2遍腻子3遍乳胶漆'
+    ACT m=1.0 l=11.487012987013 a=0.0 mech=0.5 total=12.987012987013
+      15.5 patch_downlight_hole                   m=1 l=11.49 a=0 mech=0
+      15.2 sz_downlight                           m=70 l=20 a=6 mech=0
+      15.2 downlight                              m=98 l=28 a=8 mech=0
+      15.2 embedded_downlight_review              m=85 l=18 a=1.5 mech=0
+[7896] name='原顶面深色无机涂料' unit='㎡' city='深圳' tier='mid'
+    feature='[装修工程清单] 1、PT-02原建筑混凝土楼板底、梁喷涂涂料\n2、包含各种管道'
+    ACT m=4.0 l=5.0 a=0.5 mech=1.5 total=11.04
+      31.9 paint_ceiling_dark_inorganic           m=4.5 l=5 a=0 mech=1.5
+      15.4 paint_inorganic_1b2t                   m=5.5 l=19.5 a=6 mech=0.2
+[7965] name='原顶面深色无机涂料' unit='㎡' city='深圳' tier='mid'
+    feature='[装修工程清单] 1、PT-02原建筑混凝土楼板底、梁喷涂涂料\n2、包含各种管道'
+    ACT m=4.95 l=4.69 a=2.47 mech=0.25 total=12.3648
+      31.9 paint_ceiling_dark_inorganic           m=4.5 l=5 a=0 mech=1.5
+      15.4 paint_inorganic_1b2t                   m=5.5 l=19.5 a=6 mech=0.2
+[13009] name='原天棚喷深色乳胶漆\n(含墙体上部)' unit='㎡' city='深圳' tier='mid'
+    feature='[1207清单] 1、面层：深色涂料两遍\n2、包含各种管道'
+    ACT m=8.0 l=10.0 a=0.5 mech=1.5 total=20.16
+      31.8 paint_ceiling_dark_latex               m=8 l=10 a=0 mech=1.5
+[13130] name='原天棚喷深色乳胶漆\n(含墙体上部)' unit='㎡' city='深圳' tier='mid'
+    feature='[807清单] 1、面层：深色涂料两遍\n2、包含各种管道'
+    ACT m=8.0 l=10.0 a=0.5 mech=1.5 total=20.16
+      31.8 paint_ceiling_dark_latex               m=8 l=10 a=0 mech=1.5
+[11453] name='原饰面修复（饰面）' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.原饰面修复（包括但不限于铝板、铝塑板等）\n2.包括：破损处拆除、更换新材料\n3.其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=303.38 l=83.0 a=0.0 mech=0.0 total=386.38
+      15.5 original_finish_repair                 m=303.38 l=83 a=0 mech=0
+[12504] name='原饰面修复（饰面）' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.原饰面修复（包括但不限于铝板、铝塑板等）\n2.包括：破损处拆除、更换新材料\n3.其他详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=303.38 l=83.0 a=0.0 mech=0.0 total=386.38
+      15.5 original_finish_repair                 m=303.38 l=83 a=0 mech=0
+[13653] name='墙面艺术涂料PT-02' unit='㎡' city='深圳' tier='mid'
+    feature='[不含空调消防清单] 1、面层：PT-02艺术涂料一底二面'
+    ACT m=275.0 l=35.0 a=0.0 mech=0.0 total=318.25
+      15.9 art_coating_wall_pt02                  m=275 l=35 a=0 mech=0
+      15.2 paint_ceiling                          m=30 l=37 a=5 mech=0.8
+[13231] name='原玻璃双开门拆除后安装' unit='樘' city='深圳' tier='mid'
+    feature='[不含空调消防清单] 1、原玻璃双开门拆除后安装\n2、保护性拆除'
+    ACT m=0.0 l=600.0 a=0.0 mech=0.0 total=600.0
+      31.2 demolition_glass_door_reinstall        m=0 l=600 a=0 mech=0
+      15.2 demolition_generic                     m=0 l=15 a=1 mech=1
+[11362] name='电动铝合金卷帘门' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.门代号及洞口尺寸:电动铝合金卷帘门，详设计图纸\n2.门材质:铝合金卷帘门，采用铝合金边框，顶部型材，高度详设计图纸\n3.含电机、接线、控制器及接线综合考虑\n4.其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=580.0 l=0.0 a=0.0 mech=0.0 total=580.0
+      31.4 roller_shutter_electric                m=600 l=0 a=0 mech=0
+      15.2 curtain_fabric                         m=55 l=25 a=8 mech=0
+[11364] name='手动卷帘门' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.水晶卷帘门手动开启\n2.包含门框、门扇、五金、标识、轨道等，综合考虑侧拉\n3.其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=350.0 l=0.0 a=0.0 mech=0.0 total=350.0
+      15.5 roller_shutter_manual                  m=360 l=0 a=0 mech=0
+      15.2 curtain_fabric                         m=55 l=25 a=8 mech=0
+[11367] name='快速卷帘门' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.快速卷帘门\n2.包含电机、门框、门扇、五金、标识、轨道等\n3.含电机、接线、控制器及接线综合考虑\n4.其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=1580.0 l=0.0 a=0.0 mech=0.0 total=1580.0
+      15.5 roller_shutter_fast                    m=1580 l=0 a=0 mech=0
+      15.2 curtain_fabric                         m=55 l=25 a=8 mech=0
+[11369] name='金属快速提升门' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.金属快速提升门\n2.包含亮面铝塑板边框、镀锌轨道、观察窗、合页、中置梁、工业扭簧及提升门轨道与中置梁加固，综合考虑其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范3.含电机、接线、控制器及接线综合考虑'
+    ACT m=2300.0 l=0.0 a=0.0 mech=0.0 total=2300.0
+      15.7 metal_fast_lift_door                   m=2300 l=0 a=0 mech=0
+[11370] name='布制快速提升门' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.布制快速提升门\n2.包含亮面铝塑板边框、镀锌轨道、观察窗、合页、中置梁、工业扭簧及提升门轨道与中置梁加固，综合考虑其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范3.含电机、接线、控制器及接线综合考虑'
+    ACT m=1700.0 l=0.0 a=0.0 mech=0.0 total=1700.0
+      15.7 fabric_fast_lift_door                  m=1700 l=0 a=0 mech=0
+[11371] name='明格提升门' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.明格提升门\n2.包含亮面铝塑板边框、镀锌轨道、观察窗、合页、中置梁、工业扭簧及提升门轨道与中置梁加固，综合考虑其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范3.含电机、接线、控制器及接线综合考虑'
+    ACT m=1480.0 l=0.0 a=0.0 mech=0.0 total=1480.0
+      15.5 lattice_lift_door                      m=1480 l=0 a=0 mech=0
+[11365] name='钢制防火卷帘门' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.钢制防火卷帘门\n2.耐火时间≥3小时\n3.包含门框、门扇、五金、标识、轨道、电机、接线、控制器及接线等\n4.其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=420.0 l=0.0 a=0.0 mech=0.0 total=420.0
+      15.7 fire_roller_shutter_steel              m=420 l=0 a=0 mech=0
+      15.4 fire_shutter                           m=400 l=130 a=20 mech=5
+      15.2 curtain_fabric                         m=55 l=25 a=8 mech=0
+[11366] name='无机布特级防火卷帘门' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.无机布特级防火卷帘门\n2.耐火时间≥4小时\n3.包含门框、门扇、五金、标识、轨道、电机、接线、控制器及接线等\n4.其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=420.0 l=0.0 a=0.0 mech=0.0 total=420.0
+      16.0 fire_roller_shutter_inorganic          m=420 l=0 a=0 mech=0
+      15.4 fire_shutter                           m=400 l=130 a=20 mech=5
+      15.2 curtain_fabric                         m=55 l=25 a=8 mech=0
+[11391] name='电动挡烟垂壁' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.电动挡烟垂壁\n2.防火布厚度综合考虑，包含配重底重、电机及电机固定，其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=285.89 l=111.63 a=0.0 mech=0.29 total=397.81
+      15.6 smoke_barrier_electric_plain           m=285.89 l=111.63 a=0 mech=0.29
+[11392] name='挡烟垂壁（防火布）' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.挡烟垂壁\n2.（防火布）及厚度综合考虑，其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=167.2 l=111.63 a=0.0 mech=0.29 total=279.12
+      31.2 smoke_barrier_fireproof_cloth          m=182 l=111.63 a=0 mech=0.29
+      15.3 smoke_barrier_electric_cloth           m=325.89 l=161.63 a=0 mech=0.29
+[11393] name='挡烟垂壁（防火玻璃）' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.挡烟垂壁\n2.（防火玻璃）厚度综合考虑，其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=303.29 l=111.63 a=0.0 mech=0.29 total=415.21000000000004
+      31.4 smoke_barrier_fireproof_glass          m=320 l=111.63 a=0 mech=0.29
+      15.2 glass_mirror                           m=165 l=42 a=12 mech=2
+[12475] name='电动挡烟垂壁（防火布）' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.电动挡烟垂壁 \n2.防火布厚度综合考虑，包含配重底重、电机及电机固定，其他详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=325.89 l=161.63 a=0.0 mech=0.29 total=487.81
+      31.4 smoke_barrier_electric_cloth           m=325.89 l=161.63 a=0 mech=0.29
+[12476] name='挡烟垂壁（防火玻璃）' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.挡烟垂壁 \n2.（防火玻璃）厚度综合考虑，其他详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=333.29 l=111.63 a=0.0 mech=0.29 total=445.21000000000004
+      31.4 smoke_barrier_fireproof_glass          m=320 l=111.63 a=0 mech=0.29
+      15.2 glass_mirror                           m=165 l=42 a=12 mech=2
+[12477] name='挡烟垂壁（防火布）' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.挡烟垂壁 \n2.防火布厚度综合考虑，其他详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=197.2 l=111.63 a=0.0 mech=0.29 total=309.12
+      31.2 smoke_barrier_fireproof_cloth          m=182 l=111.63 a=0 mech=0.29
+      15.3 smoke_barrier_electric_cloth           m=325.89 l=161.63 a=0 mech=0.29
+[13008] name='地面地毯' unit='㎡' city='深圳' tier='mid'
+    feature='[1207清单] 1、规格尺寸：500*500\n2、地毯专用胶，厚度包干，后期不因厚度调整价格；'
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+      15.4 carpet_floor_plain                     m=52.5 l=5 a=5 mech=0
+      15.2 demolition_floor_carpet                m=0 l=5 a=0 mech=0.5
+      15.2 carpet_floor                           m=95 l=30 a=10 mech=1
+[13233] name='地面地毯' unit='㎡' city='深圳' tier='mid'
+    feature='[不含空调消防清单] 1、规格尺寸：500*500\n2、地毯专用胶，厚度包干，后期不因厚度调整价格；'
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+      15.4 carpet_floor_plain                     m=52.5 l=5 a=5 mech=0
+      15.2 demolition_floor_carpet                m=0 l=5 a=0 mech=0.5
+      15.2 carpet_floor                           m=95 l=30 a=10 mech=1
+[13752] name='地面地毯' unit='㎡' city='深圳' tier='mid'
+    feature='[不含空调消防清单] 1、规格尺寸：500*500\n2、地毯专用胶，厚度包干，后期不因厚度调整价格；'
+    ACT m=45.0 l=5.0 a=5.0 mech=0.0 total=56.35
+      15.4 carpet_floor_plain                     m=52.5 l=5 a=5 mech=0
+      15.2 demolition_floor_carpet                m=0 l=5 a=0 mech=0.5
+      15.2 carpet_floor                           m=95 l=30 a=10 mech=1
+[8147] name='复合地板楼面F6' unit='㎡' city='' tier='mid'
+    feature='[65综合办公楼] 1.10-18厚复合木地板，地板胶粘剂粘铺，背面满刷木材防腐剂\n2.32~40厚M20水泥砂浆找平层\n3.素水泥扫浆或界面剂一道'
+    ACT m=65.0 l=18.0 a=3.5 mech=0.0 total=89.75
+      31.0 compound_floor_install                 m=65 l=18 a=3.5 mech=0
+      15.4 wood_floor_install                     m=285 l=36 a=18 mech=2
+[12820] name='砌块墙' unit='m3' city='深圳' tier='mid'
+    feature='[2层公区] 1.材质：轻质砌块砖；\n2.厚度：综合考虑；\n3.粘结材料：水泥砂浆；\n4.含砖砌所需拉结筋、过梁、门柱等费用\n5.含脚手架或梯子等高空作业措施费。'
+    ACT m=425.0 l=275.0 a=90.0 mech=0.0 total=794.25
+      40.3 block_wall_masonry_sz                  m=425 l=275 a=90 mech=0
+      15.3 block_wall_masonry                     m=120 l=62 a=0 mech=2
+[7566] name='CT-09步级拉槽' unit='㎡' city='中山' tier='mid'
+    feature='[JJ06] 规格：800*800'
+    ACT m=45.8 l=0.0 a=0.0 mech=0.0 total=45.8
+      31.3 stone_step_groove                      m=45.8 l=0 a=0 mech=0
+      15.5 ct_stair                               m=60 l=0 a=5 mech=0
+[13046] name='探测器拆除、安装' unit='套' city='深圳' tier='mid'
+    feature='[1207空调消防清单] 1、含配合装修'
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+      15.5 demolition_detector_reinstall          m=0 l=187.57 a=0 mech=3.83
+      15.2 demolition_generic                     m=0 l=15 a=1 mech=1
+[11447] name='幕墙磨砂膜' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.幕墙磨砂膜（厚度综合考虑）\n2.其他:详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=57.69 l=13.34 a=0.0 mech=0.0 total=71.03
+      15.5 frosted_film_wall                      m=57.69 l=13.34 a=0 mech=0
+      15.3 demolition_floor_frosted_film          m=0 l=7 a=0 mech=0
+      15.3 glass_frosted_film                     m=50 l=6 a=5 mech=1
+[12482] name='外立面铝塑板（单块整板面积＞4.5m2）' unit='m2' city='' tier='mid'
+    feature='[2.1装饰工程] 1.外立面铝塑板(4mm) ，单块整板面积＞4.5m2\n2.包括：面层、基层板、方管、连接件、防火封堵、密封胶、辅材、折边等费用 \n3.其他详见SI手册、品牌表及标准节点等，满足施工要求及国家规范'
+    ACT m=274.1 l=97.7 a=0.0 mech=0.0 total=371.8
+      15.6 aluminum_panel_facade                  m=290 l=92 a=0 mech=0
+      15.3 aluminum_plastic_panel                 m=240 l=138 a=30 mech=5
+[6608] name='天花反支撑' unit='m2' city='' tier='mid'
+    feature=''
+    ACT m=28.03 l=6.20203463203462 a=0.0 mech=0.4 total=34.63203463203462
+      15.3 ceiling_bracing                        m=0 l=30 a=5 mech=3
+[8085] name='智能光电烟感探测器' unit='个' city='深圳' tier='mid'
+    feature='[消防工程] 1.名称:智能烟感探测器（原设备保护性拆除，移位安装）\n2.规格及型号:原有系统设备型号\n3.综合考虑超高与非超高部分\n4.其他:满足设计图纸、相关规范、招标文件及其技术要求'
+    ACT m=40.0 l=26.400000000000002 a=12.0 mech=1.6 total=80.0
+[6950] name='排气扇管道' unit='m' city='' tier='mid'
+    feature='[2.2-电气工程] 1.支、吊架制作安装\n 2.镀锌铁皮管道制作、安装'
+    ACT m=44.89 l=58.7599544315333 a=0.0 mech=8.51 total=112.15995443153331
+[8088] name='消火栓启泵按钮' unit='个' city='深圳' tier='mid'
+    feature='[消防工程] 1.名称:消火栓按钮\n2.规格及型号:原有系统设备型号\n3.综合考虑超高与非超高部分\n4.其他:满足设计图纸、相关规范、招标文件及其技术要求'
+    ACT m=55.0 l=36.300000000000004 a=16.5 mech=2.2 total=110.0
+[7143] name='提供及安装短路隔离器\n1.含本体、管线、安装\n2.底盒安装' unit='个' city='' tier='mid'
+    feature='[2.6-消防工程] 含管、线及辅料'
+    ACT m=222.19 l=27.6922510822511 a=0.0 mech=1.2 total=251.08225108225108
+[6993] name='背景音乐扬声器点位' unit='个' city='' tier='mid'
+    feature='[2.2-电气工程] 1.含JDG20线管、辅材安装\n 2.底盒安装'
+    ACT m=268.48 l=95.1363636363636 a=0.0 mech=0.02 total=363.6363636363636
+[8083] name='水灭火控制装置调试' unit='点' city='深圳' tier='mid'
+    feature='[消防工程] 1.名称:自动喷水灭火系统调试\n2.名称:消火栓系统调试\n3.其他:满足设计图纸、相关规范、招标文件及其技术要求'
+    ACT m=40.0 l=38.0 a=20.0 mech=2.0 total=100.0
+[8085] name='智能光电烟感探测器' unit='个' city='深圳' tier='mid'
+    feature='[消防工程] 1.名称:智能烟感探测器（原设备保护性拆除，移位安装）\n2.规格及型号:原有系统设备型号\n3.综合考虑超高与非超高部分\n4.其他:满足设计图纸、相关规范、招标文件及其技术要求'
+    ACT m=40.0 l=26.400000000000002 a=12.0 mech=1.6 total=80.0
+[7153] name='5kgABC干粉灭火器（一组两只，含金属箱体）' unit='组' city='' tier='mid'
+    feature=''
+    ACT m=0.0 l=173.160173160173 a=0.0 mech=0.0 total=173.160173160173
+[7125] name='化粪池' unit='m3' city='' tier='mid'
+    feature='[2.5-室外工程] 1.地面开挖及回填等工作\n2.钢筋混凝土化粪池制作（含模板）\n3.内外防水处理'
+    ACT m=3200.0 l=661.103896103896 a=0.0 mech=35.0 total=3896.1038961038957
+[6952] name='楼梯间声控吸顶灯' unit='套' city='' tier='mid'
+    feature='[2.2-电气工程] 1.含本体及辅料、管线、安装\n 2.底盒、金属软管安装\n 3.支、吊架制作安装\n 4.18W'
+    ACT m=90.8 l=71.1138961038961 a=0.0 mech=2.19 total=164.1038961038961
+[6959] name='条形灯安装含管线（主材甲供）' unit='m' city='' tier='mid'
+    feature='[2.2-电气工程] 1.含辅料、管线、安装，不含灯具主材\n2.底盒、金属软管安装\n3.支、吊架制作安装'
+    ACT m=0.0 l=164.97 a=0.0 mech=4.76 total=169.73
+[7127] name='200mm厚混凝土地面' unit='m2' city='' tier='mid'
+    feature='[2.5-室外工程] 1.地面清理、场地平整\n2.200mmC20混凝土地面\n3.满铺钢筋网片φ6，横纵向间距200mm\n4.面层压光，防滑处理'
+    ACT m=40.0 l=114.502164502164 a=0.0 mech=10.0 total=164.50216450216402

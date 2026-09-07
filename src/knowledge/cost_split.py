@@ -20,9 +20,9 @@ def _component_total(comps: Mapping[str, Any]) -> float:
 
 def share_map(template: dict) -> dict:
     return {
-        "material_main": template.get("main", template.get("material_main", 0.4)),
-        "material_aux": template.get("aux", template.get("material_aux", 0.2)),
-        "labor": template.get("labor", 0.36),
+        "material_main": template.get("main", template.get("material_main", 0.55)),
+        "material_aux": template.get("aux", template.get("material_aux", 0.08)),
+        "labor": template.get("labor", 0.32),
         "machinery": template.get("machinery", template.get("machinery", 0.02)),
     }
 

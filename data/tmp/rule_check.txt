@@ -1,0 +1,962 @@
+[6491] 原有地毯或胶地板地面拆除 | unit=m2 | /mid -> demolition_floor_carpet 判m=0.0 l=5.0 a=0.0 mech=0.5
+    ACT m=0.0 l=4.97480519480519 a=0.0 mech=0.22 total=5.194805194805189
+[6515] 拆除卷帘门 | unit=m2 | /mid -> demolition_roller_shutter 判m=0.0 l=12.0 a=0.0 mech=0.5
+    ACT m=0.0 l=12.4351082251082 a=0.0 mech=0.55 total=12.9851082251082
+[6518] 幕墙钢框保护利旧及拆除幕墙玻璃 | unit=m2 | /mid -> demolition_curtain_wall_steel_reuse 判m=0.0 l=42.29 a=0.0 mech=1.0
+    ACT m=0.0 l=42.2870995670996 a=0.0 mech=1.0 total=43.2870995670996
+[6570] 地面铺贴500*500地毯 | unit=m2 | /mid -> carpet_floor_block 判m=85.0 l=35.0 a=8.0 mech=0.5
+    ACT m=80.0 l=39.692121212121 a=0.0 mech=1.52 total=121.212121212121
+[6571] 楼梯地毯 | unit=m2 | /mid -> carpet_stair 判m=60.0 l=56.99 a=0.0 mech=4.22
+    ACT m=60.0 l=56.992121212121 a=0.0 mech=4.22 total=121.21212121212099
+[6590] 胶地板地面 | unit=m2 | /mid -> rubber_floor_install 判m=60.0 l=25.74 a=0.0 mech=0.84
+    ACT m=60.0 l=25.7400865800866 a=0.0 mech=0.84 total=86.5800865800866
+[6622] 修补筒灯孔 | unit=个 | /mid -> patch_downlight_hole 判m=1.0 l=11.49 a=0.0 mech=0.0
+    ACT m=1.0 l=11.487012987013 a=0.0 mech=0.5 total=12.987012987013
+[6640] 墙体与玻璃幕墙交界处封铝塑板 | unit=m2 | /mid -> aluminum_plastic_seal 判m=210.0 l=119.0 a=20.0 mech=2.0
+    ACT m=210.0 l=118.854329004329 a=0.0 mech=0.15 total=329.00432900432895
+[6661] 快速卷帘门3m*3m
+(1)自动开启 | unit=樘 | /mid -> roller_shutter_fast_unit 判m=20000.0 l=1478.41 a=0.0 mech=23.75
+    ACT m=20000.0 l=1478.4145021645 a=0.0 mech=23.75 total=21502.1645021645
+[6662] 铝合金卷帘门
+(1)按钮 | unit=m2 | /mid -> roller_shutter_electric 判m=600.0 l=0.0 a=0.0 mech=0.0
+    ACT m=600.0 l=345.750952380952 a=0.0 mech=6.63 total=952.380952380952
+[6685] 原有卷帘门更换电机 | unit=套 | /mid -> roller_shutter_motor_replace 判m=1000.0 l=854.76 a=0.0 mech=50.0
+    ACT m=1000.0 l=854.7619047619 a=0.0 mech=50.0 total=1904.7619047619
+[6687] 更换电机的卷帘门拆除、安装（不含主材） | unit=套 | /mid -> demolition_roller_shutter_motor_reinstall 判m=0.0 l=239.74 a=0.0 mech=20.0
+    ACT m=0.0 l=239.74025974026 a=0.0 mech=20.0 total=259.74025974026
+[6688] 原有卷帘门更换铝合金片 | unit=m2 | /mid -> roller_shutter_slat_replace 判m=150.0 l=89.94 a=0.0 mech=8.98
+    ACT m=150.0 l=89.937748917749 a=0.0 mech=8.98 total=248.91774891774898
+[6706] 白色铝塑板窗台板 | unit=m2 | /mid -> aluminum_plastic_panel 判m=240.0 l=138.0 a=30.0 mech=5.0
+    ACT m=175.0 l=222.408398268398 a=0.0 mech=0.86 total=398.268398268398
+[6985] 卷帘门箱点 | unit=个 | /mid -> NO MATCH
+    ACT m=185.23 l=73.8560606060606 a=0.0 mech=1.52 total=260.60606060606057
+[7065] 外幕墙铝塑板雨棚 | unit=m2 | /mid -> aluminum_canopy 判m=220.0 l=65.0 a=25.0 mech=3.0
+    ACT m=220.0 l=116.794502164502 a=0.0 mech=5.37 total=342.164502164502
+[7067] 外墙铝塑板，含基层处理 | unit=m2 | /mid -> aluminum_plastic_panel 判m=240.0 l=138.0 a=30.0 mech=5.0
+    ACT m=240.0 l=138.268398268398 a=0.0 mech=20.0 total=398.26839826839796
+[7069] 外墙铝板（蓝色），含基层处理 | unit=m2 | /mid -> aluminum_canopy 判m=220.0 l=65.0 a=25.0 mech=3.0
+    ACT m=500.0 l=103.376623376623 a=0.0 mech=20.0 total=623.376623376623
+[7070] 外墙铝塑板，含基层处理 | unit=m2 | /mid -> aluminum_plastic_panel 判m=240.0 l=138.0 a=30.0 mech=5.0
+    ACT m=60.0 l=76.4675324675325 a=0.0 mech=12.0 total=148.4675324675325
+[7074] 木纹贴皮门头： 大门门头内框 | unit=㎡ | /mid -> wood_grain_veneer 判m=500.0 l=277.0 a=30.0 mech=5.0
+    ACT m=500.0 l=277.060606060606 a=0.0 mech=29.0 total=806.060606060606
+[7075] 木纹贴皮门头： 大门门头内框 | unit=㎡ | /mid -> wood_grain_veneer 判m=500.0 l=277.0 a=30.0 mech=5.0
+    ACT m=500.0 l=236.367965367965 a=0.0 mech=29.0 total=765.367965367965
+[7094] 中文标识内嵌正发光 | unit=m2 | /mid -> logo_sign 判m=650.0 l=180.0 a=45.0 mech=2.0
+    ACT m=1180.0 l=259.642920186609 a=0.0 mech=32.0 total=1471.642920186609
+[7135] 室外独立立招 定制铝塑板及方钢龙骨 | unit=m2 | /mid -> aluminum_plastic_panel 判m=240.0 l=138.0 a=30.0 mech=5.0
+    ACT m=310.0 l=82.4683982683982 a=0.0 mech=5.8 total=398.26839826839824
+[7222] 原有空调拆除 | unit=套 | /mid -> demolition_ac_reinstall 判m=0.0 l=287.18 a=0.0 mech=5.86
+    ACT m=0.0 l=287.18 a=0.0 mech=5.86 total=293.04
+[7566] CT-09步级拉槽 | unit=㎡ | 中山/mid -> stone_step_groove 判m=45.8 l=0.0 a=0.0 mech=0.0
+    ACT m=45.8 l=0.0 a=0.0 mech=0.0 total=45.8
+[7658] 玻璃纤维网 | unit=m² | 中山/mid -> glass_fiber_mesh_insulation 判m=1.5 l=0.0 a=0.0 mech=0.0
+    ACT m=1.5 l=0.0 a=0.0 mech=0.0 total=1.5
+[7693] 地板胶楼面 | unit=㎡ | 中山/mid -> linoleum_floor 判m=0.0 l=23.0 a=0.0 mech=0.0
+    ACT m=0.0 l=23.0 a=0.0 mech=0.0 total=23.0
+[7696] CFC保温 | unit=㎡ | 中山/mid -> cfc_insulation 判m=0.0 l=28.0 a=0.0 mech=0.0
+    ACT m=0.0 l=28.0 a=0.0 mech=0.0 total=28.0
+[7710] 墙面块料 | unit=㎡ | 中山/mid -> wall_face_block 判m=0.0 l=45.0 a=0.0 mech=0.0
+    ACT m=0.0 l=45.0 a=0.0 mech=0.0 total=45.0
+[7717] 内墙耐水腻子2~3遍 | unit=㎡ | 中山/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.0 l=12.0 a=0.0 mech=0.0 total=12.0
+[7718] 天棚耐水腻子2~3遍 | unit=㎡ | 中山/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.0 l=12.0 a=0.0 mech=0.0 total=12.0
+[7729] 吸音板吊顶 | unit=㎡ | 中山/mid -> acoustic_panel_ceiling 判m=0.0 l=125.0 a=0.0 mech=0.0
+    ACT m=0.0 l=125.0 a=0.0 mech=0.0 total=125.0
+[7730] 吸声内墙 | unit=㎡ | 中山/mid -> acoustic_absorbing_wall 判m=0.0 l=90.0 a=0.0 mech=0.0
+    ACT m=0.0 l=90.0 a=0.0 mech=0.0 total=90.0
+[7736] 吊顶反支撑 | unit=㎡ | 中山/mid -> ceiling_bracing 判m=0.0 l=30.0 a=5.0 mech=3.0
+    ACT m=0.0 l=10.0 a=0.0 mech=0.0 total=10.0
+[7776] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=13.5 a=0.0 mech=0.0 total=17.0
+[7782] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=13.5 a=0.0 mech=0.0 total=17.0
+[7792] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7799] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7814] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7820] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7831] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7837] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7845] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7853] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7861] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7865] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7877] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7881] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7896] 原顶面深色无机涂料 | unit=㎡ | 深圳/mid -> paint_ceiling_dark_inorganic 判m=4.5 l=5.0 a=0.0 mech=1.5
+    ACT m=4.0 l=5.0 a=0.5 mech=1.5 total=11.04
+[7899] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7906] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7931] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7937] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7946] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7953] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7965] 原顶面深色无机涂料 | unit=㎡ | 深圳/mid -> paint_ceiling_dark_inorganic 判m=4.5 l=5.0 a=0.0 mech=1.5
+    ACT m=4.95 l=4.69 a=2.47 mech=0.25 total=12.3648
+[7967] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7977] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7984] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7993] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[7997] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[8006] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[8011] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[8022] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[8030] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=0.95 l=11.049999999999999 a=6.66 mech=0.38 total=19.04
+[8075] 水喷淋(雾)喷头 | unit=个 | 深圳/mid -> fire_sprinkler_head 判m=65.0 l=42.0 a=5.0 mech=0.0
+    ACT m=77.5 l=51.15 a=23.25 mech=3.1 total=155.0
+[8076] 水喷淋(雾)喷头 | unit=个 | 深圳/mid -> fire_sprinkler_head 判m=65.0 l=42.0 a=5.0 mech=0.0
+    ACT m=65.0 l=42.9 a=19.5 mech=2.6 total=130.0
+[8084] 智能光电烟感探测器 | unit=个 | 深圳/mid -> smoke_detector_sz 判m=60.0 l=39.6 a=18.0 mech=2.4
+    ACT m=60.0 l=39.6 a=18.0 mech=2.4 total=120.0
+[8147] 复合地板楼面F6 | unit=㎡ | /mid -> compound_floor_install 判m=65.0 l=18.0 a=3.5 mech=0.0
+    ACT m=65.0 l=18.0 a=3.5 mech=0.0 total=89.75
+[8151] PVC地板F12（卷材/方块地毯） | unit=㎡ | /mid -> carpet_floor_block 判m=85.0 l=35.0 a=8.0 mech=0.5
+    ACT m=33.0 l=40.0 a=28.74 mech=0.0 total=103.39
+[8170] 壁纸（织物）墙面N8 | unit=㎡ | /mid -> wallpaper 判m=5.0 l=20.0 a=2.0 mech=1.0
+    ACT m=5.0 l=20.0 a=5.975 mech=0.0 total=31.475
+[8188] 涂料顶棚D1 | unit=㎡ | /mid -> paint_ceiling_d1_review 判m=5.0 l=20.0 a=5.975 mech=0.0
+    ACT m=5.0 l=20.0 a=5.975 mech=0.0 total=31.225
+[8189] 防霉无机涂料顶棚D2 | unit=㎡ | /mid -> paint_ceiling_d2_mildew 判m=5.0 l=20.0 a=5.975 mech=0.0
+    ACT m=5.0 l=20.0 a=5.975 mech=0.0 total=31.225
+[8204] 玻璃挡烟垂壁 | unit=m | /mid -> glass_smoke_barrier 判m=193.6 l=55.0 a=30.6 mech=0.0
+    ACT m=193.6 l=55.0 a=30.6 mech=0.0 total=288.88
+[8240] 淋浴坐凳 | unit=套 | /mid -> grab_bar 判m=85.0 l=25.0 a=5.0 mech=0.0
+    ACT m=85.0 l=25.0 a=5.0 mech=0.0 total=116.7
+[8267] 顶棚抹灰面油漆D1 | unit=㎡ | /mid -> paint_ceiling_d1_plaster 判m=4.35 l=20.0 a=5.975 mech=0.0
+    ACT m=4.35 l=20.0 a=5.975 mech=0.0 total=30.5425
+[8274] 石膏装饰线条≥100mm | unit=m | /mid -> gypsum_decor_line 判m=7.2 l=23.0 a=1.57 mech=0.0
+    ACT m=7.2 l=23.0 a=1.5675 mech=0.0 total=31.7675
+[8317] CT-02米白色仿大理石岩板（岩板暗门） | unit=m2 | 深圳/mid -> slate_secret_door_ct02 判m=180.0 l=210.0 a=353.67 mech=0.0
+    ACT m=180.0 l=210.0 a=353.67443032869534 mech=0.0 total=772.4744303286953
+[8331] 隐藏式挡烟垂壁天花 | unit=m2 | 深圳/mid -> smoke_barrier 判m=185.0 l=95.0 a=25.0 mech=2.0
+    ACT m=190.0 l=85.0 a=15.0 mech=0.0 total=291.9
+[8381] ST-02米色大理石（石材暗门） | unit=m2 | 深圳/mid -> marble_secret_door_st02 判m=606.87 l=576.53 a=303.43 mech=30.34
+    ACT m=950.0 l=185.0 a=353.67443032869534 mech=0.0 total=1517.1744303286953
+[8395] 隐藏式挡烟垂壁天花 | unit=m2 | 深圳/mid -> smoke_barrier 判m=185.0 l=95.0 a=25.0 mech=2.0
+    ACT m=116.76 l=110.92 a=58.38 mech=5.84 total=291.9
+[8439] PT-01无机涂料(燃烧性能等级A级) | unit=m2 | 深圳/mid -> paint_inorganic_1b2t 判m=5.5 l=19.5 a=6.0 mech=0.2
+    ACT m=5.5 l=19.5 a=5.98 mech=0.8 total=31.89
+[8445] ST-02米色大理石（石材暗门） | unit=m2 | 深圳/mid -> marble_secret_door_st02 判m=606.87 l=576.53 a=303.43 mech=30.34
+    ACT m=212.4 l=409.64 a=879.96 mech=15.17 total=1517.1744303286953
+[8447] CT-02米白色仿大理石岩板（岩板暗门） | unit=m2 | 深圳/mid -> slate_secret_door_ct02 判m=180.0 l=210.0 a=353.67 mech=0.0
+    ACT m=108.15 l=208.56 a=448.04 mech=7.72 total=772.4744303286953
+[8532] CT-02米白色仿大理石岩板（岩板暗门） | unit=m2 | 深圳/mid -> slate_secret_door_ct02 判m=180.0 l=210.0 a=353.67 mech=0.0
+    ACT m=108.15 l=208.56 a=448.04 mech=7.72 total=772.4744303286953
+[8546] 隐藏式挡烟垂壁天花 | unit=m2 | 深圳/mid -> smoke_barrier 判m=185.0 l=95.0 a=25.0 mech=2.0
+    ACT m=116.76 l=110.92 a=58.38 mech=5.84 total=291.9
+[8595] ST-02米色大理石（石材暗门） | unit=m2 | 深圳/mid -> marble_secret_door_st02 判m=606.87 l=576.53 a=303.43 mech=30.34
+    ACT m=212.4 l=409.64 a=879.96 mech=15.17 total=1517.1744303286953
+[8609] 隐藏式挡烟垂壁天花 | unit=m2 | 深圳/mid -> smoke_barrier 判m=185.0 l=95.0 a=25.0 mech=2.0
+    ACT m=116.76 l=110.92 a=58.38 mech=5.84 total=291.9
+[8656] PT-01无机涂料(燃烧性能等级A级) | unit=m2 | 深圳/mid -> paint_inorganic_1b2t 判m=5.5 l=19.5 a=6.0 mech=0.2
+    ACT m=12.76 l=12.110000000000001 a=6.38 mech=0.64 total=31.89
+[8657] PT-01无机涂料(燃烧性能等级A级) | unit=m2 | 深圳/mid -> paint_inorganic_1b2t 判m=5.5 l=19.5 a=6.0 mech=0.2
+    ACT m=12.76 l=12.110000000000001 a=6.38 mech=0.64 total=31.89
+[8665] ST-02米色大理石（石材暗门） | unit=m2 | 深圳/mid -> marble_secret_door_st02 判m=606.87 l=576.53 a=303.43 mech=30.34
+    ACT m=212.4 l=409.64 a=879.96 mech=15.17 total=1517.1744303286953
+[8666] CT-02米白色仿大理石岩板（岩板暗门） | unit=m2 | 深圳/mid -> slate_secret_door_ct02 判m=180.0 l=210.0 a=353.67 mech=0.0
+    ACT m=108.15 l=208.56 a=448.04 mech=7.72 total=772.4744303286953
+[9094] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9095] 设备间暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9114] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9115] 强弱电井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9116] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9132] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9152] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9153] 水井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9154] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9184] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9186] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9195] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9213] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9215] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9225] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9249] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9250] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9267] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9268] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9285] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9286] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9296] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9315] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9316] 强弱电井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9342] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9343] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9364] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9365] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9386] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9387] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9408] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9409] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9427] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[9432] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9433] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[9450] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9451] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9452] 电表间暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=0.0 l=165.0 a=353.6744 mech=1.5 total=520.1744
+[9495] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[9500] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9501] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[9502] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9503] 配电间暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=0.0 l=165.0 a=353.6744 mech=1.5 total=520.1744
+[9521] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9530] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[9532] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9533] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[9534] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9548] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9564] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9583] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9585] 强弱电井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9601] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9615] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[9617] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9618] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[9619] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9644] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9666] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9685] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9703] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9758] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=260.0 l=75.0 a=25.0 mech=3.0 total=363.0
+[9763] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9764] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[9784] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9798] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9808] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9842] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[9848] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9849] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[9851] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[9872] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9886] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9908] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9928] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9949] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9967] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[9988] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10006] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10027] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10045] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10066] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10083] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10104] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10122] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10428] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10429] 设备间暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10448] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10449] 强弱电井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10450] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10466] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10486] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10487] 水井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10488] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10518] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10520] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10529] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10547] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10549] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10559] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10583] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10584] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10601] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10602] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10619] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10620] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10630] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10649] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10650] 强弱电井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10676] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10677] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10698] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10699] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10720] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10721] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10742] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10743] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10761] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[10766] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10767] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.96825 mech=0.3 total=21.76825
+[10784] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10785] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10786] 电表间暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=0.0 l=165.0 a=353.674430328695 mech=1.5 total=520.174430328695
+[10829] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[10834] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10835] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.96825 mech=0.3 total=21.76825
+[10836] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10837] 配电间暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=0.0 l=165.0 a=353.674430328695 mech=1.5 total=520.174430328695
+[10855] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10864] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[10866] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10867] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.96825 mech=0.3 total=21.76825
+[10868] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10882] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10898] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10917] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10919] 强弱电井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10935] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10949] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[10951] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[10952] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.96825 mech=0.3 total=21.76825
+[10953] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.674430328695 mech=1.5 total=605.174430328695
+[10978] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[11000] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[11019] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[11037] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[11092] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=260.0 l=75.0 a=25.0 mech=3.0 total=363.0
+[11097] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[11098] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.96825 mech=0.3 total=21.76825
+[11137] 方案图纸设计费 | unit=m2 | /mid -> design_fee 判m=0.0 l=80.0 a=0.0 mech=0.0
+    ACT m=0.0 l=40.0 a=0.0 mech=0.0 total=40.0
+[11147] 楼地面地毯拆除 | unit=m2 | /mid -> demolition_floor_carpet 判m=0.0 l=5.0 a=0.0 mech=0.5
+    ACT m=0.0 l=4.97480519480519 a=0.05 mech=0.22 total=5.244805194805189
+[11158] 外幕墙拆除 | unit=m2 | /mid -> demolition_curtain_wall 判m=0.0 l=42.0 a=0.0 mech=5.0
+    ACT m=0.0 l=36.12 a=0.0 mech=6.5 total=42.62
+[11160] 电气、暖通等拆除费用 | unit=m2 | /mid -> demolition_mep_sweep 判m=0.0 l=12.5 a=0.0 mech=3.25
+    ACT m=0.0 l=11.0 a=0.0 mech=3.25 total=14.25
+[11168] 砖砌筑墙 | unit=m3 | /mid -> brick_wall_masonry_m3 判m=713.33 l=229.17 a=18.75 mech=11.04
+    ACT m=713.333333333333 l=229.166666666667 a=18.75 mech=11.0416666666667 total=972.2916666666667
+[11192] 5mm水泥自流平基层 | unit=m2 | /mid -> self_leveling_base 判m=11.95 l=26.26 a=0.0 mech=0.0
+    ACT m=11.95 l=26.26 a=0.0 mech=0.0 total=38.21
+[11193] 水泥自流平基层厚度每增减1mm | unit=m2 | /mid -> self_leveling_base_adj 判m=3.19 l=3.54 a=0.0 mech=0.0
+    ACT m=3.19 l=3.54 a=0.0 mech=0.0 total=6.73
+[11216] 防滑瓷砖楼梯踏步面层 | unit=m2 | /mid -> tile_stair_tread 判m=110.0 l=119.0 a=0.0 mech=0.0
+    ACT m=120.65 l=104.08 a=0.0 mech=0.0 total=224.73000000000002
+[11262] 铝塑板墙面 | unit=m2 | /mid -> aluminum_plastic_panel 判m=240.0 l=138.0 a=30.0 mech=5.0
+    ACT m=268.54 l=81.06 a=0.0 mech=0.0 total=349.6
+[11334] 木纹蜂窝铝板吊顶 | unit=m2 | /mid -> ceiling_aluminum_honeycomb 判m=520.0 l=91.94 a=0.0 mech=3.73
+    ACT m=480.3 l=91.94 a=0.0 mech=3.73 total=575.97
+[11335] 木纹蜂窝铝板吊顶 | unit=m2 | /mid -> ceiling_aluminum_honeycomb 判m=520.0 l=91.94 a=0.0 mech=3.73
+    ACT m=480.3 l=91.94 a=0.0 mech=3.73 total=575.97
+[11362] 电动铝合金卷帘门 | unit=m2 | /mid -> roller_shutter_electric 判m=600.0 l=0.0 a=0.0 mech=0.0
+    ACT m=580.0 l=0.0 a=0.0 mech=0.0 total=580.0
+[11364] 手动卷帘门 | unit=m2 | /mid -> roller_shutter_manual 判m=360.0 l=0.0 a=0.0 mech=0.0
+    ACT m=350.0 l=0.0 a=0.0 mech=0.0 total=350.0
+[11365] 钢制防火卷帘门 | unit=m2 | /mid -> fire_roller_shutter_steel 判m=420.0 l=0.0 a=0.0 mech=0.0
+    ACT m=420.0 l=0.0 a=0.0 mech=0.0 total=420.0
+[11366] 无机布特级防火卷帘门 | unit=m2 | /mid -> fire_roller_shutter_inorganic 判m=420.0 l=0.0 a=0.0 mech=0.0
+    ACT m=420.0 l=0.0 a=0.0 mech=0.0 total=420.0
+[11367] 快速卷帘门 | unit=m2 | /mid -> roller_shutter_fast 判m=1580.0 l=0.0 a=0.0 mech=0.0
+    ACT m=1580.0 l=0.0 a=0.0 mech=0.0 total=1580.0
+[11368] 铝合金保温卷帘门 | unit=m2 | /mid -> aluminum_insulated_roller_shutter_review 判m=600.0 l=0.0 a=0.0 mech=0.0
+    ACT m=600.0 l=0.0 a=0.0 mech=0.0 total=600.0
+[11369] 金属快速提升门 | unit=m2 | /mid -> metal_fast_lift_door 判m=2300.0 l=0.0 a=0.0 mech=0.0
+    ACT m=2300.0 l=0.0 a=0.0 mech=0.0 total=2300.0
+[11370] 布制快速提升门 | unit=m2 | /mid -> fabric_fast_lift_door 判m=1700.0 l=0.0 a=0.0 mech=0.0
+    ACT m=1700.0 l=0.0 a=0.0 mech=0.0 total=1700.0
+[11371] 明格提升门 | unit=m2 | /mid -> lattice_lift_door 判m=1480.0 l=0.0 a=0.0 mech=0.0
+    ACT m=1480.0 l=0.0 a=0.0 mech=0.0 total=1480.0
+[11391] 电动挡烟垂壁 | unit=m2 | /mid -> smoke_barrier_electric_plain 判m=285.89 l=111.63 a=0.0 mech=0.29
+    ACT m=285.89 l=111.63 a=0.0 mech=0.29 total=397.81
+[11392] 挡烟垂壁（防火布） | unit=m2 | /mid -> smoke_barrier_fireproof_cloth 判m=182.0 l=111.63 a=0.0 mech=0.29
+    ACT m=167.2 l=111.63 a=0.0 mech=0.29 total=279.12
+[11393] 挡烟垂壁（防火玻璃） | unit=m2 | /mid -> smoke_barrier_fireproof_glass 判m=320.0 l=111.63 a=0.0 mech=0.29
+    ACT m=303.29 l=111.63 a=0.0 mech=0.29 total=415.21000000000004
+[11408] 外立面铝塑板（单块整板面积≤4.5m2） | unit=m2 | /mid -> aluminum_panel_facade 判m=290.0 l=92.0 a=0.0 mech=0.0
+    ACT m=296.15 l=87.7 a=0.0 mech=0.0 total=383.84999999999997
+[11409] 外立面铝塑板（单块整板面积＞4.5m2） | unit=m2 | /mid -> aluminum_panel_facade 判m=290.0 l=92.0 a=0.0 mech=0.0
+    ACT m=334.1 l=87.7 a=0.0 mech=0.0 total=421.8
+[11410] 外立面铝塑板（铝塑板每增减0.5mm厚） | unit=m2 | /mid -> aluminum_panel_thickness_adj 判m=27.0 l=0.0 a=0.0 mech=0.0
+    ACT m=30.47 l=0.0 a=0.0 mech=0.0 total=30.47
+[11452] 铝塑板雨棚（含钢构件） | unit=m2 | /mid -> aluminum_plastic_canopy_steel_review 判m=520.49 l=140.22 a=0.0 mech=6.03
+    ACT m=520.49 l=140.22 a=0.0 mech=6.03 total=666.74
+[11453] 原饰面修复（饰面） | unit=m2 | /mid -> original_finish_repair 判m=303.38 l=83.0 a=0.0 mech=0.0
+    ACT m=303.38 l=83.0 a=0.0 mech=0.0 total=386.38
+[11997] 上喷头 | unit=个 | /mid -> sprinkler_upper_head 判m=11.47 l=23.89 a=4.13 mech=0.15
+    ACT m=11.47 l=23.89 a=4.13 mech=0.15 total=39.64
+[11998] 下喷头 | unit=个 | /mid -> sprinkler_lower_head 判m=13.26 l=26.31 a=6.13 mech=0.35
+    ACT m=13.26 l=26.31 a=6.13 mech=0.35 total=46.050000000000004
+[12069] 上喷头（主材利旧） | unit=个 | /mid -> sprinkler_upper_head 判m=11.47 l=23.89 a=4.13 mech=0.15
+    ACT m=0.0 l=21.83 a=4.13 mech=0.15 total=26.109999999999996
+[12070] 下喷头（主材利旧） | unit=个 | /mid -> sprinkler_lower_head 判m=13.26 l=26.31 a=6.13 mech=0.35
+    ACT m=0.0 l=23.46 a=6.13 mech=0.35 total=29.94
+[12259] 风幕机（保护性拆除） | unit=台 | /mid -> demolition_air_curtain_protective 判m=0.0 l=115.0 a=0.0 mech=51.47
+    ACT m=0.0 l=103.79 a=0.0 mech=51.47 total=155.26
+[12289] 方案图纸设计费 | unit=m2 | /mid -> design_fee 判m=0.0 l=80.0 a=0.0 mech=0.0
+    ACT m=0.0 l=90.0 a=0.0 mech=0.0 total=90.0
+[12290] 方案图纸设计费 | unit=m2 | /mid -> design_fee 判m=0.0 l=80.0 a=0.0 mech=0.0
+    ACT m=0.0 l=80.0 a=0.0 mech=0.0 total=80.0
+[12299] 楼地面地毯拆除 | unit=m2 | /mid -> demolition_floor_carpet 判m=0.0 l=5.0 a=0.0 mech=0.5
+    ACT m=0.0 l=5.7155 a=0.05 mech=0.22 total=5.985499999999999
+[12308] 电气、暖通等拆除费用 | unit=m2 | /mid -> demolition_mep_sweep 判m=0.0 l=12.5 a=0.0 mech=3.25
+    ACT m=0.0 l=14.5 a=0.0 mech=3.25 total=17.75
+[12317] 5mm水泥自流平基层 | unit=m2 | /mid -> self_leveling_base 判m=11.95 l=26.26 a=0.0 mech=0.0
+    ACT m=11.95 l=26.26 a=0.0 mech=0.0 total=38.21
+[12318] 水泥自流平基层厚度每增减1mm | unit=m2 | /mid -> self_leveling_base_adj 判m=3.19 l=3.54 a=0.0 mech=0.0
+    ACT m=3.19 l=3.54 a=0.0 mech=0.0 total=6.73
+[12336] 防滑瓷砖楼梯踏步面层 | unit=m2 | /mid -> tile_stair_tread 判m=110.0 l=119.0 a=0.0 mech=0.0
+    ACT m=100.65 l=134.08 a=0.0 mech=0.0 total=234.73000000000002
+[12371] 铝塑板墙面 | unit=m2 | /mid -> aluminum_plastic_panel 判m=240.0 l=138.0 a=30.0 mech=5.0
+    ACT m=108.54 l=251.56 a=0.0 mech=0.0 total=360.1
+[12425] 木纹蜂窝铝板吊顶 | unit=m2 | /mid -> ceiling_aluminum_honeycomb 判m=520.0 l=91.94 a=0.0 mech=3.73
+    ACT m=560.3 l=91.94 a=0.0 mech=3.73 total=655.97
+[12426] 木纹蜂窝铝板吊顶 | unit=m2 | /mid -> ceiling_aluminum_honeycomb 判m=520.0 l=91.94 a=0.0 mech=3.73
+    ACT m=560.3 l=91.94 a=0.0 mech=3.73 total=655.97
+[12453] 电动 铝合金卷帘门 | unit=m2 | /mid -> roller_shutter_electric 判m=600.0 l=0.0 a=0.0 mech=0.0
+    ACT m=625.0 l=0.0 a=0.0 mech=0.0 total=625.0
+[12454] 手动卷帘门 | unit=m2 | /mid -> roller_shutter_manual 判m=360.0 l=0.0 a=0.0 mech=0.0
+    ACT m=370.0 l=0.0 a=0.0 mech=0.0 total=370.0
+[12455] 防火卷帘门 | unit=m2 | /mid -> fire_shutter 判m=400.0 l=130.0 a=20.0 mech=5.0
+    ACT m=750.0 l=0.0 a=0.0 mech=0.0 total=750.0
+[12475] 电动挡烟垂壁（防火布） | unit=m2 | /mid -> smoke_barrier_electric_cloth 判m=325.89 l=161.63 a=0.0 mech=0.29
+    ACT m=325.89 l=161.63 a=0.0 mech=0.29 total=487.81
+[12476] 挡烟垂壁（防火玻璃） | unit=m2 | /mid -> smoke_barrier_fireproof_glass 判m=320.0 l=111.63 a=0.0 mech=0.29
+    ACT m=333.29 l=111.63 a=0.0 mech=0.29 total=445.21000000000004
+[12477] 挡烟垂壁（防火布） | unit=m2 | /mid -> smoke_barrier_fireproof_cloth 判m=182.0 l=111.63 a=0.0 mech=0.29
+    ACT m=197.2 l=111.63 a=0.0 mech=0.29 total=309.12
+[12481] 外立面铝塑板（单块整板面积≤4.5m2） | unit=m2 | /mid -> aluminum_panel_facade 判m=290.0 l=92.0 a=0.0 mech=0.0
+    ACT m=256.15 l=87.7 a=0.0 mech=0.0 total=343.84999999999997
+[12482] 外立面铝塑板（单块整板面积＞4.5m2） | unit=m2 | /mid -> aluminum_panel_facade 判m=290.0 l=92.0 a=0.0 mech=0.0
+    ACT m=274.1 l=97.7 a=0.0 mech=0.0 total=371.8
+[12483] 外立面铝塑板（铝塑板每增减0.5mm厚） | unit=m2 | /mid -> aluminum_panel_thickness_adj 判m=27.0 l=0.0 a=0.0 mech=0.0
+    ACT m=24.47 l=0.0 a=0.0 mech=0.0 total=24.47
+[12504] 原饰面修复（饰面） | unit=m2 | /mid -> original_finish_repair 判m=303.38 l=83.0 a=0.0 mech=0.0
+    ACT m=303.38 l=83.0 a=0.0 mech=0.0 total=386.38
+[12816] 风幕机（保护性拆除） | unit=台 | /mid -> demolition_air_curtain_protective 判m=0.0 l=115.0 a=0.0 mech=51.47
+    ACT m=0.0 l=125.9 a=0.0 mech=51.47 total=177.37
+[12820] 砌块墙 | unit=m3 | 深圳/mid -> block_wall_masonry_sz 判m=425.0 l=275.0 a=90.0 mech=0.0
+    ACT m=425.0 l=275.0 a=90.0 mech=0.0 total=794.25
+[12836] 原顶油漆 | unit=m2 | 深圳/mid -> ceiling_paint 判m=4.0 l=8.0 a=1.0 mech=0.5
+    ACT m=4.0 l=8.0 a=0.5 mech=1.5 total=14.04
+[12906] 吊顶天棚 | unit=m2 | 珠海/mid -> ceiling_suspended 判m=5.5 l=102.5 a=79.1 mech=1.5
+    ACT m=5.5 l=94.5 a=75.952 mech=1.5 total=177.562
+[12962] 吊顶天棚 | unit=m2 | 珠海/mid -> ceiling_suspended 判m=5.5 l=102.5 a=79.1 mech=1.5
+    ACT m=5.5 l=94.5 a=75.952 mech=1.5 total=177.562
+[13008] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+[13009] 原天棚喷深色乳胶漆
+(含墙体上部) | unit=㎡ | 深圳/mid -> paint_ceiling_dark_latex 判m=8.0 l=10.0 a=0.0 mech=1.5
+    ACT m=8.0 l=10.0 a=0.5 mech=1.5 total=20.16
+[13022] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13046] 探测器拆除、安装 | unit=套 | 深圳/mid -> demolition_detector_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13047] 探测器新增、安装 | unit=套 | 深圳/mid -> detector_install_combo 判m=104.4 l=99.18 a=52.2 mech=5.22
+    ACT m=104.4 l=99.17999999999999 a=52.2 mech=5.22 total=261.0
+[13048] 消防广播拆除、安装 | unit=套 | 深圳/mid -> demolition_broadcast_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13054] 喷头拆除、安装 | unit=个 | 深圳/mid -> demolition_sprinkler_reinstall 判m=0.0 l=170.52 a=0.0 mech=3.48
+    ACT m=0.0 l=170.52 a=0.0 mech=3.48 total=174.0
+[13055] 喷头新增、安装 | unit=个 | 深圳/mid -> sprinkler_install_combo 判m=87.0 l=82.65 a=43.5 mech=4.35
+    ACT m=87.0 l=82.64999999999999 a=43.5 mech=4.35 total=217.5
+[13074] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13083] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13105] 探测器拆除、安装 | unit=套 | 深圳/mid -> demolition_detector_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13106] 探测器新增、安装 | unit=套 | 深圳/mid -> detector_install_combo 判m=104.4 l=99.18 a=52.2 mech=5.22
+    ACT m=104.4 l=99.17999999999999 a=52.2 mech=5.22 total=261.0
+[13107] 消防广播拆除、安装 | unit=套 | 深圳/mid -> demolition_broadcast_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13113] 喷头拆除、安装 | unit=个 | 深圳/mid -> demolition_sprinkler_reinstall 判m=0.0 l=170.52 a=0.0 mech=3.48
+    ACT m=0.0 l=170.52 a=0.0 mech=3.48 total=174.0
+[13114] 喷头新增、安装 | unit=个 | 深圳/mid -> sprinkler_install_combo 判m=87.0 l=82.65 a=43.5 mech=4.35
+    ACT m=87.0 l=82.64999999999999 a=43.5 mech=4.35 total=217.5
+[13130] 原天棚喷深色乳胶漆
+(含墙体上部) | unit=㎡ | 深圳/mid -> paint_ceiling_dark_latex 判m=8.0 l=10.0 a=0.0 mech=1.5
+    ACT m=8.0 l=10.0 a=0.5 mech=1.5 total=20.16
+[13133] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13142] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13165] 探测器拆除、安装 | unit=套 | 深圳/mid -> demolition_detector_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13166] 探测器新增、安装 | unit=套 | 深圳/mid -> detector_install_combo 判m=104.4 l=99.18 a=52.2 mech=5.22
+    ACT m=104.4 l=99.17999999999999 a=52.2 mech=5.22 total=261.0
+[13167] 消防广播拆除、安装 | unit=套 | 深圳/mid -> demolition_broadcast_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13173] 喷头拆除、安装 | unit=个 | 深圳/mid -> demolition_sprinkler_reinstall 判m=0.0 l=170.52 a=0.0 mech=3.48
+    ACT m=0.0 l=170.52 a=0.0 mech=3.48 total=174.0
+[13174] 喷头新增、安装 | unit=个 | 深圳/mid -> sprinkler_install_combo 判m=87.0 l=82.65 a=43.5 mech=4.35
+    ACT m=87.0 l=82.64999999999999 a=43.5 mech=4.35 total=217.5
+[13199] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+[13203] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13208] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13210] 墙面艺术涂料 | unit=㎡ | 深圳/mid -> art_coating_wall 判m=85.0 l=35.0 a=0.0 mech=0.0
+    ACT m=85.0 l=35.0 a=0.0 mech=0.0 total=120.85
+[13216] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+[13220] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13225] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13227] 墙面艺术涂料 | unit=㎡ | 深圳/mid -> art_coating_wall 判m=85.0 l=35.0 a=0.0 mech=0.0
+    ACT m=85.0 l=35.0 a=0.0 mech=0.0 total=120.85
+[13231] 原玻璃双开门拆除后安装 | unit=樘 | 深圳/mid -> demolition_glass_door_reinstall 判m=0.0 l=600.0 a=0.0 mech=0.0
+    ACT m=0.0 l=600.0 a=0.0 mech=0.0 total=600.0
+[13233] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+[13237] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13242] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13244] 墙面艺术涂料 | unit=㎡ | 深圳/mid -> art_coating_wall 判m=85.0 l=35.0 a=0.0 mech=0.0
+    ACT m=85.0 l=35.0 a=0.0 mech=0.0 total=120.85
+[13248] 原玻璃双开门拆除后安装 | unit=樘 | 深圳/mid -> demolition_glass_door_reinstall 判m=0.0 l=600.0 a=0.0 mech=0.0
+    ACT m=0.0 l=600.0 a=0.0 mech=0.0 total=600.0
+[13250] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+[13254] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13259] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13261] 墙面艺术涂料 | unit=㎡ | 深圳/mid -> art_coating_wall 判m=85.0 l=35.0 a=0.0 mech=0.0
+    ACT m=85.0 l=35.0 a=0.0 mech=0.0 total=120.85
+[13265] 原玻璃双开门拆除后安装 | unit=樘 | 深圳/mid -> demolition_glass_door_reinstall 判m=0.0 l=600.0 a=0.0 mech=0.0
+    ACT m=0.0 l=600.0 a=0.0 mech=0.0 total=600.0
+[13267] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+[13271] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13276] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13278] 墙面艺术涂料 | unit=㎡ | 深圳/mid -> art_coating_wall 判m=85.0 l=35.0 a=0.0 mech=0.0
+    ACT m=85.0 l=35.0 a=0.0 mech=0.0 total=120.85
+[13282] 原玻璃双开门拆除后安装 | unit=樘 | 深圳/mid -> demolition_glass_door_reinstall 判m=0.0 l=600.0 a=0.0 mech=0.0
+    ACT m=0.0 l=600.0 a=0.0 mech=0.0 total=600.0
+[13284] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+[13288] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13293] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13295] 墙面艺术涂料 | unit=㎡ | 深圳/mid -> art_coating_wall 判m=85.0 l=35.0 a=0.0 mech=0.0
+    ACT m=85.0 l=35.0 a=0.0 mech=0.0 total=120.85
+[13302] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+[13306] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13311] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13313] 墙面艺术涂料 | unit=㎡ | 深圳/mid -> art_coating_wall 判m=85.0 l=35.0 a=0.0 mech=0.0
+    ACT m=85.0 l=35.0 a=0.0 mech=0.0 total=120.85
+[13319] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=60.0 l=5.0 a=5.0 mech=0.0 total=71.5
+[13323] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13328] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13330] 墙面艺术涂料 | unit=㎡ | 深圳/mid -> art_coating_wall 判m=85.0 l=35.0 a=0.0 mech=0.0
+    ACT m=85.0 l=35.0 a=0.0 mech=0.0 total=120.85
+[13334] 原玻璃双开门拆除后安装 | unit=樘 | 深圳/mid -> demolition_glass_door_reinstall 判m=0.0 l=600.0 a=0.0 mech=0.0
+    ACT m=0.0 l=600.0 a=0.0 mech=0.0 total=600.0
+[13455] 探测器拆除、安装 | unit=套 | 深圳/mid -> demolition_detector_reinstall_wire 判m=191.4 l=0.0 a=0.0 mech=0.0
+    ACT m=191.4 l=0.0 a=0.0 mech=0.0 total=191.4
+[13456] 探测器新增、安装 | unit=套 | 深圳/mid -> detector_install_combo_wire 判m=261.0 l=0.0 a=0.0 mech=0.0
+    ACT m=261.0 l=0.0 a=0.0 mech=0.0 total=261.0
+[13457] 消防广播拆除、安装 | unit=套 | 深圳/mid -> demolition_broadcast_reinstall_wire 判m=191.4 l=0.0 a=0.0 mech=0.0
+    ACT m=191.4 l=0.0 a=0.0 mech=0.0 total=191.4
+[13462] 喷头拆除、安装 | unit=个 | 深圳/mid -> demolition_sprinkler_reinstall_wire 判m=174.0 l=0.0 a=0.0 mech=0.0
+    ACT m=174.0 l=0.0 a=0.0 mech=0.0 total=174.0
+[13463] 喷头新增、安装 | unit=个 | 深圳/mid -> sprinkler_install_combo_wire 判m=217.5 l=0.0 a=0.0 mech=0.0
+    ACT m=217.5 l=0.0 a=0.0 mech=0.0 total=217.5
+[13478] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13484] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13521] 探测器拆除、安装 | unit=套 | 深圳/mid -> demolition_detector_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13522] 探测器新增、安装 | unit=套 | 深圳/mid -> detector_install_combo 判m=104.4 l=99.18 a=52.2 mech=5.22
+    ACT m=104.4 l=99.17999999999999 a=52.2 mech=5.22 total=261.0
+[13523] 消防广播拆除、安装 | unit=套 | 深圳/mid -> demolition_broadcast_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13531] 喷头拆除、安装 | unit=个 | 深圳/mid -> demolition_sprinkler_reinstall 判m=0.0 l=170.52 a=0.0 mech=3.48
+    ACT m=0.0 l=170.52 a=0.0 mech=3.48 total=174.0
+[13532] 喷头新增、安装 | unit=个 | 深圳/mid -> sprinkler_install_combo 判m=87.0 l=82.65 a=43.5 mech=4.35
+    ACT m=87.0 l=82.64999999999999 a=43.5 mech=4.35 total=217.5
+[13553] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13559] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13594] 探测器拆除、安装 | unit=套 | 深圳/mid -> demolition_detector_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13595] 探测器新增、安装 | unit=套 | 深圳/mid -> detector_install_combo 判m=104.4 l=99.18 a=52.2 mech=5.22
+    ACT m=104.4 l=99.17999999999999 a=52.2 mech=5.22 total=261.0
+[13596] 消防广播拆除、安装 | unit=套 | 深圳/mid -> demolition_broadcast_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13604] 喷头拆除、安装 | unit=个 | 深圳/mid -> demolition_sprinkler_reinstall 判m=0.0 l=170.52 a=0.0 mech=3.48
+    ACT m=0.0 l=170.52 a=0.0 mech=3.48 total=174.0
+[13605] 喷头新增、安装 | unit=个 | 深圳/mid -> sprinkler_install_combo 判m=87.0 l=82.65 a=43.5 mech=4.35
+    ACT m=87.0 l=82.64999999999999 a=43.5 mech=4.35 total=217.5
+[13644] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13651] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=20.0 a=0.0 mech=0.0 total=23.5
+[13653] 墙面艺术涂料PT-02 | unit=㎡ | 深圳/mid -> art_coating_wall_pt02 判m=275.0 l=35.0 a=0.0 mech=0.0
+    ACT m=275.0 l=35.0 a=0.0 mech=0.0 total=318.25
+[13707] 探测器拆除、安装 | unit=套 | 深圳/mid -> demolition_detector_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13708] 探测器新增、安装 | unit=套 | 深圳/mid -> detector_install_combo 判m=104.4 l=99.18 a=52.2 mech=5.22
+    ACT m=104.4 l=99.17999999999999 a=52.2 mech=5.22 total=261.0
+[13709] 消防广播拆除、安装 | unit=套 | 深圳/mid -> demolition_broadcast_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13715] 保护性拆除明装喷头 | unit=个 | 深圳/mid -> demolition_sprinkler_reinstall 判m=0.0 l=170.52 a=0.0 mech=3.48
+    ACT m=0.0 l=170.52 a=0.0 mech=3.48 total=174.0
+[13716] 明装喷头 | unit=个 | 深圳/mid -> sprinkler_install_combo 判m=87.0 l=82.65 a=43.5 mech=4.35
+    ACT m=87.0 l=82.64999999999999 a=43.5 mech=4.35 total=217.5
+[13752] 地面地毯 | unit=㎡ | 深圳/mid -> carpet_floor_plain 判m=52.5 l=5.0 a=5.0 mech=0.0
+    ACT m=45.0 l=5.0 a=5.0 mech=0.0 total=56.35
+[13759] 天花挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=18.0 a=0.0 mech=0.0 total=21.5
+[13765] 墙面挂耐水腻子 | unit=㎡ | 深圳/mid -> putty_hang_waterproof 判m=0.95 l=11.05 a=6.66 mech=0.38
+    ACT m=3.5 l=18.0 a=0.0 mech=0.0 total=21.5
+[13811] 探测器拆除、安装 | unit=套 | 深圳/mid -> demolition_detector_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13812] 探测器新增、安装 | unit=套 | 深圳/mid -> detector_install_combo 判m=104.4 l=99.18 a=52.2 mech=5.22
+    ACT m=104.4 l=99.17999999999999 a=52.2 mech=5.22 total=261.0
+[13813] 消防广播拆除、安装 | unit=套 | 深圳/mid -> demolition_broadcast_reinstall 判m=0.0 l=187.57 a=0.0 mech=3.83
+    ACT m=0.0 l=187.57 a=0.0 mech=3.83 total=191.4
+[13819] 保护性拆除明装喷头 | unit=个 | 深圳/mid -> demolition_sprinkler_reinstall 判m=0.0 l=170.52 a=0.0 mech=3.48
+    ACT m=0.0 l=170.52 a=0.0 mech=3.48 total=174.0
+[13820] 明装喷头 | unit=个 | 深圳/mid -> sprinkler_install_combo 判m=87.0 l=82.65 a=43.5 mech=4.35
+    ACT m=87.0 l=82.64999999999999 a=43.5 mech=4.35 total=217.5
+[13860] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[13861] 设备间暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[13880] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[13881] 强弱电井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[13882] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[13898] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[13918] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[13919] 水井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[13920] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[13950] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[13952] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[13961] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[13979] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[13981] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[13991] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14015] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14016] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14033] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14034] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14051] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14052] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14062] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14081] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14082] 强弱电井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14108] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14109] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14130] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14131] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14152] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14153] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14174] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14175] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14193] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[14198] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14199] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[14216] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14217] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14218] 电表间暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=0.0 l=165.0 a=353.6744 mech=1.5 total=520.1744
+[14261] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[14266] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14267] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[14268] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14269] 配电间暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=0.0 l=165.0 a=353.6744 mech=1.5 total=520.1744
+[14287] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14296] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[14298] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14299] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[14300] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14314] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14330] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14349] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14351] 强弱电井暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14367] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14381] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[14383] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14384] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[14385] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14410] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14432] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14451] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14469] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14524] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=260.0 l=75.0 a=25.0 mech=3.0 total=363.0
+[14529] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14530] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[14551] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14569] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14582] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14618] 可拆卸天花铝板吊顶 | unit=m2 | 珠海/mid -> ceiling_aluminum_detachable 判m=295.0 l=75.0 a=25.0 mech=3.0
+    ACT m=330.0 l=75.0 a=25.0 mech=3.0 total=433.0
+[14624] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14625] 天花内部喷白涂料 | unit=m2 | 珠海/mid -> zh_paint_spray_white 判m=5.5 l=12.0 a=3.97 mech=0.3
+    ACT m=5.5 l=12.0 a=3.9682 mech=0.3 total=21.7682
+[14627] 消防栓暗门(不含面层) | unit=m2 | 珠海/mid -> zh_hidden_door 判m=85.0 l=165.0 a=353.67 mech=1.5
+    ACT m=85.0 l=165.0 a=353.6744 mech=1.5 total=605.1744
+[14648] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14663] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14686] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14706] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14727] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14745] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14766] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14784] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14805] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14823] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14844] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14861] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14882] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8
+[14900] 天花肌理无机涂料PT-01 | unit=m2 | 珠海/mid -> zh_texture_paint_ceiling 判m=85.5 l=45.0 a=6.5 mech=0.8
+    ACT m=85.5 l=45.0 a=6.5 mech=0.8 total=137.8

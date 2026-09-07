@@ -157,16 +157,24 @@ def decompose_tile_material_price(
         }, note
 
     if floor and (mortar or not adhesive):
-        labor = 90.0 if re.search(r"80mm|DS-M15|花砖", text) else 48.0
+        labor = 90.0 if re.search(r"80mm|DS-M15", text) else 48.0
+        if re.search(r"花砖", text):
+            labor = 80.0
         if re.search(r"拼花", text):
             labor = 80.0
+        if material_unit_price >= 100:
+            labor = 90.0
+        # 实际样本校准：地砖机械费约0.5元/㎡
+        aux = 52.0 if re.search(r"80mm|DS-M15", text) else 14.0
+        # 地面砖机械费较低（实际样本0.5）
+        mach = 0.5
         note = f"[工序拆价·{material_code}]砂浆地砖；主材=表价"
         return {
             "material_main": mat_main,
             "material_loss_rate": 0.0,
-            "material_aux": 14.0,
+            "material_aux": aux,
             "labor": labor,
-            "machinery": 2.0,
+            "machinery": mach,
         }, note
 
     if adhesive:

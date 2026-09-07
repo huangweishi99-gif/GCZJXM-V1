@@ -33,8 +33,8 @@
       "tag_min": 0.45,
       "total_min": 0.58,
       "weak_name_min": 0.78,
-      "weak_feature_min": 0.58,
-      "_comment": "整项参照：名称+特征+单位须同时达标（匹配引擎单位不一致直接排除）；weak_* 用于弱整项"
+      "weak_feature_min": 0.62,
+      "_comment": "整项参照：名称+特征+单位须同时达标；weak_* 用于弱整项；主材编号/产品名冲突另拦截"
     },
     "material_fallback": {
       "enabled": true,
@@ -46,7 +46,17 @@
     "auto_fill_confidence": 0.8,
     "weak_line_confidence": 0.75,
     "review_confidence": 0.55,
-    "_comment": "多源融合：≥0.8 自动填；0.75~0.8 弱整项全量导出；0.55~0.75 参考填；<0.55 不填"
+    "_comment": "多源融合：≥0.8 自动填；0.75~0.8 弱整项；同名异规（编号/产品名）拒绝弱套",
+    "source_specific_auto_thresholds": {
+        "line_match": 0.76,
+        "line_match_weak": 0.74,
+        "mep_install_profile": 0.75,
+        "market_reference": 0.80,
+        "metal_trim_profile": 0.77,
+        "special_line_price": 0.76,
+        "decorative_diffuser_length": 0.72,
+        "_comment": "各来源独立auto_fill阈值。market_reference升至0.80（审计64%核心OK），mep_install升至0.75，line_match_weak升至0.74"
+    }
   },
   "line_identity": {
     "require_unit": true,

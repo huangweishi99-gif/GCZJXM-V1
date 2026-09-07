@@ -1,0 +1,67 @@
+﻿
+### 电缆YJV-5x2.5mm2 | 实: main=18.88 labor=0.56
+  spec='5*2.5' total_mm2=12.5
+  cable: main=20.0 aux=1.1 labor=0.7 mach=0.17 | [电力电缆]铜芯5*2.5=12.5mm²
+
+### 电缆WDZA-YJV-5*6 | 实: main=35.6 labor=11.07
+  spec='5*6' total_mm2=30.0
+  cable: main=30.0 aux=1.1 labor=5.0 mach=0.17 | [电力电缆]铜芯5*6=30mm²
+
+### 电缆WDZB-YJV-5*4 | 实: main=18.9 labor=4.57
+  spec='5*4' total_mm2=20.0
+  cable: main=20.0 aux=1.1 labor=5.0 mach=0.17 | [电力电缆]铜芯5*4=20mm²
+
+### 电缆 ZR-YJV-3*70+2*35 | 实: main=196.8 labor=17.42
+  spec='3*70+2*35' total_mm2=280.0
+  cable: main=196.0 aux=1.15 labor=17.5 mach=1.5 | [电力电缆]铜芯3*70+2*35=280mm²
+
+### 电缆 ZR-YJV-5*6 | 实: main=30.63 labor=11.07
+  spec='5*6' total_mm2=30.0
+  cable: main=30.0 aux=1.1 labor=5.0 mach=0.17 | [电力电缆]铜芯5*6=30mm²
+
+### 电缆WDZ-YJV-3*10 | 实: main=27.17 labor=4.56
+  spec='3*10' total_mm2=30.0
+  cable: main=26.4 aux=1.1 labor=5.0 mach=0.17 | [电力电缆]铜芯3*10=30mm²
+
+### 电缆WDZB-YJV-4*70+1*35 | 实: main=297.08 labor=17.42
+  spec='4*70+1*35' total_mm2=315.0
+  cable: main=220.5 aux=1.15 labor=17.5 mach=1.5 | [电力电缆]铜芯4*70+1*35=315mm²
+
+### 电缆WDZB-YJV-3*6 | 实: main=42.55 labor=11.07
+  spec='3*6' total_mm2=18.0
+  cable: main=18.0 aux=1.1 labor=5.0 mach=0.17 | [电力电缆]铜芯3*6=18mm²
+
+### 电缆ZR-YJV-3*4 | 实: main=15.18 labor=10.7
+  spec='3*4' total_mm2=12.0
+  cable: main=12.0 aux=1.1 labor=0.7 mach=0.17 | [电力电缆]铜芯3*4=12mm²
+
+### 配管JDG40 | 实: main=11.3 labor=10.6
+  conduit: main=11.2 aux=0.8 labor=9.8 mach=0.5 | [JDG配管] DN40
+
+### 配管JDG40 | 实: main=12.99 labor=12.19
+  conduit: main=11.2 aux=0.8 labor=9.8 mach=0.5 | [JDG配管] DN40
+
+### 配管JDG20 | 实: main=4.84 labor=10.09
+  conduit: main=5.57 aux=1.05 labor=9.12 mach=0.54 | [JDG配管] DN20
+
+### 配管 | 实: main=5.77 labor=10.85
+  conduit: main=6.0 aux=0.48 labor=8.5 mach=0.2 | [配管] DN20
+
+### NXBLE-63 C16/ 3P（30mA） | 实: main=59.5 labor=14.69
+  breaker: main=62.0 aux=0.0 labor=15.0 mach=0.44 | [断路器] 16A/3P
+
+### NXB-63 D25/3P | 实: main=23.15 labor=8.36
+python : Traceback (most recent call last):
+所在位置 C:\Users\guangwan\AppData\Local\Temp\genie-ps-1787198915421-cgscxr.ps1:558 字符: 33
++ cd d:\projects\cost-estimation; python _tmp_mep_test.py 2>&1 | Out-Fi ...
++                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "D:\projects\cost-estimation\_tmp_mep_test.py", line 51, in <module>
+    show("breaker", lookup_breaker_components(name, feat, unit))
+  File "D:\projects\cost-estimation\_tmp_mep_test.py", line 38, in show
+    print(f"  {label}: main={c['material_main']} aux={c['material_aux']} labor={c['labor']} mach={c['machinery']} | {no
+te}")
+                             ~^^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable

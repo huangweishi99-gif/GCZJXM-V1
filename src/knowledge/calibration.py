@@ -17,6 +17,8 @@ from src.pricing.reconcile import component_total
 
 ROOT = Path(__file__).resolve().parents[2]
 PAIRS_PATH = ROOT / "config" / "project_pairs.json"
+# 启用校准别名匹配的项目（招标/定稿分项命名不一致）
+CALIBRATION_ALIAS_PROJECTS = frozenset({"shenhai_dasha"})
 
 
 @dataclass
@@ -50,6 +52,17 @@ class LineDiff:
 
 
 @dataclass
+class GapRow:
+    dedupe_key: str
+    name: str
+    unit: str
+    feature: str
+    cost_unit: float
+    qty: float
+    sheet: str = ""
+
+
+@dataclass
 class CalibrationReport:
     project_id: str
     label: str
@@ -64,6 +77,8 @@ class CalibrationReport:
     amount_user: float = 0.0
     amount_ai: float = 0.0
     worst: List[LineDiff] = field(default_factory=list)
+    user_only_items: List[GapRow] = field(default_factory=list)
+    ai_only_items: List[GapRow] = field(default_factory=list)
     clusters: Dict[str, int] = field(default_factory=dict)
     upgrade_actions: List[str] = field(default_factory=list)
 
@@ -141,6 +156,88 @@ def load_priced_map_merged(paths: List[str | Path]) -> Dict[str, PricedRow]:
     return merged
 
 
+def _aggregate_match_rows(
+    mk: str,
+    rows: List[Tuple[str, PricedRow]],
+) -> Tuple[str, PricedRow]:
+    """同一匹配键多行（分楼层拆项）→ 工程量求和、单价按工程量加权。"""
+    if len(rows) == 1 and not mk.startswith("vent_band|"):
+        return rows[0]
+
+    if mk.startswith("vent_band|"):
+        from src.knowledge.calibration_match import vent_band_rate_from_row
+
+        rep_dk, rep = rows[0]
+        total_m = 0.0
+        total_amt = 0.0
+        for _, r in rows:
+            meters, _ = vent_band_rate_from_row(r.feature or "", r.quantity, r.cost_unit)
+            if meters <= 0:
+                continue
+            total_m += meters
+            total_amt += float(r.cost_unit) * float(r.quantity)
+        rate = round(total_amt / total_m, 4) if total_m > 0 else float(rep.cost_unit)
+        return rep_dk, PricedRow(
+            dedupe_key=rep.dedupe_key,
+            name=rep.name,
+            feature=rep.feature,
+            unit="m",
+            quantity=round(total_m, 4),
+            cost_unit=rate,
+            material_main=rep.material_main,
+            labor=rep.labor,
+            material_aux=rep.material_aux,
+            sheet=rep.sheet,
+        )
+
+    if len(rows) == 1:
+        return rows[0]
+    rep_dk, rep = rows[0]
+    total_qty = round(sum(float(r.quantity or 0) for _, r in rows), 4)
+    weighted = 0.0
+    w_qty = 0.0
+    for _, r in rows:
+        q = float(r.quantity or 0)
+        c = float(r.cost_unit or 0)
+        if q > 0 and c > 0:
+            weighted += c * q
+            w_qty += q
+    if w_qty > 0:
+        cost = round(weighted / w_qty, 4)
+    else:
+        cost = next((r.cost_unit for _, r in rows if r.cost_unit > 0), rep.cost_unit)
+    return rep_dk, PricedRow(
+        dedupe_key=rep.dedupe_key,
+        name=rep.name,
+        feature=rep.feature,
+        unit=rep.unit,
+        quantity=total_qty,
+        cost_unit=cost,
+        material_main=rep.material_main,
+        labor=rep.labor,
+        material_aux=rep.material_aux,
+        sheet=rep.sheet,
+    )
+
+
+def _match_index(
+    priced_map: Dict[str, PricedRow], project_id: str
+) -> Dict[str, Tuple[str, PricedRow]]:
+    from src.knowledge.calibration_match import make_calibration_match_key
+
+    buckets: Dict[str, List[Tuple[str, PricedRow]]] = defaultdict(list)
+    for dk, row in priced_map.items():
+        mk = make_calibration_match_key(
+            row.name, row.feature or "", row.unit, project_id=project_id
+        )
+        buckets[mk].append((dk, row))
+
+    out: Dict[str, Tuple[str, PricedRow]] = {}
+    for mk, rows in buckets.items():
+        out[mk] = _aggregate_match_rows(mk, rows)
+    return out
+
+
 def _compare_maps(
     gold_map: Dict[str, PricedRow],
     ai_map: Dict[str, PricedRow],
@@ -156,31 +253,88 @@ def _compare_maps(
         gold_file=gold_file,
         ai_file=ai_file,
     )
-    report.user_only = len(set(gold_map) - set(ai_map))
-    report.ai_only = len(set(ai_map) - set(gold_map))
+
+    def _gap_row(key: str, row: PricedRow) -> GapRow:
+        return GapRow(
+            dedupe_key=key,
+            name=row.name,
+            unit=row.unit,
+            feature=(row.feature or "")[:120],
+            cost_unit=row.cost_unit,
+            qty=row.quantity,
+            sheet=row.sheet,
+        )
 
     diffs: List[LineDiff] = []
-    for key, u in gold_map.items():
-        a = ai_map.get(key)
-        if not a:
-            continue
-        pct = round((a.cost_unit - u.cost_unit) / u.cost_unit * 100, 1) if u.cost_unit else None
-        diffs.append(
-            LineDiff(
-                dedupe_key=key,
-                name=u.name,
-                unit=u.unit,
-                feature=u.feature[:120],
-                qty=u.quantity,
-                user_cost=u.cost_unit,
-                ai_cost=a.cost_unit,
-                pct_diff=pct,
-                user_main=u.material_main,
-                ai_main=a.material_main,
-                user_labor=u.labor,
-                ai_labor=a.labor,
+
+    if project_id in CALIBRATION_ALIAS_PROJECTS:
+        g_idx = _match_index(gold_map, project_id)
+        a_idx = _match_index(ai_map, project_id)
+        g_mk, a_mk = set(g_idx), set(a_idx)
+        report.user_only = len(g_mk - a_mk)
+        report.ai_only = len(a_mk - g_mk)
+        report.user_only_items = [
+            _gap_row(g_idx[k][0], g_idx[k][1]) for k in sorted(g_mk - a_mk)[:40]
+        ]
+        report.ai_only_items = [
+            _gap_row(a_idx[k][0], a_idx[k][1]) for k in sorted(a_mk - g_mk)[:40]
+        ]
+        for mk in g_mk & a_mk:
+            gdk, u = g_idx[mk]
+            adk, a = a_idx[mk]
+            pct = (
+                round((a.cost_unit - u.cost_unit) / u.cost_unit * 100, 1)
+                if u.cost_unit
+                else None
             )
-        )
+            diffs.append(
+                LineDiff(
+                    dedupe_key=gdk,
+                    name=u.name,
+                    unit=u.unit,
+                    feature=u.feature[:120],
+                    qty=u.quantity,
+                    user_cost=u.cost_unit,
+                    ai_cost=a.cost_unit,
+                    pct_diff=pct,
+                    user_main=u.material_main,
+                    ai_main=a.material_main,
+                    user_labor=u.labor,
+                    ai_labor=a.labor,
+                )
+            )
+    else:
+        report.user_only = len(set(gold_map) - set(ai_map))
+        report.ai_only = len(set(ai_map) - set(gold_map))
+        uo_keys = sorted(set(gold_map) - set(ai_map))
+        ao_keys = sorted(set(ai_map) - set(gold_map))
+        report.user_only_items = [_gap_row(k, gold_map[k]) for k in uo_keys[:40]]
+        report.ai_only_items = [_gap_row(k, ai_map[k]) for k in ao_keys[:40]]
+        for key, u in gold_map.items():
+            a = ai_map.get(key)
+            if not a:
+                continue
+            pct = (
+                round((a.cost_unit - u.cost_unit) / u.cost_unit * 100, 1)
+                if u.cost_unit
+                else None
+            )
+            diffs.append(
+                LineDiff(
+                    dedupe_key=key,
+                    name=u.name,
+                    unit=u.unit,
+                    feature=u.feature[:120],
+                    qty=u.quantity,
+                    user_cost=u.cost_unit,
+                    ai_cost=a.cost_unit,
+                    pct_diff=pct,
+                    user_main=u.material_main,
+                    ai_main=a.material_main,
+                    user_labor=u.labor,
+                    ai_labor=a.labor,
+                )
+            )
 
     uniq: Dict[str, LineDiff] = {}
     for d in diffs:
@@ -374,3 +528,77 @@ def learn_from_gold(gold_path: str | Path, *, city: str = "", tier: str = "mid")
         price_tier=tier or None,
         export_anatomy=True,
     )
+
+
+def run_regression_suite(
+    *,
+    audit_limit: Optional[int] = 500,
+    min_calibrate_ratio: float = 0.95,
+    min_audit_core: float = 0.45,
+) -> Dict[str, Any]:
+    """一键回归：全项目 calibrate + audit-judge 摘要，供改 judge 后防回退。"""
+    from src.pricing.judge_audit import run_judge_audit
+
+    cal_results: List[Dict[str, Any]] = []
+    failures: List[str] = []
+
+    for pair in load_project_pairs():
+        pid = pair.get("id") or ""
+        label = pair.get("label", pid)
+        if not pair.get("gold"):
+            cal_results.append(
+                {
+                    "project_id": pid,
+                    "label": label,
+                    "skipped": "delivery_only",
+                    "delivery": pair.get("delivery", "deliver"),
+                }
+            )
+            continue
+        try:
+            rep = run_pair_calibration(pid)
+            ratio = rep.within_10pct / rep.compared if rep.compared else 1.0
+            entry = {
+                "project_id": pid,
+                "label": label,
+                "compared": rep.compared,
+                "within_10pct": f"{rep.within_10pct}/{rep.compared}",
+                "user_only": rep.user_only,
+                "ai_only": rep.ai_only,
+                "amount_delta_pct": round(
+                    (rep.amount_ai - rep.amount_user) / rep.amount_user * 100, 2
+                )
+                if rep.amount_user
+                else None,
+            }
+            cal_results.append(entry)
+            if rep.compared and ratio < min_calibrate_ratio:
+                failures.append(
+                    f"calibrate:{pid} {rep.within_10pct}/{rep.compared} < {min_calibrate_ratio:.0%}"
+                )
+        except FileNotFoundError as exc:
+            cal_results.append({"project_id": pid, "label": label, "error": str(exc)})
+            failures.append(f"missing_export:{pid}")
+
+    audit = run_judge_audit(
+        limit=audit_limit,
+        export_path=None,
+        exclude_simulated=True,
+        exclude_fee_items=True,
+    )
+    core = float((audit.get("accuracy_all") or {}).get("core_main_and_labor") or 0)
+    audit_summary = {
+        "samples": audit.get("samples", 0),
+        "filters": audit.get("filters"),
+        "auto_fill_rate": audit.get("auto_fill_rate"),
+        "core_main_and_labor": core,
+    }
+    if audit.get("samples", 0) > 0 and core < min_audit_core:
+        failures.append(f"audit:core_main_and_labor={core:.2%} < {min_audit_core:.0%}")
+
+    return {
+        "calibration": cal_results,
+        "audit_judge": audit_summary,
+        "failures": failures,
+        "ok": len(failures) == 0,
+    }

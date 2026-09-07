@@ -1,0 +1,22 @@
+=== 目标来源 core_ok_rate ===
+  custom_door_profile          n=   53  core=0.830  (44/53)
+  lighting_fixture_code        n=  110  core=0.427  (47/110)
+  mep_install_profile          n=  239  core=0.477  (114/239)
+  paint_process                n=   15  core=1.000  (15/15)
+--- 全部命中样本来源分布 ---
+  market_reference                 n=1036
+  special_line_price               n=333
+  line_match_weak                  n=239
+  mep_install_profile              n=239
+  project_material_code            n=155
+  line_match                       n=130
+  lighting_fixture_code            n=110
+  residential_finish_profile       n=96
+  decorative_diffuser_length       n=58
+  custom_door_profile              n=53
+  ceiling_cl_paint                 n=22
+  unresolved                       n=17
+  paint_process                    n=15
+  metal_trim_profile               n=9
+  composite_furniture_line         n=2
+  custom_furniture_profile         n=1

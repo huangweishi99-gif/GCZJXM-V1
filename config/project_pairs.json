@@ -8,6 +8,10 @@
       "tender_fallback": "清单数据资料/AI学习清单/珠海海德公馆售楼处会所-20260627.xlsx",
       "gold": "清单数据资料/AI学习清单/珠海海德公馆售楼处会所-20260627.xlsx",
       "export": "data/exports/珠海海德公馆售楼处会所-20260622_成本分析_去重链接.xlsx",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/珠海海德公馆售楼处会所-20260627.xlsx"
+      ],
       "city": "珠海",
       "tier": "mid",
       "project_materials_ref": "haide_sales_office"
@@ -18,9 +22,47 @@
       "tender": "清单数据资料/甲方招标清单/珠海丹田海德地库清单2026.5.15.xlsx",
       "gold": "清单数据资料/AI学习清单/珠海丹田海德地库清单-20260627.xlsx",
       "export": "data/exports/珠海丹田海德地库清单-20260627_成本分析_去重链接.xlsx",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/珠海丹田海德地库清单-20260627.xlsx",
+        "清单数据资料/AI学习清单/珠海海德公馆售楼处会所-20260627.xlsx"
+      ],
       "city": "珠海",
       "tier": "mid",
       "project_materials_ref": "haide_basement"
+    },
+    {
+      "id": "haide_club_merge",
+      "label": "海德公馆会所合并招标（清单询）",
+      "tender": "清单数据资料/甲方招标清单/珠海丹田海德公馆会所精装修工程-合并-20260701.xlsx",
+      "gold": "清单数据资料/AI学习清单/珠海丹田海德公馆会所精装修工程-合并-20260705.xlsx",
+      "export": "data/exports/珠海丹田海德公馆会所精装修工程-合并-20260701_成本链接.xlsx",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/珠海丹田海德公馆会所精装修工程-合并-20260705.xlsx",
+        "清单数据资料/AI学习清单/珠海海德公馆售楼处会所-20260627.xlsx",
+        "清单数据资料/AI学习清单/珠海丹田海德地库清单-20260627.xlsx"
+      ],
+      "inline_sheets": "地上装修工程,电梯轿厢装修工程,地下室装修工程,会所安装工程量清单",
+      "city": "珠海",
+      "tier": "mid",
+      "project_materials_ref": "haide_sales_office"
+    },
+    {
+      "id": "b2_house",
+      "label": "B2户型装修工程",
+      "tender": "清单数据资料/甲方招标清单/B2户型装修工程清单-20260705.xls",
+      "gold": "清单数据资料/AI学习清单/B2户型装修工程清单-20260706.xlsx",
+      "export": "data/exports/B2户型装修工程清单-20260705_成本链接_v2.xlsx",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/B2户型装修工程清单-20260706.xlsx",
+        "清单数据资料/AI学习清单/珠海海德公馆售楼处会所-20260627.xlsx",
+        "清单数据资料/AI学习清单/珠海丹田海德地库清单-20260627.xlsx"
+      ],
+      "inline_sheets": "装修工程,安装工程,电器工程",
+      "city": "珠海",
+      "tier": "mid"
     },
     {
       "id": "costco",
@@ -28,8 +70,73 @@
       "tender": "清单数据资料/甲方招标清单/02 附件二：星河开市客环球商业中心2楼公区装修改造工程20260615.xlsx",
       "gold": "清单数据资料/AI学习清单/02 附件二：星河开市客环球商业中心2楼公区装修改造工程20260628.xlsx",
       "export": "data/exports/02 附件二：星河开市客环球商业中心2楼公区装修改造工程20260615_成本分析_去重链接.xlsx",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/02 附件二：星河开市客环球商业中心2楼公区装修改造工程20260628.xlsx"
+      ],
       "city": "深圳",
       "tier": "mid"
+    },
+    {
+      "id": "jiangmen_05house",
+      "label": "江门新会骏凯豪庭五期三标1栋05户型（批量精装）",
+      "tender": "清单数据资料/甲方招标清单/江门新会骏凯豪庭五期三标项目1栋05户型精装修工程-投标报价.xlsx",
+      "gold": "清单数据资料/AI学习清单/江门新会骏凯豪庭五期三标项目1栋05户型精装修工程-投标报价-20260818.xlsx",
+      "export": "data/exports/江门新会骏凯豪庭五期三标项目1栋05户型精装修工程-投标报价_成本填写.xlsx",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/江门新会骏凯豪庭五期三标项目1栋05户型精装修工程-投标报价-20260818.xlsx"
+      ],
+      "inline_sheets": "标准层户型85",
+      "city": "江门",
+      "tier": "mid",
+      "price_style": "batch_fitout",
+      "remark": "地产批量精装集采价：冠珠瓷砖36/三棵树涂料5.5/公牛G33开关/综合费率12%"
+    },
+    {
+      "id": "rcl_spa",
+      "label": "深圳星河丽思卡尔顿酒店5楼SPA区域装修维修改造",
+      "tender": "清单数据资料/甲方招标清单/深圳星河丽思卡尔顿酒店5楼SPA区域装修维修改造工程报价清单20260818.xlsx",
+      "gold": "清单数据资料/AI学习清单/深圳星河丽思卡尔顿酒店5楼SPA区域装修维修改造工程报价清单20260828.xlsx",
+      "export": "data/exports/深圳星河丽思卡尔顿酒店5楼SPA区域装修维修改造工程报价清单-收拢版-20260828.xlsx",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/深圳星河丽思卡尔顿酒店5楼SPA区域装修维修改造工程报价清单20260828.xlsx"
+      ],
+      "inline_sheets": "报价清单",
+      "city": "深圳",
+      "tier": "high",
+      "remark": "酒店SPA改造最终报价：国产泳池设备工程价+进口设备单列（TYLO门/当代花洒）+拆除恢复整项+人工上浮+综合费率21%"
+    },
+    {
+      "id": "yunwan_deco",
+      "label": "中山云湾花园会所售楼部装修工程专业分包",
+      "tender": "清单数据资料/甲方招标清单/云湾花园项目-会所售楼部装修工程专业分包-投标清单-20260825.xls",
+      "gold": "清单数据资料/AI学习清单/云湾花园项目-会所售楼部装修工程专业分包-投标清单-20260828.xls",
+      "export": "data/exports/云湾花园会所售楼部装修工程-收拢版-20260828.xlsx",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/云湾花园项目-会所售楼部装修工程专业分包-投标清单-20260828.xls"
+      ],
+      "inline_sheets": "清单表",
+      "city": "中山",
+      "tier": "mid",
+      "remark": "会所售楼部装修定稿：重点展示面上调收口（屏风/透光亚克力/电动移门/石材/木饰面门套），墙面干挂瓷砖下调；成本=报价（费率管理费0利润0主材1人工1辅材1机械1）"
+    },
+    {
+      "id": "yunwan_inst",
+      "label": "中山云湾花园会所售楼部安装工程",
+      "tender": "清单数据资料/甲方招标清单/02 会所售楼部安装工程清单.xlsx",
+      "gold": "清单数据资料/AI学习清单/02 会所售楼部安装工程清单-20260828.xlsx",
+      "export": "data/exports/云湾花园会所售楼部安装工程-收拢版-20260828.xlsx",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/02 会所售楼部安装工程清单-20260828.xlsx"
+      ],
+      "inline_sheets": "电气工程,给排水工程,空调工程",
+      "city": "中山",
+      "tier": "mid",
+      "remark": "会所售楼部安装定稿：LED灯具主材上调50~300%（灯条/灯带驱动/格栅射灯/吊线办公灯），风管机按厂家工程价下调约40%，多联机室外机上调；成本=报价口径"
     },
     {
       "id": "shenhai_dasha",
@@ -51,8 +158,13 @@
         "data/exports/深海大厦-北塔13-14层安装_成本分析_去重链接.xlsx"
       ],
       "gold": "清单数据资料/AI学习清单/成本分析表-深海大厦项目-20260512.xls",
+      "delivery": "auto",
+      "reference_tenders": [
+        "清单数据资料/AI学习清单/成本分析表-深海大厦项目-20260512.xls"
+      ],
       "city": "深圳",
-      "tier": "mid"
+      "tier": "mid",
+      "project_materials_ref": "shenhai_dasha"
     }
   ]
 }

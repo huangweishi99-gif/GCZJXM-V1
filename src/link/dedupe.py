@@ -9,6 +9,26 @@ from src.normalize.feature_extract import extract_feature_profile
 from src.normalize.text import normalize_name, normalize_unit
 
 
+@dataclass(frozen=True)
+class MasterRowRef:
+    """工作簿内母行定位（用于同表/跨表 lj 链接）。"""
+
+    sheet: str
+    row: int
+
+
+def master_cell_formula(ref: MasterRowRef, col_letter: str, local_sheet: str) -> str:
+    """生成 Excel 全绝对引用公式（铁律：母行链接必须绝对引用，行列均加 $）。
+
+    与 lj 工具/历史清单引用方式一致（如 `=$U$7`、`='地上装修工程'!$Q$1`）：
+    母行/费率单元格一律 `$列$行`，保证筛选、排序、移动单元格后引用目标不漂移。
+    """
+    if ref.sheet == local_sheet:
+        return f"=${col_letter}${ref.row}"
+    safe = ref.sheet.replace("'", "''")
+    return f"='{safe}'!${col_letter}${ref.row}"
+
+
 @dataclass
 class DedupeItem:
     key: str

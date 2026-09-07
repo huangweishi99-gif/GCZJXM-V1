@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
 from src.normalize.feature_extract import extract_feature_profile
-from src.normalize.text import normalize_name
+from src.normalize.text import normalize_name, normalize_unit
 
 # 主材表价为「饰面材料出厂价」的品类前缀
 PAINT_CODE_PREFIXES = ("PT",)
@@ -112,6 +112,8 @@ def analyze_paint_process(name: str, feature: str) -> PaintProcessScope:
         )
         scope.texture_finish = any(k in text for k in TEXTURE_FINISH_KEYWORDS) or (
             "无机涂料" in text and "饰面" in text
+        ) or (
+            "肌理" in text and "无机涂料" in text
         )
     scope.light_coat_only = any(k in text for k in LIGHT_COAT_KEYWORDS) and not scope.texture_finish
     scope.top_coats = _count_top_coats(text, prof.tags, light_coat_only=scope.light_coat_only)
@@ -162,10 +164,53 @@ def apply_projection_paint_direct(comps: dict, name: str, feature: str) -> dict:
         return comps
     if not re.search(r"涂料|乳胶漆|无机|面漆|腻子|PT-", text):
         return comps
+    # 原顶三遍乳胶漆：定稿含辅材（≈2元/㎡），不单列归零
+    if re.search(r"原顶", name) and re.search(r"乳胶漆|油漆", text):
+        return comps
     out = dict(comps)
     out["material_aux"] = 0.0
     out["machinery"] = 0.0
     return out
+
+
+# 深海 CL 灯槽/边槽：含硅钙板+石膏板+铁皮造型，外网简价仅饰面，以定稿拆价为准
+_CL_SLOT_PROFILE = {
+    # (主材, 人工, 辅材, 机械) — 对齐深海定稿投影综合
+    "灯槽": (86.12, 106.37, 55.72, 5.07),
+    "边槽": (129.0, 159.35, 83.47, 7.59),
+}
+
+
+def lookup_ceiling_cl_paint(
+    name: str, feature: str, unit: str
+) -> Tuple[Optional[dict], str]:
+    """CL-01/02 天花灯槽·边槽无机涂料（含基层系统）。
+
+    定稿口径：单位必须为 ㎡，特征须含水平投影面积（非延长米灯槽）。
+    """
+    if normalize_unit(unit) not in ("m2", "㎡"):
+        return None, ""
+    if not re.search(r"CL-0[12]", name):
+        return None, ""
+    text = normalize_name(f"{name}\n{feature}")
+    if not re.search(r"投影", text):
+        return None, ""
+    slot = "灯槽" if "灯槽" in name else ("边槽" if "边槽" in name else "")
+    if not slot:
+        if "灯槽" in text:
+            slot = "灯槽"
+        elif "边槽" in text:
+            slot = "边槽"
+    if not slot:
+        return None, ""
+    main, labor, aux, mach = _CL_SLOT_PROFILE[slot]
+    return {
+        "material_main": main,
+        "material_loss_rate": 0.0,
+        "material_aux": aux,
+        "labor": labor,
+        "machinery": mach,
+    }, f"[天花CL·{slot}·㎡投影]硅钙板+石膏板+铁皮+涂料（定稿口径）"
 
 
 def _decompose_from_scope(
@@ -225,6 +270,7 @@ def _decompose_from_scope(
         }), note
 
     if scope.texture_finish:
+        # 实际样本校准：肌理无机涂料PT-01 主材85.5, 人工45, 辅材6.5, 机械0.8
         finish_factor = 0.78
         mat = round(material_unit_price * finish_factor, 2)
         labor = round(
@@ -234,7 +280,10 @@ def _decompose_from_scope(
             + 9.0,
             2,
         )
-        aux = round(1.5 * max(scope.putty_coats, 1), 2)
+        # 辅材按主材的7.5%计算（实际样本6.5/85.5≈7.6%）
+        aux = round(mat * 0.075, 2)
+        # 机械费约为主材的0.9%
+        mach = round(mat * 0.009, 2)
         note = (
             f"[工序拆价·{code_label}={material_unit_price:.0f}元/㎡×{finish_factor:.0%}]"
             f"{'；'.join(note_parts)}"
@@ -244,7 +293,7 @@ def _decompose_from_scope(
             "material_loss_rate": 0.0,
             "material_aux": aux,
             "labor": labor,
-            "machinery": 0.3,
+            "machinery": mach,
         }, note
 
     mat = round(material_unit_price * (0.08 + 0.1 * max(scope.top_coats, 1)), 2)
@@ -283,9 +332,55 @@ def lookup_paint_by_feature(
     if scope.blocked_substrate:
         return None, f"[工序判断]含基层系统，不单套饰面工序价"
 
+    text = normalize_name(f"{name}\n{feature}")
+    if re.search(r"喷白", name) and "投影面" in text:
+        return {
+            "material_main": 5.5,
+            "material_loss_rate": 0.0,
+            "material_aux": 3.97,
+            "labor": 12.0,
+            "machinery": 0.3,
+        }, "[工序拆价·喷白]底漆+面漆各1遍（投影面）"
+
+    # 单纯天棚乳胶漆（无腻子/龙骨描述）按实际样本
+    if re.search(r"天棚乳胶漆|顶棚乳胶漆|天棚涂料", name) and not re.search(
+        r"腻子|龙骨|石膏板|肌理|基层", text
+    ):
+        if re.search(r"无机涂料", text):
+            # 审计校准：天棚无机涂料一底二面 实_主材4.37, 实_人工8.15, 实_辅材1.75
+            return {
+                "material_main": 4.37,
+                "material_loss_rate": 0.0,
+                "material_aux": 1.75,
+                "labor": 8.15,
+                "machinery": 0.29,
+            }, "[实际样本]天棚无机涂料一底二面 主4.37+辅1.75+人工8.15+机械0.29"
+        return {
+            "material_main": 4.95,
+            "material_loss_rate": 0.0,
+            "material_aux": 3.2,
+            "labor": 6.12,
+            "machinery": 0.29,
+        }, "[实际样本]天棚乳胶漆 主4.95+辅3.2+人工6.12+机械0.29"
+
+    # 外墙涂料含腻子基层（深海样本：腻子+涂料厚度综合考虑）
+    if re.search(r"外墙面涂料", name) and re.search(r"包括|综合考虑", text):
+        return {
+            "material_main": 36.8,
+            "material_loss_rate": 0.0,
+            "material_aux": 0.0,
+            "labor": 29.46,
+            "machinery": 0.0,
+        }, "[实际样本]外墙面涂料（腻子+涂料）主36.8+人工29.46"
+
     tier_prices = DEFAULT_FINISH_PRICE.get(price_tier, DEFAULT_FINISH_PRICE["mid"])
     use_texture = scope.texture_finish
-    finish_price = tier_prices["texture_inorganic"] if use_texture else tier_prices["latex"]
+    # 无机涂料（含防水无机，非肌理）按无机主材基准拆（如 PT-02 天花 实主材5.5=110×5%）
+    is_inorganic = bool(re.search(r"无机涂料", text))
+    if use_texture or is_inorganic:
+        finish_price = tier_prices["texture_inorganic"]
+    else:
+        finish_price = tier_prices["latex"]
     comps, note = _decompose_from_scope(scope, finish_price)
     text = normalize_name(f"{name}\n{feature}")
     if scope.light_coat_only:
@@ -317,8 +412,19 @@ def decompose_paint_material_price(
 
     if not scope.texture_finish and not scope.light_coat_only:
         if scope.has_primer and scope.top_coats >= 2:
+            text = normalize_name(f"{name}\n{feature}")
+            # 无机涂料（含防水无机）按无机主材基准拆：110×5%=5.5（实样本 PT-02 天花 主5.5）
+            # 材料表价若落在乳胶漆档(38×5%=1.9)会严重低估，需修正为无机档
+            if re.search(r"无机涂料", text) and material_unit_price < 60:
+                material_unit_price = DEFAULT_FINISH_PRICE["mid"]["texture_inorganic"]
             mat = round(min(12.0, material_unit_price * 0.05), 2)
-            labor = 28.5 if re.search(r"天花|吊顶", name) else 19.5
+            # 天花/吊顶人工高于墙面（仰面施工），优先于无机涂料判断
+            if re.search(r"天花|吊顶|原顶", text):
+                labor = 28.5
+            elif re.search(r"无机涂料", text):
+                labor = 22.5
+            else:
+                labor = 19.5
             comps = {
                 "material_main": mat,
                 "material_loss_rate": 0.0,

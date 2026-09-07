@@ -1,0 +1,13 @@
+﻿cands: 3
+  cand: {'record_id': None, 'name': '内墙无机涂料2~3道', 'unit': '㎡', 'name_score': 0.4211, 'feature_score': 1.0, 'line_conf': None, 'feature': ''}
+  weak_comps: None
+  is_material_only: None
+  note: 
+  cand: {'record_id': None, 'name': '天棚无机涂料2~3道', 'unit': '㎡', 'name_score': 0.4211, 'feature_score': 1.0, 'line_conf': None, 'feature': ''}
+  weak_comps: None
+  is_material_only: None
+  note: 
+  cand: {'record_id': None, 'name': '原消防管道重新油漆', 'unit': '㎡', 'name_score': 0.2353, 'feature_score': 1.0, 'line_conf': None, 'feature': ''}
+  weak_comps: None
+  is_material_only: None
+  note: 

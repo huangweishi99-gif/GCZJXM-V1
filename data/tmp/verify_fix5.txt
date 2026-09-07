@@ -1,0 +1,14 @@
+﻿[OK] 装饰灯                              src=lighting_fixture_cod 判[  21.00/ 19.50] 期望[  20.60/ 19.57]
+[OK] AL-03黑色型材踢脚线                     src=special_line_price   判[  13.00/ 12.30] 期望[  12.94/ 12.28]
+[OK] 天花检修口                            src=market_reference     判[  45.23/ 40.20] 期望[  45.23/ 40.20]
+[OK] 装饰屏风（1810mm*100mm*3400mm）        src=special_line_price   判[1415.00/ 55.00] 期望[1415.00/ 55.00]
+[OK] 造型石膏板吊顶（标高7.15m）                 src=special_line_price   判[   0.00/150.00] 期望[   0.00/150.00]
+[OK] 内顶多层叠型                           src=special_line_price   判[   0.00/150.00] 期望[   0.00/150.00]
+[DIFF] 原顶面白色无机涂料                        src=line_match_weak      判[  27.60/  0.00] 期望[   4.95/  4.69]
+[OK] 空调风口                             src=decorative_diffuser_ 判[ 463.68/121.44] 期望[ 463.49/123.59]
+[OK] NXB-63 D25/3P                    src=mep_install_profile  判[  23.10/  8.36] 期望[  23.15/  8.36]
+[OK] NXBLE-63 C16/ 3P（30mA）           src=mep_install_profile  判[  62.00/ 15.00] 期望[  59.50/ 14.69]
+[OK] NXB-63 3P C63（30mA）              src=mep_install_profile  判[  79.65/ 15.50] 期望[  83.00/ 15.14]
+[DIFF] NXB-63 D20/2P                    src=mep_install_profile  判[  18.90/  4.50] 期望[  15.55/  5.00]
+
+通过 10/12

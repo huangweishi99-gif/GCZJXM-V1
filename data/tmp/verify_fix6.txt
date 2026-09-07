@@ -1,0 +1,10 @@
+﻿source: line_match_weak conf: 0.79
+comps: {'material_main': 27.604592592592592, 'material_loss_rate': 0.0, 'material_aux': 0.0, 'labor': 0.0, 'machinery': 0.0}
+=== 全部 notes ===
+  0: 对照口径：名称+特征(0字)+单位(㎡)
+  1: 整项参照置信 79%<80%：[主材价库]材料价库(paint·深圳·mid)；规格paint（深圳·中档）
+  2: [主材价库]材料价库(paint·深圳·mid)；规格paint
+  3: 按「装饰综合」份额模板推算辅材/人工（主材来自价库）
+  4: material_plus_template层已禁用，继续fall through
+  5: [定额标准] 020501002「墙面无机涂料」（匹配度:40.5%，单位:100㎡）
+  6: [主材价库]材料价库(paint·深圳·mid)；规格paint（深圳·中档）

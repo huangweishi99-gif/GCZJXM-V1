@@ -47,6 +47,10 @@ def prefer_net_price(name: str, feature: str = "", unit: str = "") -> bool:
     name_n = normalize_name(name)
     u = normalize_unit(unit)
 
+    for gu in rules.get("gross_units") or []:
+        if u == normalize_unit(gu):
+            return False
+
     for pat in _compiled_patterns(rules.get("gross_name_patterns") or []):
         if pat.search(name_n):
             return False

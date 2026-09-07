@@ -1,0 +1,92 @@
+{
+  "version": "2023.12",
+  "city": "深圳",
+  "description": "深圳建设工程价格信息 - 材料单价库（供定额消耗量计算使用）",
+  "categories": {
+    "建筑材料": {
+      "cement": {"name": "水泥", "spec": "P.O 42.5R", "unit": "t", "price": 550},
+      "sand": {"name": "中砂", "spec": "", "unit": "m³", "price": 120},
+      "gravel": {"name": "碎石", "spec": "5-31.5mm", "unit": "m³", "price": 100},
+      "concrete": {"name": "商品混凝土", "spec": "C30", "unit": "m³", "price": 450},
+      "steel_bar": {"name": "钢筋", "spec": "HRB400", "unit": "t", "price": 5500},
+      "steel_plate": {"name": "钢板", "spec": "Q235B", "unit": "t", "price": 6000},
+      "bricks": {"name": "粘土砖", "spec": "240×115×53", "unit": "千块", "price": 300},
+      "blocks": {"name": "加气混凝土砌块", "spec": "600×200×200", "unit": "m³", "price": 280},
+      "lime": {"name": "生石灰", "spec": "", "unit": "t", "price": 260},
+      "water": {"name": "自来水", "spec": "", "unit": "m³", "price": 5}
+    },
+    "装饰材料": {
+      "paint_exterior": {"name": "外墙涂料", "spec": "丙烯酸", "unit": "kg", "price": 25},
+      "paint_interior": {"name": "内墙涂料", "spec": "乳胶漆", "unit": "kg", "price": 18},
+      "wallpaper": {"name": "壁纸", "spec": "", "unit": "㎡", "price": 50},
+      "gypsum_board": {"name": "石膏板", "spec": "12mm", "unit": "㎡", "price": 25},
+      "aluminum_plate": {"name": "铝塑板", "spec": "3mm", "unit": "㎡", "price": 80},
+      "aluminum_veneer": {"name": "铝单板", "spec": "2.5mm", "unit": "㎡", "price": 180},
+      "wood_veneer": {"name": "木饰面", "spec": "", "unit": "㎡", "price": 150},
+      "marble": {"name": "大理石", "spec": "20mm", "unit": "㎡", "price": 200},
+      "granite": {"name": "花岗岩", "spec": "20mm", "unit": "㎡", "price": 180},
+      "ceramic_tile": {"name": "瓷砖", "spec": "600×600", "unit": "㎡", "price": 80},
+      "glass_tempered": {"name": "钢化玻璃", "spec": "10mm", "unit": "㎡", "price": 120},
+      "glass_laminated": {"name": "夹胶玻璃", "spec": "6+6", "unit": "㎡", "price": 200},
+      "silicone_sealant": {"name": "硅酮密封胶", "spec": "中性", "unit": "支", "price": 20},
+      "adhesive": {"name": "建筑胶", "spec": "", "unit": "kg", "price": 15},
+      "grout": {"name": "勾缝剂", "spec": "", "unit": "kg", "price": 8}
+    },
+    "安装材料": {
+      "steel_pipe_black": {"name": "焊接钢管", "spec": "DN20", "unit": "m", "price": 15},
+      "steel_pipe_galvanized": {"name": "镀锌钢管", "spec": "DN20", "unit": "m", "price": 20},
+      "ppr_pipe": {"name": "PPR管", "spec": "De20", "unit": "m", "price": 8},
+      "pvc_pipe": {"name": "PVC管", "spec": "DN50", "unit": "m", "price": 12},
+      "copper_pipe": {"name": "铜管", "spec": "φ15", "unit": "m", "price": 60},
+      "valve_ball": {"name": "球阀", "spec": "DN20", "unit": "个", "price": 35},
+      "valve_gate": {"name": "闸阀", "spec": "DN50", "unit": "个", "price": 80},
+      "valve_butterfly": {"name": "蝶阀", "spec": "DN100", "unit": "个", "price": 150},
+      "water_meter": {"name": "水表", "spec": "DN20", "unit": "个", "price": 60},
+      "fire_sprinkler": {"name": "喷淋头", "spec": "DN15", "unit": "个", "price": 65},
+      "fire_hydrant": {"name": "消火栓", "spec": "SN65", "unit": "套", "price": 350},
+      "smoke_detector": {"name": "烟感探测器", "spec": "", "unit": "个", "price": 180},
+      "broadcast_speaker": {"name": "消防广播", "spec": "", "unit": "个", "price": 120},
+      "cable_yjv": {"name": "电力电缆", "spec": "YJV-4×25", "unit": "m", "price": 80},
+      "wire_bv": {"name": "铜芯电线", "spec": "BV-2.5", "unit": "m", "price": 2.5},
+      "wire_byj": {"name": "低烟无卤电线", "spec": "WDZC-BYJ-2.5", "unit": "m", "price": 3},
+      "conduit_jdg": {"name": "JDG管", "spec": "φ20", "unit": "m", "price": 6},
+      "conduit_pvc": {"name": "PVC线管", "spec": "φ20", "unit": "m", "price": 2},
+      "distribution_box": {"name": "配电箱", "spec": "300×400", "unit": "个", "price": 300},
+      "circuit_breaker": {"name": "断路器", "spec": "C65N-16A", "unit": "个", "price": 30},
+      "socket": {"name": "插座", "spec": "五孔", "unit": "个", "price": 20},
+      "switch": {"name": "开关", "spec": "单开", "unit": "个", "price": 15}
+    },
+    "机电设备": {
+      "fan_coil": {"name": "风机盘管", "spec": "FP-68", "unit": "台", "price": 2000},
+      "axial_fan": {"name": "轴流风机", "spec": "φ300", "unit": "台", "price": 500},
+      "centrifugal_fan": {"name": "离心风机", "spec": "4-72-No.5", "unit": "台", "price": 1500},
+      "air_conditioner": {"name": "空调室内机", "spec": "1.5HP", "unit": "台", "price": 3000},
+      "air_conditioner_outdoor": {"name": "空调室外机", "spec": "1.5HP", "unit": "台", "price": 2500},
+      "diffuser": {"name": "空调风口", "spec": "300×300", "unit": "个", "price": 100},
+      "plenum_box": {"name": "静压箱", "spec": "500×500", "unit": "个", "price": 400},
+      "duct_steel": {"name": "镀锌钢板风管", "spec": "0.75mm", "unit": "㎡", "price": 85},
+      "pump": {"name": "水泵", "spec": "ISG50-160", "unit": "台", "price": 3000}
+    },
+    "人工工资": {
+      "labor_decoration": {"name": "装饰工", "spec": "", "unit": "工日", "price": 120},
+      "labor_electrician": {"name": "电工", "spec": "", "unit": "工日", "price": 150},
+      "labor_plumber": {"name": "给排水工", "spec": "", "unit": "工日", "price": 140},
+      "labor_civil": {"name": "土建工", "spec": "", "unit": "工日", "price": 110},
+      "labor_welder": {"name": "焊工", "spec": "", "unit": "工日", "price": 180},
+      "labor_painter": {"name": "油漆工", "spec": "", "unit": "工日", "price": 120},
+      "labor_mason": {"name": "砌筑工", "spec": "", "unit": "工日", "price": 110},
+      "labor_carpenter": {"name": "木工", "spec": "", "unit": "工日", "price": 140}
+    },
+    "机械台班": {
+      "crane_8t": {"name": "汽车起重机", "spec": "8t", "unit": "台班", "price": 800},
+      "excavator_1m3": {"name": "挖掘机", "spec": "1m³", "unit": "台班", "price": 800},
+      "bulldozer": {"name": "推土机", "spec": "80HP", "unit": "台班", "price": 600},
+      "concrete_mixer": {"name": "混凝土搅拌机", "spec": "400L", "unit": "台班", "price": 200},
+      "welding_machine": {"name": "电焊机", "spec": "BX3-500", "unit": "台班", "price": 200},
+      "air_compressor": {"name": "空气压缩机", "spec": "0.9m³", "unit": "台班", "price": 250},
+      "grinder": {"name": "磨光机", "spec": "", "unit": "台班", "price": 150},
+      "roller": {"name": "压路机", "spec": "10t", "unit": "台班", "price": 600},
+      "truck_5t": {"name": "载重汽车", "spec": "5t", "unit": "台班", "price": 500}
+    }
+  }
+}

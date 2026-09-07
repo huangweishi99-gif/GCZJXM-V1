@@ -30,6 +30,7 @@ class MarketRef:
     material_loss_rate: float = 0.0
     note: str = ""
     confidence: float = 0.82
+    preserve_components: bool = False
 
 
 def lookup_market_reference(
@@ -48,15 +49,36 @@ def lookup_market_reference(
     unit_n = normalize_unit(unit)
     if not unit_n:
         return None
+    demolition_context = any(k in combined for k in ("拆除", "铲除", "剔凿", "刨铣"))
 
     best: Optional[MarketRef] = None
     best_score = 0.0
 
+    city_n = normalize_name(city) if city else ""
+    tier_n = (tier or "mid").lower()
+
     for rule in cfg.get("rules", []):
         score = 0.0
+        rule_id = str(rule.get("id", ""))
+        if demolition_context and not (
+            rule_id.startswith("demolition_") or rule.get("allow_demolition_context")
+        ):
+            continue
         allowed = rule.get("units") or []
         if allowed and unit_n not in allowed:
             continue
+
+        cities = [normalize_name(c) for c in (rule.get("cities") or []) if c]
+        if cities and city_n and city_n not in cities:
+            continue
+        # 城市/档位特化规则优先于通用市场价
+        if cities and city_n and city_n in cities:
+            score += 25.0
+        tiers = [str(t).lower() for t in (rule.get("tiers") or []) if t]
+        if tiers and tier_n not in tiers:
+            continue
+        if tiers and tier_n in tiers:
+            score += 5.0
 
         name_hits = 0
         for kw in rule.get("name_keywords", []):
@@ -71,12 +93,11 @@ def lookup_market_reference(
         feat_hits = 0
         for kw in feat_req:
             kn = normalize_name(kw)
-            if kn and kn in combined:
+            # feature_keywords可以在名称或特征中匹配（如DN50可能在名称中）
+            if kn and (kn in name_n or kn in combined):
                 feat_hits += 1
                 score += 8 + len(kn) * 0.05
         if feat_req and rule.get("require_feature_keywords") and feat_hits == 0:
-            continue
-        if feat_req and not feat_n:
             continue
 
         for kw in rule.get("exclude_feature_keywords", []):
@@ -115,6 +136,7 @@ def lookup_market_reference(
                 material_loss_rate=float(rule.get("material_loss_rate", 0)),
                 note=rule.get("source_note", "市场参考价"),
                 confidence=float(rule.get("confidence", 0.82)),
+                preserve_components=bool(rule.get("preserve_components", False)),
             )
 
     return best

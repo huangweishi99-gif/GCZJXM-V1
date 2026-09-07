@@ -1,0 +1,90 @@
+﻿[套] 原有空调拆除 -> demolition_ac_reinstall 主0.0 辅0.0 人287.18 机5.86 conf=0.82 | 实际样本校准：原有空调拆除实_人工287.18
+[m2] 幕墙钢框保护利旧及拆除幕墙玻璃 -> demolition_curtain_wall_steel_reuse 主0.0 辅0.0 人42.29 机1.0 conf=0.82 | 实际样本校准：幕墙钢框保护利旧及拆除幕墙玻璃实_人工42.29
+[套] 探测器拆除、安装 -> demolition_detector_reinstall 主0.0 辅0.0 人187.57 机3.83 conf=0.82 | 实际样本校准：探测器拆除、安装（配合装修，不含布管布线）实_人工187.57
+[套] 消防广播拆除、安装 -> demolition_broadcast_reinstall 主0.0 辅0.0 人187.57 机3.83 conf=0.82 | 实际样本校准：消防广播拆除、安装（配合装修，不含布管布线）实_人工187.57
+[个] 喷头拆除、安装 -> demolition_sprinkler_reinstall 主0.0 辅0.0 人170.52 机3.48 conf=0.82 | 实际样本校准：喷头拆除、安装/保护性拆除明装喷头（配合装修）实_人工170.52
+[项] 电气、暖通等拆除费用 -> demolition_generic 主0.0 辅1.0 人186.08 机1.0 conf=0.72 | 市场参考：拆除工程综合兜底
+[m] 栏杆、栏板拆除 -> demolition_railing 主0.0 辅0.0 人12.0 机0.3 conf=0.82 | 市场参考：金属栏杆/扶手拆除
+
+--- 所有 demolition_ 规则 ---
+  demolition_ceiling | units=['㎡'] | kw=['天花拆除', '吊顶拆除', '矿棉板', '铝扣板'] | 主0 辅0 人10 机0.5 conf=None
+  demolition_floor_concrete | units=['㎡'] | kw=['混凝土地面拆除', '混凝土拆除'] | 主0 辅0 人51 机8 conf=None
+  demolition_floor_tile | units=['㎡'] | kw=['地砖', '石材地面'] | 主0 辅0 人27 机2 conf=None
+  demolition_wall_finish | units=['㎡'] | kw=['拆除墙面石材', '拆除墙砖', '石材、墙砖', '墙面砖拆除'] | 主0 辅0 人27 机1 conf=None
+  demolition_paint_scrape | units=['㎡'] | kw=['乳胶漆铲除', '涂料铲除', '墙面铲除', '铲除'] | 主0 辅0 人4.3 机0.1 conf=None
+  demolition_floor_epoxy | units=['㎡'] | kw=['环氧'] | 主0 辅0 人10 机1.5 conf=None
+  demolition_steel_stair | units=['㎡', 'm'] | kw=['钢楼梯', '楼梯', '钢结构'] | 主0 辅100 人800 机80 conf=None
+  demolition_floor_carpet | units=['㎡'] | kw=['地毯', '胶地板'] | 主0 辅0 人5 机0.5 conf=None
+  demolition_electrical | units=['㎡'] | kw=['电气工程拆除', '电气拆除'] | 主0 辅0 人1 机0 conf=None
+  demolition_furniture_fixed | units=['m'] | kw=['固定家具拆除', '固定家具'] | 主0 辅0 人20 机0.5 conf=None
+  demolition_roller_shutter | units=['㎡'] | kw=['拆除卷帘门', '卷帘门拆除'] | 主0 辅0 人12 机0.5 conf=None
+  demolition_floor_drain | units=['m'] | kw=['排水篦子', '篦子盖板'] | 主0 辅0 人4 机0 conf=None
+  demolition_floor_frosted_film | units=['㎡'] | kw=['地面磨砂膜', '磨砂膜'] | 主0 辅0 人7 机0 conf=None
+  demolition_wall_masonry | units=['m³'] | kw=['砌筑', '墙体拆除'] | 主0 辅0 人165 机5 conf=None
+  demolition_wall_partition | units=['㎡'] | kw=['石膏板', '隔墙', '水泥压力板'] | 主0 辅0 人19 机1 conf=None
+  demolition_window | units=['㎡'] | kw=['外窗', '拆除外窗', '拆除窗'] | 主0 辅0 人11 机0.5 conf=None
+  demolition_partition | units=['间', '个', '㎡'] | kw=['隔断拆除'] | 主0 辅0 人24 机0.5 conf=None
+  demolition_fixture | units=['个', '套'] | kw=['台盆拆除', '固定家具拆除', '洁具拆除'] | 主0 辅0 人17 机0.3 conf=None
+  demolition_stair | units=['t', '项', '㎡'] | kw=['钢楼梯', '楼梯拆除', '台阶拆除'] | 主0 辅0 人35 机8 conf=None
+  demolition_railing | units=['m'] | kw=['拆除', '栏杆'] | 主0 辅0 人12 机0.3 conf=None
+  demolition_electrical | units=['项', '㎡'] | kw=['电气工程拆除', '电气拆除'] | 主0 辅5 人45 机2 conf=None
+  demolition_metal_structure_t_review | units=['t'] | kw=['金属构件拆除'] | 主0 辅0 人674.73 机13 conf=0.78
+  demolition_reinforced_concrete_m3_review | units=['m³'] | kw=['钢筋混凝土构件拆除'] | 主0 辅9.2 人359 机143.37 conf=0.78
+  demolition_fcu_protective_review | units=['台', '套'] | kw=['风机盘管'] | 主0 辅0 人170.97 机0 conf=0.78
+  demolition_concrete_stair | units=['部', '套', '个'] | kw=['混凝土楼梯', '楼梯拆除', '混凝土楼梯拆除'] | 主0 辅0 人1050 机80 conf=None
+  demolition_curtain_wall_glass | units=['㎡'] | kw=['外幕墙玻璃拆除'] | 主0 辅17.62 人41.54 机0 conf=None
+  demolition_curtain_wall | units=['㎡'] | kw=['幕墙拆除', '玻璃幕墙拆除', '外幕墙拆除'] | 主0 辅0 人42 机5 conf=None
+  demolition_glass_partition | units=['㎡'] | kw=['玻璃隔断拆除', '玻璃隔墙拆除'] | 主0 辅17.95 人10.91 机0 conf=None
+  demolition_fan_protective | units=['台', '套'] | kw=['离心风机'] | 主0 辅0 人280 机20 conf=None
+  demolition_sprinkler_pipe_dn65 | units=['m'] | kw=['水喷淋钢管', '喷淋钢管'] | 主0 辅3.5 人31.5 机0 conf=None
+  demolition_generic | units=[] | kw=['拆除', '铲除'] | 主0 辅1 人186.08 机1 conf=0.72
+  demolition_plain_concrete_m3 | units=['m³'] | kw=['素混凝土拆除', '素混凝土', '混凝土构件拆除'] | 主0 辅5 人250 机20 conf=0.75
+  demolition_wall_logo | units=['㎡', '个'] | kw=['墙面logo', 'logo拆除', '文字拆除', '标识拆除'] | 主0 辅0 人68 机2 conf=0.7
+  demolition_curtain_wall_billboard | units=['㎡'] | kw=['玻璃幕墙广告画', '幕墙广告', '广告画拆除'] | 主0 辅0 人13 机0.5 conf=None
+  demolition_concrete_foundation | units=['个', '套'] | kw=['举升机基础', '钢筋混凝土基础', '带型基础'] | 主1500 辅0 人180 机12 conf=None
+  demolition_sanitary | units=['个'] | kw=['小便斗拆除', '洁具拆除'] | 主0 辅1 人15 机0 conf=None
+  demolition_film | units=['㎡'] | kw=['磨砂膜拆除', '膜拆除'] | 主0 辅0.5 人7 机0 conf=None
+  demolition_curtain_wall | units=['㎡'] | kw=['幕墙拆除', '玻璃幕墙拆除', '外幕墙拆除'] | 主0 辅2 人45 机5 conf=None
+  demolition_wall | units=['m³'] | kw=['拆除墙体'] | 主0 辅5 人675 机25 conf=None
+  demolition_glass_partition | units=['㎡'] | kw=['玻璃隔墙拆除'] | 主0 辅1.5 人29 机1 conf=None
+  door_opening_repair | units=['处'] | kw=['拆除原门洞口修补加固', '洞口修补'] | 主50 辅20 人188 机5 conf=None
+  demolition_door_repair | units=['处', '项'] | kw=['拆除原门洞口修补加固', '门洞口修补', '洞口修补', '门洞口加固'] | 主50 辅0 人188 机0 conf=0.72
+  demolition_steel_stair | units=['部', '套'] | kw=['拆除钢楼梯', '钢楼梯拆除'] | 主0 辅20 人800 机50 conf=None
+  fan_coil_protective_removal | units=['台'] | kw=['风机盘管'] | 主0 辅10 人171 机5 conf=None
+  steel_stair_demolition | units=['部'] | kw=['钢楼梯拆除', '拆除钢楼梯'] | 主0 辅10 人830 机20 conf=None
+  concrete_demolition | units=['m³'] | kw=['钢筋混凝土构件拆除', '混凝土构件拆除'] | 主0.0 辅20.0 人359.0 机30.0 conf=None
+  demolition_detector_reinstall | units=['套'] | kw=['探测器拆除'] | 主0 辅0 人187.57 机3.83 conf=None
+  demolition_detector_reinstall_wire | units=['套'] | kw=['探测器拆除'] | 主191.4 辅0 人0 机0 conf=None
+  demolition_broadcast_reinstall | units=['套'] | kw=['广播拆除'] | 主0 辅0 人187.57 机3.83 conf=None
+  demolition_broadcast_reinstall_wire | units=['套'] | kw=['广播拆除'] | 主191.4 辅0 人0 机0 conf=None
+  demolition_sprinkler_reinstall | units=['个'] | kw=['喷头拆除', '拆除明装喷头'] | 主0 辅0 人170.52 机3.48 conf=None
+  demolition_sprinkler_reinstall_wire | units=['个'] | kw=['喷头拆除', '拆除明装喷头'] | 主174 辅0 人0 机0 conf=None
+  demolition_glass_door_reinstall | units=['樘'] | kw=['玻璃双开门拆除', '双开门拆除'] | 主0 辅0 人600 机0 conf=None
+  demolition_ac_reinstall | units=['套'] | kw=['空调拆除'] | 主0 辅0 人287.18 机5.86 conf=None
+  demolition_air_curtain_protective | units=['台'] | kw=['风幕机'] | 主0 辅0 人115 机51.47 conf=None
+  demolition_curtain_wall_steel_reuse | units=['㎡'] | kw=['幕墙钢框保护利旧'] | 主0 辅0 人42.29 机1.0 conf=None
+  demolition_mep_sweep | units=['㎡'] | kw=['暖通等拆除', '电气暖通'] | 主0 辅0 人12.5 机3.25 conf=None
+  demolition_roller_shutter_motor_reinstall | units=['套'] | kw=['更换电机的卷帘门拆除'] | 主0 辅0 人239.74 机20 conf=None
+  smoke_detector_sz | units=['个'] | kw=['智能光电烟感'] | 主40 辅18 人26.4 机2.4 conf=None
+  demolition_wall_door_open | units=['㎡'] | kw=['砌体墙开门洞', '开门洞'] | 主0 辅2.59 人66.66 机13 conf=None
+  demolition_floor_spring | units=['个'] | kw=['地弹簧'] | 主650 辅50 人198.85 机0 conf=None
+
+--- labor in {16.66, 15.0} 或类似 ---
+  aluminum_skirting | kw=['AL-', '踢脚线', '型材踢脚'] | units=['m'] | 人15.0 辅2 机0.2 conf=None | 市场参考：铝合金型材踢脚线
+  fire_extinguisher | kw=['灭火器'] | units=['个'] | 人15 辅5 机0 conf=None | 市场参考：灭火器含安装
+  waste_bin_paper | kw=['废纸收纳盒', '废纸收纳'] | units=['个', '组'] | 人15 辅0 机0 conf=None | 深圳定稿：废纸收纳盒
+  waste_bin | kw=['垃圾桶', '垃圾箱', '收纳盒', '废纸收纳'] | units=['个', '组'] | 人15 辅2 机0 conf=None | 市场参考：垃圾桶/收纳盒
+  shower_threshold | kw=['淋浴间挡水台', '挡水台', '淋浴门槛'] | units=['m', '个'] | 人15 辅5 机1 conf=None | 市场参考：淋浴间挡水台（石材门槛）
+  sprinkler_pipe_dn150 | kw=['水喷淋钢管', '喷淋钢管'] | units=['m'] | 人15 辅3 机2 conf=None | 实际样本校准：水喷淋钢管DN150新增实_主材22.5,实_人工14.85
+  sz_grout_floor | kw=['地面美缝', '美缝剂美缝'] | units=['㎡'] | 人15 辅0 机0 conf=None | 深圳定稿：地面美缝约18.5元/㎡
+  sz_grout_wall | kw=['墙面美缝', '美缝剂美缝'] | units=['㎡'] | 人15 辅0 机0 conf=None | 深圳定稿：墙面美缝约18.5元/㎡
+  clothes_drying_rod | kw=['晾衣杆'] | units=['m'] | 人15 辅8 机0 conf=None | 市场参考：不锈钢晾衣杆
+  demolition_sanitary | kw=['小便斗拆除', '洁具拆除'] | units=['个'] | 人15 辅1 机0 conf=None | 市场参考：卫生洁具拆除
+  single_double_switch | kw=['单联双控开关'] | units=['个'] | 人15 辅1 机0 conf=None | 市场参考：单联双控开关含主材及安装
+  stainless_steel_trim | kw=['不锈钢装饰线'] | units=['m'] | 人15 辅3 机0.5 conf=None | 市场参考：不锈钢装饰线（人工）
+  floor_grout | kw=['美缝剂', '美缝'] | units=['㎡'] | 人15 辅3 机1 conf=None | 市场参考：美缝剂美缝
+  door_frame_foam | kw=['发泡胶塞口', '门框发泡胶'] | units=['樘'] | 人15 辅15 机0 conf=None | 实际样本校准：门框发泡胶塞口实_人工15辅材15
+  toilet_platform_concrete | kw=['砌筑高台'] | units=['㎡'] | 人15 辅0 机2 conf=None | 市场参考：卫生间混凝土砌筑高台
+  escape_route_sign | kw=['逃生通道图'] | units=['个'] | 人15 辅0 机0 conf=None | 市场参考：逃生通道图(A3亚克力)
+  tissue_box | kw=['抽纸'] | units=['套'] | 人15 辅0 机0 conf=None | 市场参考：洗手池抽纸不锈钢纸盒
+  gray_wave_panel | kw=['波浪板'] | units=['㎡'] | 人15 辅0 机2 conf=None | 市场参考：外立面灰色波浪板

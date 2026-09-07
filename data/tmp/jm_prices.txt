@@ -1,0 +1,291 @@
+R  8 [PL020103001 ] 楼地面
+    unit=m2  qty=25.04                    m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(141字)+单位(㎡) / 整项参照置信 41%<80%：[主材价库]材料价库(tile:800*800·通用·mid)【跨区/跨档】；规
+R  9 [PL020103001 ] 楼地面
+    unit=m2  qty==3.34+2.48+2.37+7.18+0.5 m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(136字)+单位(㎡) / 整项参照置信 41%<80%：[主材价库]材料价库(tile:600*600·通用·mid)【跨区/跨档】；规
+R 10 [PL020103001 ] 楼地面
+    unit=m2  qty==1.02+1.05               m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(136字)+单位(㎡) / 整项参照置信 41%<80%：[主材价库]材料价库(tile:800*800·通用·mid)【跨区/跨档】；规
+R 11 [PL020106003 ] 窗台石
+    unit=m2  qty==2.76*(0.6+0.04)+1.76*0. m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(79字)+单位(㎡) / 整项参照置信 50%<80%：[主材价库]材料价库(tile:800*800·通用·mid)【跨区/跨档】；规格
+R 12 [PL020117001 ] 自流坪楼地面
+    unit=m2  qty=0                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(19字)+单位(㎡) / 拒绝弱整项：特征一致度33%<62% / 层5拒绝弱整项：特征一致度33%<62% / 未达自动判断门槛：工艺=
+R 13 [PL020401001 ] 防水工程
+    unit=m2  qty==2+2.65+(3.4+4.7)*0.15   m=35.00 l=19.85 a=8.00 mech=0.50 loss=0.000 conf=0.76 auto=True src=special_line_price
+    notes: 对照口径：名称+特征(40字)+单位(㎡) / [实际样本]立面防水层(聚氨酯防水)(特征)
+R 14 [PL020111001 ] 陶粒回填
+    unit=m3  qty==(2+2.65)*0.08           m=65.00 l=28.00 a=12.00 mech=5.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(26字)+单位(m³) / 专项规则：市场参考：沉箱陶粒回填
+R 15 [PL020101003 ] 水泥砂浆找平层、保护层或找坡层
+    unit=m2  qty==H20                     m=0.00 l=22.00 a=8.40 mech=0.50 loss=0.000 conf=0.84 auto=True src=residential_finish_profile
+    notes: 对照口径：名称+特征(30字)+单位(㎡) / [精装]20mm砂浆保护层/找坡
+R 16 [PL020107003 ] 门槛石
+    unit=m2  qty==0.24+0.2+0.12+2.1*0.1   m=135.00 l=140.00 a=12.00 mech=0.50 loss=0.030 conf=0.84 auto=True src=residential_finish_profile
+    notes: 对照口径：名称+特征(80字)+单位(㎡) / [精装]门槛石湿贴
+R 17 [PL020107002 ] 门槛石
+    unit=m2  qty==0.22+0.13*2             m=135.00 l=140.00 a=12.00 mech=0.50 loss=0.030 conf=0.84 auto=True src=residential_finish_profile
+    notes: 对照口径：名称+特征(100字)+单位(㎡) / [精装]门槛石湿贴
+R 18 [PL020112001 ] 架空沉箱
+    unit=m2  qty==1.7+0.95                m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(18字)+单位(㎡) / 拒绝弱整项：特征一致度36%<62% / 层5拒绝弱整项：特征一致度36%<62% / 未达自动判断门槛：工艺=
+R 19 [PL020101001 ] 水泥砂浆找平层、保护层或找坡层
+    unit=m2  qty==(3.5+3.4)*2+7.26+5.07+( m=0.00 l=22.00 a=8.40 mech=0.50 loss=0.000 conf=0.84 auto=True src=residential_finish_profile
+    notes: 对照口径：名称+特征(30字)+单位(㎡) / [精装]20mm砂浆保护层/找坡
+R 20 [            ] 强化木地板
+    unit=?   qty==9.98+7.58+5.06          m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.00 auto=False src=
+    notes: 缺少清单单位，无法确定单价口径
+R 21 [            ] 木塑踢脚线
+    unit=?   qty==14.14+11.04+9.04-0.96-0 m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.00 auto=False src=
+    notes: 缺少清单单位，无法确定单价口径
+R 22 [            ] 铝合金扣条
+    unit=?   qty==0.95+0.9+0.9+0.8+1.8    m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.00 auto=False src=
+    notes: 缺少清单单位，无法确定单价口径
+R 24 [PL020201001 ] 内墙钉挂网
+    unit=m2  qty==(8.46*2.8-1.6*2.2-1.02+ m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(38字)+单位(㎡) / 拒绝弱整项：特征一致度43%<62% / 层5拒绝弱整项：特征一致度43%<62% / 未达自动判断门槛：工艺=
+R 25 [PL020202002 ] 墙柱面抹灰
+    unit=m2  qty==H24                     m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(36字)+单位(㎡) / 拒绝弱整项：特征一致度29%<62% / [工艺价型]抹灰找平江门·中档 样本6 标签plaster_thick
+R 26 [PL020207001 ] 墙面块料面层
+    unit=m2  qty==(4.82*2+5.87*2-1.02-3.6 m=0.00 l=45.00 a=0.00 mech=0.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(88字)+单位(㎡) / 整项参照置信 45%<80%：[主材价库]材料价库(tile:600*600·通用·mid)【跨区/跨档】；规格
+R 27 [PL020204001 ] 内墙刮腻子
+    unit=m2  qty==(28.44*2.38-1.09*2.34-0 m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(36字)+单位(㎡) / 拒绝弱整项：特征一致度37%<62% / 层5拒绝弱整项：特征一致度37%<62% / 未达自动判断门槛：工艺=
+R 28 [PL020205001 ] 内墙涂料
+    unit=m2  qty==H27                     m=30.00 l=37.00 a=5.00 mech=0.80 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(45字)+单位(㎡) / 整项参照置信 45%<80%：[主材价库]材料价库(paint·通用·mid)【跨区/跨档】；规格paint（江
+R 29 [PL020204001 ] 内墙刮腻子
+    unit=m2  qty==9.04*2.79-0.9*2.2+(0.9+ m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(42字)+单位(㎡) / 拒绝弱整项：特征一致度34%<62% / 层5拒绝弱整项：特征一致度34%<62% / 未达自动判断门槛：工艺=
+R 30 [PL020205001 ] 内墙涂料
+    unit=m2  qty==H29                     m=30.00 l=37.00 a=5.00 mech=0.80 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(44字)+单位(㎡) / 整项参照置信 41%<80%：[主材价库]材料价库(paint·通用·mid)【跨区/跨档】；规格paint（江
+R 31 [PL020206004 ] 踢脚线
+    unit=m   qty==14.3-2.52-2.11          m=22.00 l=8.00 a=2.00 mech=0.20 loss=0.000 conf=0.78 auto=True src=metal_trim_profile
+    notes: 对照口径：名称+特征(29字)+单位(m) / [型材踢脚/收边] 经验单价（无展开面）
+R 32 [PL020206007 ] 踢脚线
+    unit=m   qty=0                        m=22.00 l=8.00 a=2.00 mech=0.20 loss=0.000 conf=0.78 auto=True src=metal_trim_profile
+    notes: 对照口径：名称+特征(39字)+单位(m) / [型材踢脚/收边] 经验单价（无展开面）
+R 33 [PL020212002 ] 门石座脚
+    unit=个   qty=4                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(37字)+单位(个) / 拒绝弱整项：特征一致度30%<62% / 层5拒绝弱整项：特征一致度30%<62% / 未达自动判断门槛：工艺=
+R 34 [            ] 户内门M1-主卧单开门 900*2200mm
+    unit=樘   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(73字)+单位(樘) / 拒绝弱整项：特征一致度39%<62% / 层5拒绝弱整项：特征一致度39%<62% / 未达自动判断门槛：工艺=
+R 35 [            ] 户内门M2-主卫、公卫单开门 800*2200mm
+    unit=樘   qty=2                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(73字)+单位(樘) / 拒绝弱整项：特征一致度44%<62% / 层5拒绝弱整项：特征一致度44%<62% / 未达自动判断门槛：工艺=
+R 36 [            ] 户内门M3-次卧单开防火门 950*2200mm
+    unit=樘   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(75字)+单位(樘) / 拒绝弱整项：特征一致度42%<62% / 工艺价型样本3未通过合理性校验或归类为「装饰综合」，已跳过 / 层5拒
+R 37 [            ] 户内门M3-阳改房单开门 900*2200mm
+    unit=樘   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(73字)+单位(樘) / 拒绝弱整项：特征一致度39%<62% / 层5拒绝弱整项：特征一致度39%<62% / 未达自动判断门槛：工艺=
+R 38 [            ] 厨房门明装双移1600*2200mm
+    unit=樘   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(60字)+单位(樘) / 拒绝弱整项：特征一致度33%<62% / 层5拒绝弱整项：特征一致度33%<62% / 未达自动判断门槛：工艺=
+R 39 [            ] 橱柜地柜
+    unit=套   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(57字)+单位(套) / 拒绝弱整项：特征产品名冲突「厨房地柜」≠「地漏」 / 层5拒绝弱整项：特征产品名冲突「厨房地柜」≠「地漏」 / 
+R 40 [            ] 橱柜吊柜
+    unit=套   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(53字)+单位(套) / 拒绝弱整项：特征产品名冲突「厨房吊柜」≠「吸顶灯」 / 层5拒绝弱整项：特征产品名冲突「厨房吊柜」≠「吸顶灯」 
+R 41 [            ] 浴室柜-主卧
+    unit=套   qty=1                        m=1050.00 l=150.00 a=35.00 mech=1.50 loss=0.000 conf=0.76 auto=True src=special_line_price
+    notes: 对照口径：名称+特征(61字)+单位(套) / 拒绝弱整项：特征一致度36%<62% / [市场参考]浴室柜
+R 42 [            ] 浴室柜-次卧
+    unit=套   qty=1                        m=1050.00 l=150.00 a=35.00 mech=1.50 loss=0.000 conf=0.76 auto=True src=special_line_price
+    notes: 对照口径：名称+特征(61字)+单位(套) / 拒绝弱整项：特征一致度36%<62% / [市场参考]浴室柜
+R 44 [PL020303001 ] 石膏板吊顶
+    unit=m2  qty==3.05+2.9+1.22           m=28.00 l=55.00 a=42.00 mech=2.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(94字)+单位(㎡) / 拒绝弱整项：特征一致度39%<62% / [市场参考江门·中档] 市场参考：轻钢龙骨石膏板吊顶（规则:ceili
+R 45 [PL020303005 ] 石膏板吊顶
+    unit=m2  qty==3.7*(0.1+0.29)+3.1*(0.1 m=28.00 l=55.00 a=42.00 mech=2.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(86字)+单位(㎡) / 拒绝弱整项：特征一致度30%<62% / [市场参考江门·中档] 市场参考：轻钢龙骨石膏板吊顶（规则:ceili
+R 46 [PL020303006 ] 石膏板吊顶
+    unit=m²  qty==9.2*0.29                m=28.00 l=55.00 a=42.00 mech=2.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(77字)+单位(㎡) / 拒绝弱整项：特征一致度31%<62% / [市场参考江门·中档] 市场参考：轻钢龙骨石膏板吊顶（规则:ceili
+R 47 [PL020301001 ] 天棚刮腻子
+    unit=m2  qty==H44+H45+H46+17.98+7.58+ m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(34字)+单位(㎡) / 拒绝弱整项：特征一致度28%<62% / 层5拒绝弱整项：特征一致度28%<62% / 未达自动判断门槛：工艺=
+R 48 [PL020302001 ] 天棚涂料
+    unit=m2  qty==H47                     m=1.90 l=21.00 a=4.20 mech=0.20 loss=0.000 conf=0.84 auto=True src=paint_process
+    notes: 对照口径：名称+特征(41字)+单位(㎡) / 整项参照置信 49%<80%：[主材价库]材料价库(paint·通用·mid)【跨区/跨档】；规格paint（江
+R 49 [PL020301001 ] 天棚刮腻子
+    unit=m2  qty==5.06+1.25+7.26+6.15*0.2 m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(39字)+单位(㎡) / 拒绝弱整项：特征一致度25%<62% / 层5拒绝弱整项：特征一致度25%<62% / 未达自动判断门槛：工艺=
+R 50 [PL020302001 ] 天棚涂料
+    unit=m2  qty==H49                     m=1.90 l=21.00 a=4.20 mech=0.20 loss=0.000 conf=0.84 auto=True src=paint_process
+    notes: 对照口径：名称+特征(48字)+单位(㎡) / 整项参照置信 48%<80%：[主材价库]材料价库(paint·通用·mid)【跨区/跨档】；规格paint（江
+R 51 [PL020605004 ] 装饰线条
+    unit=m   qty==18.32+8.3+8+7.4         m=28.00 l=10.00 a=3.00 mech=0.20 loss=0.000 conf=0.78 auto=True src=metal_trim_profile
+    notes: 对照口径：名称+特征(44字)+单位(m) / [金属装饰线/MT] 实际样本校准
+R 52 [PL020304001 ] 金属板吊顶
+    unit=m2  qty==3.2+3.26+3.2            m=28.00 l=55.00 a=42.00 mech=2.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(58字)+单位(㎡) / 拒绝弱整项：特征一致度18%<62% / [市场参考江门·中档] 市场参考：轻钢龙骨石膏板吊顶（规则:ceili
+R 54 [PL020401003 ] 防水工程
+    unit=m2  qty=52.44                    m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(40字)+单位(㎡) / 整项参照置信 46%<80%：[主材价库]材料价库(paint·通用·mid)【跨区/跨档】；规格paint（江
+R 56 [PL020601001 ] 防撞块
+    unit=个   qty=3                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(16字)+单位(个) / 拒绝弱整项：特征产品名冲突「满足使用要求,综合考虑」≠「尾纤2m」 / 层5拒绝弱整项：特征产品名冲突「满足使用
+R 57 [PL020602001 ] 装饰盖
+    unit=个   qty==10+7                    m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(87字)+单位(个) / 拒绝弱整项：特征产品名冲突「装饰盖/空调孔盖」≠「定制装饰吊灯」 / 层5拒绝弱整项：特征产品名冲突「装饰盖/空
+R 58 [PL020602002 ] 装饰盖
+    unit=户   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(28字)+单位(户) / 未达自动判断门槛：工艺=装饰综合；无材料目录命中
+R 59 [PL020603001 ] 阳台管根部位进行包框、贴砖处理
+    unit=个   qty=2                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(0字)+单位(个) / 未达自动判断门槛：工艺=装饰综合；无材料目录命中 / 有工艺价型样本325条但置信不足，可执行 backfill-
+R 60 [PL020615001 ] 优秀做法
+    unit=m2  qty=82.56                    m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(25字)+单位(㎡) / 拒绝弱整项：特征一致度24%<62% / 层5拒绝弱整项：特征一致度24%<62% / 未达自动判断门槛：工艺=
+R 61 [            ] 拆除铝合金平开门框
+    unit=m2  qty==0.9*2.2                 m=0.00 l=15.00 a=1.00 mech=1.00 loss=0.000 conf=0.72 auto=False src=market_reference
+    notes: 对照口径：名称+特征(43字)+单位(㎡) / 专项规则：市场参考：拆除工程综合兜底
+R 62 [            ] 原有栏杆拆除
+    unit=m   qty==2.25+1.7                m=0.00 l=12.00 a=0.00 mech=0.30 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(40字)+单位(m) / 专项规则：市场参考：金属栏杆/扶手拆除
+R 63 [            ] LC395125灰色50平开窗
+    unit=m2  qty==3.95*1.25               m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(48字)+单位(㎡) / 整项参照置信 34%<80%：[主材价库]材料价库(glass·通用·mid)【跨区/跨档】；规格glass（江
+R 65 [PL020808001 ] 配线
+    unit=m   qty=269.32                   m=2.77 l=2.10 a=0.21 mech=0.02 loss=0.020 conf=0.72 auto=False src=mep_install_profile
+    notes: 对照口径：名称+特征(28字)+单位(m) / [配线] 2.5mm²
+R 66 [PL020808002 ] 配线
+    unit=m   qty==569.3+12.94             m=3.68 l=1.40 a=0.22 mech=0.01 loss=0.020 conf=0.72 auto=False src=mep_install_profile
+    notes: 对照口径：名称+特征(28字)+单位(m) / [配线] 4mm²
+R 67 [PL020808004 ] 配线
+    unit=m   qty==28.88+5                 m=2.77 l=2.10 a=0.21 mech=0.02 loss=0.020 conf=0.72 auto=False src=mep_install_profile
+    notes: 对照口径：名称+特征(22字)+单位(m) / [配线] 2.5mm²
+R 68 [PL020808006 ] 配线
+    unit=m   qty=10.2                     m=2.77 l=2.10 a=0.21 mech=0.02 loss=0.020 conf=0.72 auto=False src=mep_install_profile
+    notes: 对照口径：名称+特征(27字)+单位(m) / [配线] 2.5mm²
+R 69 [            ] 配线
+    unit=m   qty=24.03                    m=4.40 l=7.27 a=0.18 mech=0.03 loss=0.020 conf=0.72 auto=False src=mep_install_profile
+    notes: 对照口径：名称+特征(29字)+单位(m) / [配线] RVV 4*0.5mm²
+R 70 [PL020806004 ] 配管
+    unit=m   qty==0.25*8                  m=3.00 l=6.90 a=1.11 mech=0.00 loss=0.000 conf=0.72 auto=False src=mep_install_profile
+    notes: 对照口径：名称+特征(34字)+单位(m) / [金属软管]DN20
+R 71 [            ] 开关插座
+    unit=个   qty=2                        m=20.00 l=18.00 a=0.00 mech=1.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(31字)+单位(个) / [电气]开关
+R 72 [            ] 开关插座
+    unit=个   qty=4                        m=35.00 l=28.00 a=0.00 mech=1.20 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(31字)+单位(个) / [电气]开关
+R 73 [            ] 开关插座
+    unit=个   qty=5                        m=13.54 l=12.97 a=0.68 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(31字)+单位(个) / [电气]开关
+R 74 [            ] 开关插座
+    unit=个   qty=1                        m=35.00 l=28.00 a=0.00 mech=1.20 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(31字)+单位(个) / [电气]开关
+R 75 [            ] 开关插座
+    unit=个   qty=5                        m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(32字)+单位(个) / [电气]开关
+R 76 [            ] 开关插座
+    unit=个   qty=4                        m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(32字)+单位(个) / [电气]开关
+R 77 [            ] 开关插座
+    unit=个   qty=3                        m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(34字)+单位(个) / [电气]开关
+R 78 [            ] 开关插座
+    unit=个   qty=10                       m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(31字)+单位(个) / [电气]开关
+R 79 [            ] 开关插座
+    unit=个   qty=8                        m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(35字)+单位(个) / [电气]开关
+R 80 [            ] 开关插座
+    unit=个   qty=3                        m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(33字)+单位(个) / [电气]开关
+R 81 [            ] 开关插座
+    unit=个   qty=3                        m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(29字)+单位(个) / [电气]开关
+R 82 [            ] 开关插座
+    unit=个   qty=1                        m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(29字)+单位(个) / [电气]开关
+R 83 [            ] 开关插座
+    unit=个   qty=1                        m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(31字)+单位(个) / [电气]开关
+R 84 [            ] 开关插座
+    unit=个   qty=1                        m=15.00 l=10.00 a=1.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(29字)+单位(个) / [电气]开关
+R 85 [            ] 灯具
+    unit=个   qty=5                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(30字)+单位(个) / 拒绝弱整项：特征产品名冲突「灯泡底座」≠「定制装饰吊灯」 / [工艺价型]灯具江门·中档 样本12 标签=— /
+R 86 [            ] 灯具
+    unit=个   qty=2                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(24字)+单位(个) / 拒绝弱整项：特征产品名冲突「吸顶灯」≠「防水地插」 / [工艺价型]灯具江门·中档 样本12 标签=— / 工艺
+R 87 [            ] 灯具
+    unit=个   qty=5                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(37字)+单位(个) / 拒绝弱整项：特征产品名冲突「LED筒灯」≠「筒灯」 / [工艺价型]灯具江门·中档 样本12 标签=— / 工艺
+R 88 [            ] 灯具
+    unit=个   qty=2                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(21字)+单位(个) / 拒绝弱整项：特征产品名冲突「小夜灯」≠「筒灯」 / [工艺价型]灯具江门·中档 样本12 标签=— / 工艺价型
+R 89 [PL020802002 ] 灯具
+    unit=个   qty=3                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(30字)+单位(个) / 拒绝弱整项：特征产品名冲突「灯盘类」≠「筒灯」 / [工艺价型]灯具江门·中档 样本12 标签=— / 工艺价型
+R 90 [PL020803001 ] 电器
+    unit=个   qty=2                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(31字)+单位(个) / 拒绝弱整项：特征一致度43%<62% / 层5拒绝弱整项：特征一致度43%<62% / 未达自动判断门槛：工艺=
+R 91 [            ] 电器
+    unit=个   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(22字)+单位(个) / 拒绝弱整项：特征产品名冲突「抽油烟机」≠「灭火器箱」 / 层5拒绝弱整项：特征产品名冲突「抽油烟机」≠「灭火器箱
+R 92 [            ] 电器
+    unit=个   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(21字)+单位(个) / 拒绝弱整项：特征产品名冲突「燃气灶」≠「灭火器箱」 / 层5拒绝弱整项：特征产品名冲突「燃气灶」≠「灭火器箱」 
+R 94 [PL020901001 ] 洗菜盆龙头
+    unit=个   qty=1                        m=280.00 l=55.00 a=20.00 mech=0.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(37字)+单位(个) / 拒绝弱整项：特征产品名冲突「洗菜盆龙头」≠「喷淋头」 / [市场参考江门·中档] 市场参考：龙头安装（规则:fa
+R 95 [            ] 洗手盆龙头
+    unit=个   qty=2                        m=550.00 l=90.00 a=12.00 mech=0.00 loss=0.000 conf=0.84 auto=True src=mep_install_profile
+    notes: 对照口径：名称+特征(37字)+单位(个) / [洁具]台盆
+R 96 [PL020901002 ] 洗衣机龙头、清洁龙头
+    unit=个   qty=2                        m=280.00 l=55.00 a=20.00 mech=0.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(44字)+单位(个) / 拒绝弱整项：特征产品名冲突「洗衣机龙头、清洁龙头」≠「喷淋头」 / [市场参考江门·中档] 市场参考：龙头安装（
+R 97 [PL020901004 ] 花洒
+    unit=个   qty=2                        m=480.00 l=95.00 a=35.00 mech=0.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(35字)+单位(个) / 拒绝弱整项：特征产品名冲突「花洒」≠「喷淋头」 / [市场参考江门·中档] 市场参考：淋浴器/花洒含安装（规则:
+R 98 [PL020901004 ] 厨盆
+    unit=个   qty=1                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(33字)+单位(个) / 拒绝弱整项：特征产品名冲突「厨盆」≠「喷淋头」 / 层5拒绝弱整项：特征产品名冲突「厨盆」≠「喷淋头」 / 未达
+R 99 [PL020901005 ] 角阀
+    unit=个   qty=10                       m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(36字)+单位(个) / 拒绝弱整项：特征产品名冲突「角阀」≠「闸阀」 / 层5拒绝弱整项：特征产品名冲突「角阀」≠「闸阀」 / 未达自动
+R100 [PL020901007 ] 去水器
+    unit=个   qty=3                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(21字)+单位(个) / 拒绝弱整项：特征产品名冲突「去水器」≠「灭火器箱」 / 层5拒绝弱整项：特征产品名冲突「去水器」≠「灭火器箱」 
+R101 [PL020901010 ] 给/排水软管
+    unit=条   qty=10                       m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(34字)+单位(条) / 拒绝弱整项：特征产品名冲突「给/排水软管」≠「六类非屏蔽成品跳线」 / 层5拒绝弱整项：特征产品名冲突「给/排水
+R102 [PL020901012 ] 密封圈
+    unit=个   qty=2                        m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(31字)+单位(个) / 拒绝弱整项：特征产品名冲突「密封圈」≠「防虫网封堵」 / 层5拒绝弱整项：特征产品名冲突「密封圈」≠「防虫网封堵
+R103 [PL020902001 ] 洁具
+    unit=个   qty=2                        m=800.00 l=130.00 a=15.00 mech=0.80 loss=0.000 conf=0.84 auto=True src=residential_finish_profile
+    notes: 对照口径：名称+特征(30字)+单位(个) / [精装]坐便器
+R104 [PL020904001 ] 地漏
+    unit=个   qty=5                        m=35.00 l=18.00 a=5.00 mech=0.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(37字)+单位(个) / 拒绝弱整项：特征一致度37%<62% / [市场参考江门·中档] 市场参考：地漏安装（规则:floor_drai
+R105 [            ] 地漏
+    unit=个   qty=1                        m=35.00 l=18.00 a=5.00 mech=0.00 loss=0.000 conf=0.82 auto=True src=market_reference
+    notes: 对照口径：名称+特征(40字)+单位(个) / 拒绝弱整项：特征一致度35%<62% / [市场参考江门·中档] 市场参考：地漏安装（规则:floor_drai
+R106 [PL020906001 ] 排水管线敷设
+    unit=m2  qty==5.24*0+4+3.6            m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(34字)+单位(㎡) / 拒绝弱整项：特征一致度34%<62% / 层5拒绝弱整项：特征一致度34%<62% / 未达自动判断门槛：工艺=
+R108 [PL021001001 ] 成品保护
+    unit=m2  qty==H60                     m=0.00 l=20.00 a=15.00 mech=1.00 loss=0.000 conf=0.65 auto=False src=market_reference
+    notes: 对照口径：名称+特征(0字)+单位(㎡) / [市场参考江门·中档] 市场参考：成品保护费（规则:product_protection）
+R109 [PL021002001 ] 开荒保洁费
+    unit=m2  qty==H108                    m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(13字)+单位(㎡) / 拒绝弱整项：特征一致度12%<62% / [工艺价型]措施零星江门·中档 样本4 标签=— / 工艺价型层已禁用
+R110 [PL021003001 ] 垃圾清运
+    unit=m2  qty==H108                    m=0.00 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.35 auto=False src=unresolved
+    notes: 对照口径：名称+特征(0字)+单位(㎡) / 未达自动判断门槛：工艺=装饰综合；无材料目录命中 / 有工艺价型样本442条但置信不足，可执行 backfill-
+R111 [PL021004001 ] 瓷砖加工费
+    unit=m2  qty=0                        m=90.88 l=0.00 a=0.00 mech=0.00 loss=0.000 conf=0.79 auto=False src=line_match_weak
+    notes: 对照口径：名称+特征(0字)+单位(㎡) / 整项参照置信 79%<80%：[主材价库]材料价库(tile·通用·mid)【跨区/跨档】；规格tile（江门·中

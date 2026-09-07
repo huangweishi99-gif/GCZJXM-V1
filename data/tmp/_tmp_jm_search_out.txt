@@ -1,0 +1,21 @@
+## 楼地面
+  sid=3945 "楼地面" name_score=1.00 feat_score=0.75 tag=0.45 total=0.65 samples=None 摘要=材料品种:瓷砖(CT-01)冠珠800*800 GF-DIQ
+  sid=3947 "楼地面" name_score=1.00 feat_score=0.68 tag=0.45 total=0.62 samples=None 摘要=材料品种:瓷砖(CT-06)冠珠800*800 GF-L88
+  sid=3946 "楼地面" name_score=1.00 feat_score=0.65 tag=0.45 total=0.61 samples=None 摘要=材料品种:瓷砖(CT-02)冠珠600*600 GF-L66
+  sid=3948 "窗台石" name_score=0.00 feat_score=0.67 tag=0.45 total=0.47 samples=None 摘要=瓷砖胶粘贴（共4条工艺）
+  sid=3962 "墙面块料面层" name_score=0.22 feat_score=0.43 tag=0.45 total=0.41 samples=None 摘要=材料品类、规格、颜色:瓷砖,长边规格900mm(含)以内综合
+
+## 内墙涂料
+  sid=3964 "内墙涂料" name_score=1.00 feat_score=0.60 tag=0.45 total=0.59 samples=None 摘要=涂料品类:乳胶漆,颜色综合(PT-03)三棵树；遍数:一底两
+  sid=3966 "内墙涂料" name_score=1.00 feat_score=0.49 tag=0.45 total=0.55 samples=None 摘要=有防水（共3条工艺）
+  sid=3985 "天棚涂料" name_score=0.50 feat_score=0.48 tag=0.45 total=0.47 samples=None 摘要=有防水（共2条工艺）
+  sid=3818 "墙面艺术涂料" name_score=0.60 feat_score=0.37 tag=0.45 total=0.44 samples=None 摘要=面层:PT-02艺术涂料一底二面
+  sid=3983 "天棚涂料" name_score=0.50 feat_score=0.40 tag=0.45 total=0.44 samples=None 摘要=基层类型:综合考虑；涂料类型、刷漆遍数:三棵树乳胶漆,一底两
+
+## 单联单控开关
+  sid=2883 "单联单控开关" name_score=1.00 feat_score=0.41 tag=0.45 total=0.52 samples=None 摘要=名称:单联单控开关；规格:250V10A
+  sid=1412 "单联单控开关" name_score=1.00 feat_score=0.37 tag=0.45 total=0.50 samples=None 摘要=名称:单联单控开关；安装方式:距地1.3米安装；其他:满足设
+  sid=4003 "开关插座" name_score=0.40 feat_score=0.57 tag=0.45 total=0.49 samples=None 摘要=名称:单联单控开关；规格、型号:G33系列；品牌:公牛
+  sid=4004 "开关插座" name_score=0.40 feat_score=0.54 tag=0.45 total=0.48 samples=None 摘要=名称:双联单控开关；规格、型号:G33系列；品牌:公牛
+  sid=4005 "开关插座" name_score=0.40 feat_score=0.54 tag=0.45 total=0.48 samples=None 摘要=名称:单联双控开关；规格、型号:G33系列；品牌:公牛
+

@@ -16,6 +16,7 @@ FURNITURE_KEYWORDS = (
     "吧台",
     "服务台",
     "置物架",
+    "收纳架",
     "展示柜",
     "前台",
     "收银台",
@@ -50,7 +51,13 @@ def is_custom_furniture_candidate(name: str, feature: str = "", unit: str = "") 
     if normalize_unit(unit) not in FURNITURE_UNITS:
         return False
     nn = normalize_name(name)
-    return any(k in nn for k in FURNITURE_KEYWORDS)
+    if not any(k in nn for k in FURNITURE_KEYWORDS):
+        return False
+    from src.knowledge.project_materials import extract_material_codes
+
+    if len(extract_material_codes(name, feature or "")) >= 2:
+        return False
+    return True
 
 
 def _size_metric(dims: Optional[Tuple[int, ...]]) -> float:
@@ -83,16 +90,19 @@ def _load_furniture_samples(
 ) -> List[dict]:
     conn = repo.conn()
     try:
-        rows = conn.execute(
-            """SELECT si.name_norm, si.method_summary,
-                      lpf.material_main, lpf.material_aux, lpf.labor, lpf.machinery,
-                      lpf.material_loss_rate, lpf.cost_unit_price
-               FROM line_price_facts lpf
-               JOIN standard_items si ON si.id = lpf.standard_item_id
-               WHERE COALESCE(lpf.city,'') = ? AND COALESCE(lpf.price_tier,'mid') = ?
-                 AND (si.name_norm = ? OR si.name_norm LIKE ?)""",
-            (ctx.city or "", ctx.price_tier or "mid", name_norm, f"%{name_norm}%"),
-        ).fetchall()
+        sql = """SELECT si.name_norm, si.method_summary,
+                        lpf.material_main, lpf.material_aux, lpf.labor, lpf.machinery,
+                        lpf.material_loss_rate, lpf.cost_unit_price,
+                        COALESCE(lpf.city,'') AS city
+                 FROM line_price_facts lpf
+                 JOIN standard_items si ON si.id = lpf.standard_item_id
+                 WHERE COALESCE(lpf.price_tier,'mid') = ?
+                   AND (si.name_norm = ? OR si.name_norm LIKE ?)"""
+        params: list = [ctx.price_tier or "mid", name_norm, f"%{name_norm}%"]
+        if ctx.city:
+            sql += " AND COALESCE(lpf.city,'') = ?"
+            params.append(ctx.city)
+        rows = conn.execute(sql, params).fetchall()
     finally:
         conn.close()
     return [dict(r) for r in rows]
@@ -130,7 +140,23 @@ def lookup_custom_furniture_price(
     name_norm = normalize_name(name)
     target = parse_furniture_size(name, feature)
     samples = _load_furniture_samples(repo, ctx, name_norm)
-    best = _pick_best(samples, target)
+    if not samples and ctx.city:
+        samples = _load_furniture_samples(
+            repo, PricingContext(city="", price_tier=ctx.price_tier), name_norm
+        )
+    if target is None:
+        exact = [
+            s
+            for s in samples
+            if normalize_name(s.get("name_norm") or "") == name_norm
+        ]
+        best = (
+            max(exact, key=lambda s: float(s.get("cost_unit_price") or 0))
+            if exact
+            else _pick_best(samples, target)
+        )
+    else:
+        best = _pick_best(samples, target)
     if not best:
         return None, ""
     comps = {
@@ -142,8 +168,65 @@ def lookup_custom_furniture_price(
     }
     stored = float(best.get("cost_unit_price") or 0)
     comps = reconcile_components_with_stored_total(
-        comps, stored, net_divisor=net_divisor, unit=unit
+        comps, stored, net_divisor=1.0, unit=unit
     )
     size_note = "*".join(str(x) for x in target) + "mm" if target else "无尺寸"
     note = f"[custom_furniture|{size_note}] 价库「{best.get('name_norm','')[:20]}」"
     return comps, note
+
+
+def is_composite_furniture_line(name: str, feature: str = "", unit: str = "") -> bool:
+    """多主材编号组合的柜体/前台等：走整项历史价，不按单码拆价。"""
+    if normalize_unit(unit) not in FURNITURE_UNITS:
+        return False
+    nn = normalize_name(name)
+    if not any(k in nn for k in FURNITURE_KEYWORDS):
+        return False
+    from src.knowledge.project_materials import extract_material_codes
+
+    return len(extract_material_codes(name, feature or "")) >= 2
+
+
+def lookup_composite_furniture_line(
+    name: str,
+    feature: str,
+    unit: str,
+    repo: KnowledgeRepository,
+    ctx: Optional[PricingContext],
+) -> Tuple[Optional[dict], str]:
+    if not is_composite_furniture_line(name, feature, unit):
+        return None, ""
+    if not ctx or not ctx.city:
+        return None, ""
+    name_norm = normalize_name(name)
+    target = parse_furniture_size(name, feature)
+    samples = _load_furniture_samples(repo, ctx, name_norm)
+    if not samples and ctx.city:
+        samples = _load_furniture_samples(
+            repo, PricingContext(city="", price_tier=ctx.price_tier), name_norm
+        )
+    exact = [
+        s
+        for s in samples
+        if normalize_name(s.get("name_norm") or "") == name_norm
+    ]
+    if exact:
+        best = max(exact, key=lambda s: float(s.get("cost_unit_price") or 0))
+    else:
+        best = _pick_best(samples, target)
+    if not best:
+        return None, ""
+    blob = f"{best.get('name_norm') or ''} {best.get('method_summary') or ''}"
+    stored = float(best.get("cost_unit_price") or 0)
+    if not exact and target and _size_score(target, blob) < 0.55 and stored < 15000:
+        return None, ""
+    comps = {
+        "material_main": float(best.get("material_main") or 0),
+        "material_aux": float(best.get("material_aux") or 0),
+        "labor": float(best.get("labor") or 0),
+        "machinery": float(best.get("machinery") or 0),
+        "material_loss_rate": float(best.get("material_loss_rate") or 0),
+    }
+    stored = float(best.get("cost_unit_price") or 0)
+    comps = reconcile_components_with_stored_total(comps, stored, net_divisor=1.0, unit=unit)
+    return comps, f"[composite_furniture|整项] 价库「{best.get('name_norm','')}」"

@@ -285,6 +285,58 @@ def cmd_link_price(args: argparse.Namespace) -> None:
     print(f"链接组价表已导出: {out}")
 
 
+def cmd_link_inline(args: argparse.Namespace) -> None:
+    """内嵌人工/主材/辅材机械列：引用历史价 + 组价 + 同表母行链接。"""
+    from src.export.inline_cost_link import fill_inline_cost_link
+    from src.knowledge.calibration import get_pair
+
+    init_database()
+    pair = get_pair(args.project) if args.project else None
+    tender = _resolve_file(
+        args.tender or (pair and pair.get("tender")) or ""
+    )
+    if not tender:
+        raise SystemExit("请指定 --tender 或在 project_pairs 配置 tender")
+    refs = [_resolve_file(p) for p in (args.reference or [])]
+    if not refs and pair:
+        refs = [_resolve_file(p) for p in pair.get("reference_tenders") or []]
+    sheets = args.sheets or (pair.get("inline_sheets") if pair else None)
+    if sheets and isinstance(sheets, str):
+        sheets = [s.strip() for s in sheets.split(",") if s.strip()]
+    tier = args.tier or (pair.get("tier") if pair else None) or "mid"
+    if tier in ("高", "中", "低"):
+        tier = {"高": "high", "中": "mid", "低": "low"}[tier]
+    city = args.city or (pair.get("city") if pair else None) or "珠海"
+    materials_ref = args.materials_ref or (
+        pair.get("project_materials_ref") if pair else None
+    ) or "haide_sales_office"
+    out = args.output or (pair.get("export") if pair else None)
+    report = fill_inline_cost_link(
+        tender,
+        refs,
+        sheet_names=sheets,
+        output_path=out,
+        city=city,
+        tier=tier,
+        project_materials_ref=materials_ref,
+    )
+    print(
+        json.dumps(
+            {
+                "输出": report.output_path,
+                "母行": report.masters,
+                "链接行": report.slaves,
+                "跨表链接": report.cross_sheet_slaves,
+                "引用命中": report.reference_hits,
+                "系统组价": report.judged,
+                "分表": report.sheets,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
 def cmd_backfill(_: argparse.Namespace) -> None:
     from src.knowledge.backfill import backfill_method_signatures
 
@@ -351,6 +403,94 @@ def cmd_import_project_materials(args: argparse.Namespace) -> None:
     print(json.dumps(r, ensure_ascii=False, indent=2))
 
 
+def cmd_import_quota(args: argparse.Namespace) -> None:
+    """导入广联达定额标准库（JSON格式）。"""
+    from src.knowledge.quota_manager import QuotaManager
+
+    init_database()
+    fp = _resolve_file(args.file) if args.file else str(ROOT / "config" / "quota_standards.json")
+    mgr = QuotaManager()
+    r = mgr.import_from_json(fp)
+    print(json.dumps(r, ensure_ascii=False, indent=2))
+
+
+def cmd_quota_match(args: argparse.Namespace) -> None:
+    """测试定额匹配（根据项目名称和特征匹配定额子目）。"""
+    from src.knowledge.quota_manager import QuotaManager
+    from src.pricing.feature_to_quota import FeatureToQuotaMatcher
+
+    init_database()
+    mgr = QuotaManager()
+    matcher = FeatureToQuotaMatcher(mgr)
+    results = matcher.match_by_feature(args.name, args.feature or "", args.unit, top_n=args.top)
+    for res in results:
+        print(json.dumps(res, ensure_ascii=False, indent=2))
+
+
+def cmd_quota_cost(args: argparse.Namespace) -> None:
+    """计算定额子目成本。"""
+    from src.knowledge.quota_manager import QuotaManager
+
+    init_database()
+    mgr = QuotaManager()
+    cost = mgr.calculate_cost(args.code, target_unit=args.unit, city=getattr(args, "city", "") or "")
+    if cost:
+        print(json.dumps(cost, ensure_ascii=False, indent=2))
+    else:
+        print(f"未找到定额子目: {args.code}")
+
+
+def cmd_audit_price(args: argparse.Namespace) -> None:
+    """价格数量级审计：扫描市场参考价/定额价/人工机械单价中的越界项。"""
+    from src.pricing.sanity_check import run_full_audit
+
+    report = run_full_audit()
+    total = report["total_issues"]
+    print(f"价格审计完成，共发现 {total} 处数量级越界：\n")
+    for source, issues in report.items():
+        if source == "total_issues":
+            continue
+        label = {
+            "market_reference": "市场参考价",
+            "quota_standards": "定额内嵌材料价",
+            "labor_rates": "人工/机械单价",
+        }.get(source, source)
+        print(f"--- {label} ({len(issues)}) ---")
+        for x in issues[:30]:
+            print(f"  {x.get('name')} {x.get('price')}: {x.get('issue')}")
+        if len(issues) > 30:
+            print(f"  ... 其余 {len(issues) - 30} 条省略")
+        print()
+    if total == 0:
+        print("全部通过，无越界。")
+    else:
+        print("提示：越界项会触发 [价格校验] 标注并降级 auto_fill，需人工复核。")
+
+
+def cmd_quote_fees(args: argparse.Namespace) -> None:
+    """取费建议：成本单价 → 综合单价（管理费+利润+风险）及单位工程费汇总。"""
+    from src.pricing.fee_rates import build_summary, get_rates
+
+    rates = get_rates(args.category, args.tier, style=args.style)
+    style_tag = f"·{args.style}" if args.style else ""
+    print(f"取费标准（{args.category or '通用'}·{args.tier}{style_tag}）：")
+    print(json.dumps(rates, ensure_ascii=False, indent=2))
+    if args.cost:
+        s = build_summary(args.cost, args.quantity or 1, args.category, args.tier, style=args.style)
+        print("\n费用汇总：")
+        print(json.dumps(s, ensure_ascii=False, indent=2))
+
+
+def cmd_validate_boq(args: argparse.Namespace) -> None:
+    """招标清单可投标性体检：五要素（编码/名称/特征/单位/工程量）+ 废标雷区。"""
+    from src.export.boq_validation import format_report, validate_boq
+
+    fp = _resolve_file(args.file)
+    print(f"正在解析 {fp} ...")
+    report = validate_boq(str(fp))
+    print(format_report(report))
+
+
 def cmd_audit_judge(args: argparse.Namespace) -> None:
     from src.pricing.judge_audit import run_judge_audit
 
@@ -366,6 +506,8 @@ def cmd_audit_judge(args: argparse.Namespace) -> None:
         limit=args.limit,
         project_id=args.project,
         export_path=out,
+        exclude_simulated=args.exclude_simulated,
+        exclude_fee_items=args.exclude_fee,
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     if out:
@@ -376,9 +518,42 @@ def cmd_audit_judge(args: argparse.Namespace) -> None:
     print(f"摘要已写入: {json_path}")
 
 
+def cmd_audit_review(args: argparse.Namespace) -> None:
+    from src.pricing.audit_review import build_audit_review
+    from src.pricing.judge_audit import run_judge_audit
+
+    init_database()
+    input_path = Path(args.input) if args.input else ROOT / "data" / "exports" / "抽检报告_人材机判断.xlsx"
+    if args.refresh or not input_path.exists():
+        summary = run_judge_audit(
+            exclude_self=not args.include_self,
+            limit=args.limit,
+            export_path=input_path,
+        )
+        summary_path = ROOT / "data" / "exports" / "audit_judge_summary.json"
+        summary_path.parent.mkdir(parents=True, exist_ok=True)
+        summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"已刷新抽检报告: {input_path}")
+    output_path = Path(args.output) if args.output else ROOT / "data" / "exports" / "待确认清单_人材机判断.xlsx"
+    json_path = Path(args.json_output) if args.json_output else ROOT / "data" / "exports" / "audit_review_summary.json"
+    review = build_audit_review(
+        input_path,
+        output_path=output_path,
+        json_path=json_path,
+        top=args.top,
+    )
+    print(json.dumps(review, ensure_ascii=False, indent=2))
+    print(f"\n待确认清单已导出: {output_path}")
+    print(f"摘要已写入: {json_path}")
+
+
 def cmd_judge(args: argparse.Namespace) -> None:
     from src.knowledge.query import PricingContext
-    from src.pricing.component_judge import judge_line_components
+    from src.pricing.component_judge import (
+        judge_line_components,
+        judgment_explanation,
+        judgment_risk_tags,
+    )
     from src.pricing.engine import PricingEngine
 
     init_database()
@@ -407,6 +582,8 @@ def cmd_judge(args: argparse.Namespace) -> None:
         "人工": j.labor,
         "机械": j.machinery,
         "分项置信": j.field_confidence,
+        "解释摘要": judgment_explanation(j),
+        "风险标签": judgment_risk_tags(j, name=args.name, feature=args.feature or ""),
         "说明": j.notes,
         "预警": j.warnings,
     }
@@ -438,6 +615,67 @@ def cmd_deliver(args: argparse.Namespace) -> None:
         if not tender_list:
             raise SystemExit(f"项目 {args.project} 未配置 tender 路径")
         materials_ref = pair.get("project_materials_ref")
+        # link_inline / auto / cost_analysis：智能成本分析模板（自动识别甲方列并追加统一成本区）
+        # 未配置 delivery 的老项目仍走原 inplace（校准回归用）
+        delivery = pair.get("delivery") or "legacy"
+        if delivery in ("link_inline", "auto", "cost_analysis"):
+            from src.export.inline_cost_link import fill_inline_cost_link
+
+            refs = [_resolve_file(p) for p in pair.get("reference_tenders") or []]
+            sheets = pair.get("inline_sheets")
+            if isinstance(sheets, str):
+                sheets = [s.strip() for s in sheets.split(",") if s.strip()]
+            tier_norm = (
+                tier
+                if tier not in ("高", "中", "低")
+                else {"高": "high", "中": "mid", "低": "low"}[tier]
+            )
+            reports = []
+            for i, tender in enumerate(tender_list):
+                if len(tender_list) == 1:
+                    out = args.output or pair.get("export") or (
+                        export_list[0] if export_list else None
+                    )
+                else:
+                    out = (
+                        args.output
+                        if args.output and len(tender_list) == 1
+                        else (export_list[i] if i < len(export_list) else None)
+                    )
+                out_path = (
+                    str(ROOT / out) if out and not Path(out).is_absolute() else out
+                )
+                report = fill_inline_cost_link(
+                    _resolve_file(tender),
+                    refs,
+                    sheet_names=sheets,
+                    output_path=out_path,
+                    city=city,
+                    tier=tier_norm,
+                    project_materials_ref=materials_ref,
+                )
+                reports.append(report)
+                print(
+                    json.dumps(
+                        {
+                            "输出": report.output_path,
+                            "模板": "智能成本分析",
+                            "母行": report.masters,
+                            "链接行": report.slaves,
+                            "跨表链接": report.cross_sheet_slaves,
+                            "引用": report.reference_hits,
+                            "组价": report.judged,
+                            "分表绑定": report.sheets,
+                        },
+                        ensure_ascii=False,
+                        indent=2,
+                    )
+                )
+            print(
+                "下一步: 校正后 learn → python app.py calibrate --project",
+                args.project,
+            )
+            return
         for i, tender in enumerate(tender_list):
             out = (
                 args.output
@@ -472,9 +710,36 @@ def cmd_deliver(args: argparse.Namespace) -> None:
 
     if not args.file:
         raise SystemExit("请指定招标 file 或 --project")
+    # 单文件招标默认走智能成本分析模板（自动接甲方列）
+    from src.export.inline_cost_link import fill_inline_cost_link
+
     stem = Path(_resolve_file(args.file)).stem
-    out = args.output or f"data/exports/{stem}_成本分析_去重链接.xlsx"
-    _run_deliver_one(args.file, city=args.city, tier=args.tier or "mid", output=out, args=args)
+    out = args.output or f"data/exports/{stem}_成本链接.xlsx"
+    report = fill_inline_cost_link(
+        _resolve_file(args.file),
+        [],
+        sheet_names=None,
+        output_path=str(ROOT / out) if not Path(out).is_absolute() else out,
+        city=args.city or "珠海",
+        tier=args.tier or "mid",
+        project_materials_ref=getattr(args, "materials_ref", None),
+    )
+    print(
+        json.dumps(
+            {
+                "输出": report.output_path,
+                "模板": "智能成本分析",
+                "母行": report.masters,
+                "链接行": report.slaves,
+                "跨表链接": report.cross_sheet_slaves,
+                "引用": report.reference_hits,
+                "组价": report.judged,
+                "分表绑定": report.sheets,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
 
 def _run_deliver_one(
@@ -504,6 +769,24 @@ def _run_deliver_one(
         project_materials_ref=project_materials_ref,
     )
     print(f"已交付: {written}")
+
+
+def cmd_regression(args: argparse.Namespace) -> None:
+    """全项目校准 + audit-judge 回归（改 judge 后防回退）。"""
+    from src.knowledge.calibration import run_regression_suite
+
+    init_database()
+    summary = run_regression_suite(
+        audit_limit=args.audit_limit,
+        min_calibrate_ratio=args.min_calibrate,
+        min_audit_core=args.min_audit_core,
+    )
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    out = ROOT / "data" / "exports" / "regression_summary.json"
+    out.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"\n摘要: {out}")
+    if not summary.get("ok"):
+        raise SystemExit(1)
 
 
 def cmd_calibrate(args: argparse.Namespace) -> None:
@@ -598,6 +881,33 @@ def cmd_calibrate(args: argparse.Namespace) -> None:
         finally:
             conn.close()
         print("已 backfill-kb:", json.dumps(r, ensure_ascii=False))
+
+
+def cmd_extract_market_ref(args: argparse.Namespace) -> None:
+    """从知识库提炼跨项目一致样本簇 → 市场参考价候选（人工审核后合并）。"""
+    from src.pricing.extract_market_ref import build_report, export_report
+
+    report = build_report(
+        min_n=args.min_n,
+        min_projects=args.min_projects,
+        top=args.top,
+        city=args.city,
+    )
+    out = export_report(report)
+    cands = report["candidates"]
+    covered = sum(1 for c in cands if c["already_covered"])
+    print(
+        f"候选簇 {len(cands)} 个（其中已覆盖 {covered}），"
+        f"基于 {report['total_samples']} 条真实样本"
+    )
+    print(f"明细已导出: {out}")
+    print("\n未覆盖候选（优先审核）:")
+    for c in [x for x in cands if not x["already_covered"]][:15]:
+        print(
+            f"  [{c['n']}条/{len(c['projs'])}项目] {c['city']} {c['words']} "
+            f"({c['unit']}) 主材{c['main_median']} 人工{c['lab_median']} "
+            f"辅材{c['aux_median']} 机械{c['mach_median']}"
+        )
 
 
 def cmd_external_price(args: argparse.Namespace) -> None:
@@ -805,6 +1115,28 @@ def main() -> None:
     p_link.add_argument("--output", default=None)
     p_link.set_defaults(func=cmd_link_price)
 
+    p_inline = sub.add_parser(
+        "link-inline",
+        help="P列起成本区填母行；F/G/H桥接成本列；重复项lj链接（海德清单询格式）",
+    )
+    p_inline.add_argument("tender", nargs="?", default=None, help="招标清单 xlsx")
+    p_inline.add_argument("--project", default=None, help="project_pairs 项目 id（如 haide_club_merge）")
+    p_inline.add_argument(
+        "--reference",
+        nargs="+",
+        required=True,
+        help="可引用价格的 xlsx（可多个）",
+    )
+    p_inline.add_argument(
+        "--sheets",
+        default=None,
+        help="逗号分隔 sheet 名；默认跳过说明/汇总",
+    )
+    p_inline.add_argument("--output", default=None)
+    p_inline.add_argument("--materials-ref", default="haide_sales_office")
+    _add_region_args(p_inline)
+    p_inline.set_defaults(func=cmd_link_inline)
+
     sub.add_parser("backfill", help="为知识库回填做法标签（特征解析）").set_defaults(
         func=cmd_backfill
     )
@@ -843,6 +1175,55 @@ def main() -> None:
     _add_region_args(p_pm)
     p_pm.set_defaults(func=cmd_import_project_materials)
 
+    p_quota = sub.add_parser(
+        "import-quota",
+        help="导入广联达定额标准库（JSON格式，默认 config/quota_standards.json）",
+    )
+    p_quota.add_argument("file", nargs="?", default=None, help="定额JSON文件路径")
+    p_quota.set_defaults(func=cmd_import_quota)
+
+    p_q_match = sub.add_parser(
+        "quota-match",
+        help="测试定额匹配（根据项目名称和特征匹配定额子目）",
+    )
+    p_q_match.add_argument("name", help="项目名称")
+    p_q_match.add_argument("--feature", default="", help="项目特征")
+    p_q_match.add_argument("--unit", required=True, help="单位")
+    p_q_match.add_argument("--top", type=int, default=5, help="返回前N个匹配结果")
+    p_q_match.set_defaults(func=cmd_quota_match)
+
+    p_q_cost = sub.add_parser(
+        "quota-cost",
+        help="计算定额子目成本",
+    )
+    p_q_cost.add_argument("code", help="定额编号")
+    p_q_cost.add_argument("--unit", default="", help="目标单位（如 m、个、㎡）")
+    _add_region_args(p_q_cost)
+    p_q_cost.set_defaults(func=cmd_quota_cost)
+
+    sub.add_parser(
+        "audit-price",
+        help="价格数量级审计：市场参考价/定额价/人工机械单价越界扫描",
+    ).set_defaults(func=cmd_audit_price)
+
+    p_boq = sub.add_parser(
+        "validate-boq",
+        help="招标清单可投标性体检（编码/名称/特征/单位/工程量 五要素）",
+    )
+    p_boq.add_argument("file", help="招标清单 xlsx/xls")
+    p_boq.set_defaults(func=cmd_validate_boq)
+
+    p_fee = sub.add_parser(
+        "quote-fees",
+        help="取费建议：成本单价→综合单价（管理费+利润+风险）及单位工程费汇总",
+    )
+    p_fee.add_argument("--cost", type=float, default=0, help="成本单价（元）")
+    p_fee.add_argument("--quantity", type=float, default=1, help="工程量")
+    p_fee.add_argument("--category", default="", help="工程类别：装饰装修/土建/安装/幕墙/市政")
+    p_fee.add_argument("--tier", default="mid", help="档位：high/mid/low")
+    p_fee.add_argument("--style", default="", help="项目风格：batch_fitout（批量精装 12%）")
+    p_fee.set_defaults(func=cmd_quote_fees)
+
     p_judge = sub.add_parser("judge", help="判断单项人材机（多源融合+置信度）")
     p_judge.add_argument("name", help="项目名称")
     p_judge.add_argument("--feature", default="", help="项目特征")
@@ -866,7 +1247,34 @@ def main() -> None:
     p_audit.add_argument("--rel-tol", type=float, default=0.20, help="分项相对误差容忍（默认20%%）")
     p_audit.add_argument("--abs-tol", type=float, default=5.0, help="分项绝对误差容忍/元（实际≈0时）")
     p_audit.add_argument("--total-tol", type=float, default=0.15, help="合计相对误差容忍（默认15%%）")
+    p_audit.add_argument(
+        "--exclude-simulated",
+        action="store_true",
+        help="排除模拟工程量/框架清单项目（附件2-1/附件2-2，实值为模拟价，拉低指标且不可修）",
+    )
+    p_audit.add_argument(
+        "--exclude-fee",
+        action="store_true",
+        help="排除费用项（安全文明施工费/材料搬运费等，judge 按人材机做法设计，不覆盖费率类）",
+    )
     p_audit.set_defaults(func=cmd_audit_judge)
+
+    p_review = sub.add_parser(
+        "audit-review",
+        help="基于 audit-judge 明细生成待确认清单（风险标签/建议动作）",
+    )
+    p_review.add_argument("--input", default=None, help="抽检报告路径（默认 data/exports/抽检报告_人材机判断.xlsx）")
+    p_review.add_argument("--output", default=None, help="待确认清单 xlsx 输出路径")
+    p_review.add_argument("--json-output", default=None, help="摘要 json 输出路径")
+    p_review.add_argument("--top", type=int, default=80, help="导出最高风险前 N 行（默认 80；0=全部）")
+    p_review.add_argument("--refresh", action="store_true", help="先刷新 audit-judge 抽检报告")
+    p_review.add_argument("--limit", type=int, default=500, help="--refresh 时 audit-judge 抽检上限")
+    p_review.add_argument(
+        "--include-self",
+        action="store_true",
+        help="--refresh 时不排除同标准项（仅对比用）",
+    )
+    p_review.set_defaults(func=cmd_audit_review)
 
     p_deliver = sub.add_parser(
         "deliver",
@@ -899,6 +1307,30 @@ def main() -> None:
     _add_region_args(p_cal)
     p_cal.set_defaults(func=cmd_calibrate)
 
+    p_reg = sub.add_parser(
+        "regression",
+        help="全项目 calibrate + audit-judge 回归摘要（失败时 exit 1）",
+    )
+    p_reg.add_argument(
+        "--audit-limit",
+        type=int,
+        default=500,
+        help="audit-judge 抽检上限（默认 500）",
+    )
+    p_reg.add_argument(
+        "--min-calibrate",
+        type=float,
+        default=0.95,
+        help="各项目可比行 ±10%% 最低比例（默认 0.95）",
+    )
+    p_reg.add_argument(
+        "--min-audit-core",
+        type=float,
+        default=0.45,
+        help="audit-judge 主材+人工核心准确率下限（默认 0.45）",
+    )
+    p_reg.set_defaults(func=cmd_regression)
+
     p_ext = sub.add_parser("external-price", help="外部搜索造价参考（无样本项）")
     p_ext.add_argument("name", nargs="?", default=None, help="项目名称")
     p_ext.add_argument("--feature", default="")
@@ -909,6 +1341,16 @@ def main() -> None:
     p_ext.add_argument("--project", default=None, help="配合 --from-calibration")
     p_ext.add_argument("--limit", type=int, default=5)
     p_ext.set_defaults(func=cmd_external_price)
+
+    p_mr = sub.add_parser(
+        "extract-market-ref",
+        help="从知识库提炼市场参考价候选（跨项目一致样本簇）",
+    )
+    p_mr.add_argument("--top", type=int, default=None, help="只输出前 N 个候选")
+    p_mr.add_argument("--min-n", type=int, default=3, help="簇最小样本数（默认 3）")
+    p_mr.add_argument("--min-projects", type=int, default=2, help="簇最小项目数（默认 2）")
+    p_mr.add_argument("--city", default=None, help="只提炼指定城市")
+    p_mr.set_defaults(func=cmd_extract_market_ref)
 
     p_sync = sub.add_parser("sync", help="桌面与手机端同步（清单校正）")
     sync_sub = p_sync.add_subparsers(dest="sync_action", required=True)

@@ -1,0 +1,13 @@
+﻿电缆 ZR-YJV-5*6                        src=mep_install_profile    conf=0.84 auto=True | 主材=   30.00 人工=  5.00 辅材=  1.10 机= 0.17 | craft=电缆线缆
+电缆WDZA-YJV-5*6                       src=mep_install_profile    conf=0.84 auto=True | 主材=   30.00 人工=  5.00 辅材=  1.10 机= 0.17 | craft=电缆线缆
+配管JDG40                              src=mep_install_profile    conf=0.84 auto=True | 主材=   11.20 人工=  9.80 辅材=  0.80 机= 0.50 | craft=配管
+三联单控暗开关                              src=mep_install_profile    conf=0.84 auto=True | 主材=   45.00 人工= 35.00 辅材=  3.00 机= 3.00 | craft=开关插座
+五孔插座带USB+typeC                       src=mep_install_profile    conf=0.84 auto=True | 主材=   85.00 人工= 14.00 辅材=  0.00 机= 1.52 | craft=开关插座
+冷媒铜管 19.1                            src=mep_install_profile    conf=0.84 auto=False | 主材=  207.35 人工= 24.55 辅材= 16.59 机=16.59 | craft=冷媒铜管/分歧器
+分歧器 FQ01                             src=mep_install_profile    conf=0.72 auto=False | 主材=   30.00 人工= 24.00 辅材= 15.00 机= 1.20 | craft=冷媒铜管/分歧器
+洗脸盆                                  src=mep_install_profile    conf=0.72 auto=False | 主材=  320.00 人工= 55.00 辅材= 12.00 机= 0.00 | craft=洗脸盆/洗涤盆
+大便器                                  src=mep_install_profile    conf=0.72 auto=False | 主材=  352.00 人工=310.00 辅材=160.00 机=15.00 | craft=装饰综合
+配线ZRNH-RVS-2*1.5                     src=mep_install_profile    conf=0.72 auto=False | 主材=    3.05 人工=  4.40 辅材=  0.21 机= 0.04 | craft=配线/电线
+镀锌线槽600*200                          src=mep_install_profile    conf=0.72 auto=False | 主材=  164.00 人工=111.60 辅材=  0.00 机= 4.92 | craft=线槽/桥架
+时控开关                                 src=mep_install_profile    conf=0.84 auto=True | 主材=   66.00 人工= 35.00 辅材=  0.00 机= 1.45 | craft=开关插座
+热镀锌钢管DN25                            src=mep_install_profile    conf=0.74 auto=False | 主材=   14.00 人工= 35.00 辅材=  0.00 机= 0.50 | craft=消防

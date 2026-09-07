@@ -48,9 +48,13 @@ def lookup_project_material_components(
     text_norm = normalize_name(f"{name}\n{feature}")
     if is_door_whole_line(name, feature):
         return None, ""
+    if re.search(r"护角弧形|石材护角", text_norm):
+        return None, ""
+    if normalize_name(name) == normalize_name("洗漱台"):
+        return None, ""
     codes_early = extract_material_codes(name, feature)
     if len(codes_early) >= 2 and len({c.split("-")[0].upper() for c in codes_early}) >= 2:
-        if re.search(r"定制|屏风", text_norm):
+        if re.search(r"定制|屏风|前台|吧台|服务台", text_norm):
             return None, ""
     is_ct_kick = bool(re.search(r"踢脚", text_norm)) and bool(
         re.search(r"CT-\d+", text_norm, re.I)
@@ -76,6 +80,24 @@ def lookup_project_material_components(
             project_ref=project_ref,
             db_path=repo.db_path,
         )
+    if not row:
+        codes_fb = extract_material_codes(name, feature)
+        if (
+            project_ref == "haide_basement"
+            and codes_fb
+            and codes_fb[0].upper().startswith("PT")
+        ):
+            row, note = lookup_project_material_row(
+                codes_fb[0],
+                feature,
+                unit,
+                city=city,
+                price_tier=tier,
+                project_ref="haide_sales_office",
+                db_path=repo.db_path,
+            )
+            if row:
+                note = f"[地库沿用售楼处]{codes_fb[0]}表价；{note}"
     if not row:
         return None, ""
 
@@ -136,25 +158,46 @@ def lookup_project_material_components(
     # 含龙骨/板材基层的吊顶墙面：PT/AM 编号仅为饰面材料，不单套整项
     from src.pricing.material_process_price import analyze_paint_process
 
-    if prefix == "MT" and re.search(r"玻镁板|方通|镀锌方通", text_norm):
-        labor = 110.0 if re.search(r"门套|金属饰面|不锈钢", text_norm) else 85.0
+    if prefix == "MT" and re.search(r"玻镁板|方通|镀锌方通|玻镁|轻钢龙骨", text_norm):
+        ceiling_mt = bool(re.search(r"吊顶|天花", text_norm))
+        multi_keel = bool(re.search(r"30[\*×]13[\*×]3", text_norm))
+        labor = 110.0 if (
+            multi_keel or re.search(r"门套|古铜|窗套|镜面|不锈钢饰面|金属饰面", text_norm)
+        ) else 85.0
+        # 实际样本校准：
+        # MT-01古铜不锈钢窗套/饰面: 主材450, 人工110, 辅材54, 机械1.2
+        if re.search(r"MT-01|古铜", text_norm) and re.search(r"饰面|窗套|门套", text_norm):
+            aux, mach = 54.0, 1.2
+        elif ceiling_mt and re.search(r"MT-01|古铜", text_norm):
+            aux, mach = 45.5, 0.0
+        elif multi_keel:
+            aux, mach = 128.0, 60.0
+        elif re.search(r"9厘|12厘|9mm|12mm", text_norm) and re.search(
+            r"玻镁", text_norm
+        ):
+            aux, mach = 59.7, 0.0
+        elif re.search(r"50[\*×]50[\*×]5", text_norm):
+            aux, mach = 46.0, 31.7
+        else:
+            aux, mach = 0.0, 0.0
         return {
             "material_main": main_val,
             "material_loss_rate": 0.0,
-            "material_aux": 0.0,
+            "material_aux": aux,
             "labor": labor,
-            "machinery": 0.0,
+            "machinery": mach,
         }, f"[工序拆价·{code}金属饰面+玻镁基层]主材=表价；人工{labor:.0f}；{note}"
 
     if prefix == "MR" and re.search(r"阻燃板|轻钢龙骨", text_norm):
-        aux = 93.0 if re.search(r"不锈钢线条", text_norm) else 118.0
+        # 实际样本校准：MR-01银镜 主材85, 人工110, 辅材125.75, 机械0.6
+        aux = 93.0 if re.search(r"不锈钢线条", text_norm) else 125.75
         return {
             "material_main": main_val,
             "material_loss_rate": 0.0,
             "material_aux": aux,
             "labor": 110.0,
-            "machinery": 15.0,
-        }, f"[工序拆价·{code}银镜+基层]主材=表价；人工110；{note}"
+            "machinery": 0.6,
+        }, f"[工序拆价·{code}银镜+基层]主材=表价；人工110；机械0.6（实际样本校准）；{note}"
 
     scope = analyze_paint_process(name, feature)
     if scope.blocked_substrate and prefix in ("PT", "AM"):

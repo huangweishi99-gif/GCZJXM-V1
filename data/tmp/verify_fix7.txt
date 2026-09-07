@@ -1,0 +1,10 @@
+﻿source: market_reference conf: 0.82
+comps: {'material_main': 5.0, 'material_loss_rate': 0.0, 'material_aux': 0.0, 'labor': 5.0, 'machinery': 1.5}
+=== 全部 notes ===
+  0: 对照口径：名称+特征(0字)+单位(㎡)
+  1: 整项参照置信 79%<80%：[主材价库]材料价库(paint·深圳·mid)；规格paint（深圳·中档）
+  2: [主材价库]材料价库(paint·深圳·mid)；规格paint
+  3: 按「装饰综合」份额模板推算辅材/人工（主材来自价库）
+  4: material_plus_template层已禁用，继续fall through
+  5: [定额标准] 020501002「墙面无机涂料」（匹配度:40.5%，单位:100㎡）
+  6: 层5 material-only 让位市场参考：审计校准 2026-08：原顶面白色无机涂料 5x 实_主材4-4.95/实_人工4.69-5

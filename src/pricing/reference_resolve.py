@@ -146,7 +146,12 @@ def resolve_reference_costs(
     from src.pricing.custom_door import is_door_whole_line
 
     door_line = is_door_whole_line(name, feature or "")
+    # 拆除上下文：查询名称/特征含"拆除"时，候选也必须含"拆除"，
+    # 避免"喷头拆除、安装"误配到普通"喷头安装"整项
+    query_has_demolition = ("拆除" in (name or "")) or ("拆除" in (feature or ""))
     for c in cands:
+        if query_has_demolition and "拆除" not in (c.get("name") or "") and "拆除" not in (c.get("feature") or ""):
+            continue
         if door_line:
             ok, reason = line_reference_ok_door(c, query_unit=unit)
         else:

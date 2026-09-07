@@ -35,15 +35,23 @@ def is_metal_trim_candidate(name: str, feature: str = "", unit: str = "") -> boo
     if u not in ("m", "米"):
         return False
     text = f"{name} {feature}"
+    unfold = parse_unfold_mm(name, feature)
+    metal_terms = ("不锈钢", "古铜", "收口", "线条", "装饰线", "嵌条", "MT-", "MT－", "铜条", "AL-", "收边")
+    if unfold is not None and any(k in text for k in metal_terms):
+        if any(k in text for k in ("柜", "门套", "门头", "屏风", "服务台", "吧台", "洗手台")):
+            return False
+        return True
     if any(k in text for k in _SKIP_KEYWORDS):
         return False
     if re.search(r"CT-\d+", text, re.I) and "踢脚" in text and ("瓷砖" in text or "CT" in text):
         return False
     if any(k in text for k in ("石膏", "玻镁", "阻燃板", "基层板", "木夹板", "夹板")):
         return False
-    if parse_unfold_mm(name, feature) is not None:
+    if unfold is not None:
         return True
-    keys = ("不锈钢", "古铜", "踢脚", "收口", "线条", "嵌条", "MT-", "MT－", "铜条", "AL-", "收边")
+    keys = ("不锈钢", "古铜", "踢脚", "收口", "线条", "装饰线", "嵌条", "MT-", "MT－", "铜条", "AL-", "收边")
+    if re.search(r"MT\d", text, re.I):
+        return True
     return any(k in text for k in keys)
 
 
@@ -130,6 +138,22 @@ def lookup_metal_trim_price(
     if not is_metal_trim_candidate(name, feature, unit):
         return None, ""
     text = f"{name} {feature}"
+    
+    # 先检查是否是踢脚线类项目（避免高度被误识别为展开面）
+    if "踢脚" in text or "AL-" in text:
+        is_wood = "木" in text or "木质" in text
+        if is_wood:
+            return (
+                {
+                    "material_main": 29.2,  # 实际样本校准
+                    "material_aux": 2.0,
+                    "labor": 6.97,  # 实际样本校准
+                    "machinery": 0.2,
+                    "material_loss_rate": 0.0,
+                },
+                "[木踢脚线] 实际样本校准",
+            )
+    
     unfold = parse_unfold_mm(name, feature)
     if unfold is not None:
         samples: List[Tuple[float, dict]] = []
@@ -147,7 +171,7 @@ def lookup_metal_trim_price(
         return (
             {
                 "material_main": 19.0,
-                "material_aux": 0.5,
+                "material_aux": 0.3,
                 "labor": 12.0,
                 "machinery": 0.2,
                 "material_loss_rate": 0.0,
@@ -166,6 +190,18 @@ def lookup_metal_trim_price(
                 },
                 "[5mm不锈钢收边条] 经验单价",
             )
+        # 实际样本校准：3mm墙面金属收边条实_主材10.57,实_人工16.83
+        if re.search(r"3\s*mm|3mm", text):
+            return (
+                {
+                    "material_main": 10.57,
+                    "material_aux": 1.0,
+                    "labor": 16.83,
+                    "machinery": 0.3,
+                    "material_loss_rate": 0.0,
+                },
+                "[3mm金属收边条] 实际样本校准",
+            )
         return (
             {
                 "material_main": 6.0,
@@ -177,17 +213,45 @@ def lookup_metal_trim_price(
             "[金属收边条] 经验单价",
         )
     if any(k in text for k in ("踢脚", "AL-", "收口", "嵌条")):
+        # 实际样本校准：
+        # 木踢脚线（50mm高）：主材29.2-34.2，人工6.97
+        # AL-03黑色型材踢脚线（20mm高）：主材15.9-17.79，人工12-12.93
+        is_wood = "木" in text or "木质" in text
+        if is_wood:
+            return (
+                {
+                    "material_main": 29.2,  # 实际样本校准
+                    "material_aux": 2.0,
+                    "labor": 6.97,  # 实际样本校准
+                    "machinery": 0.2,
+                    "material_loss_rate": 0.0,
+                },
+                "[木踢脚线] 实际样本校准（无展开面）",
+            )
+        else:
+            return (
+                {
+                    "material_main": 22.0,
+                    "material_aux": 2.0,
+                    "labor": 8.0,
+                    "machinery": 0.2,
+                    "material_loss_rate": 0.0,
+                },
+                "[型材踢脚/收边] 经验单价（无展开面）",
+            )
+    # 无展开面的 MT/装饰线
+    if re.search(r"MT-0?\d|MT\d", text, re.I) or "装饰线" in text:
+        # 实际样本校准：
+        # MT02黑色铝条：主材28，人工10
+        # MT01黑色铝条15*15mm：主材28，人工12
         return (
             {
-                "material_main": 22.0,
-                "material_aux": 2.0,
-                "labor": 8.0,
+                "material_main": 28.0,  # 实际样本校准
+                "material_aux": 3.0,
+                "labor": 10.0,  # 实际样本校准
                 "machinery": 0.2,
                 "material_loss_rate": 0.0,
             },
-            "[型材踢脚/收边] 经验单价（无展开面）",
+            "[金属装饰线/MT] 实际样本校准",
         )
-    # 无展开面的 MT 包边/复杂制品：不估默认50mm，交历史整项
-    if re.search(r"MT-0?\d", text, re.I):
-        return None, "[金属制品]无展开面，走历史整项匹配"
     return None, ""

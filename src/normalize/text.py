@@ -19,10 +19,14 @@ _UNIT_MAP = {
     "个": "个",
     "项": "项",
     "套": "套",
+    "座": "套",
+    "件": "套",
+    "根": "个",
+    "只": "个",
     "组": "组",
     "台": "台",
-    "樘": "樘",
-    "扇": "扇",
+    "吨": "t",
+    "T": "t",
 }
 
 _SYNONYMS = [
@@ -76,9 +80,15 @@ def normalize_feature(feature: str | None) -> str:
         line = line.strip()
         if not line:
             continue
-        if _FEATURE_META_LINE.match(line) or line.startswith("[分层工程量]"):
+        # 整行元数据（分层工程量）才丢弃；「[安装工程清单] 1.名称:…」只剥标签
+        if line.startswith("[分层工程量]"):
             continue
-        line = re.sub(r"^\[[^\]]+\]\s*", "", line)
+        line = re.sub(r"^\[[^\]]+\]\s*", "", line).strip()
+        if not line:
+            continue
+        # 剥离后仍是纯元数据标签
+        if _FEATURE_META_LINE.match(line):
+            continue
         line = re.sub(r"^(\d+)[.、．]\s*", r"\1.", line)
         if line:
             lines.append(line)

@@ -1,0 +1,18 @@
+=== 按 source: 总数/失败/成功率 ===
+  market_reference             共 2380 失败 1116 成功率53.1%
+  mep_install_profile          共 1062 失败  625 成功率41.1%
+  unresolved                   共  605 失败  605 成功率0.0%
+  line_match_weak              共  699 失败  256 成功率63.4%
+  line_match                   共  913 失败  245 成功率73.2%
+  special_line_price           共  651 失败  211 成功率67.6%
+  residential_finish_profile   共  185 失败   93 成功率49.7%
+  lighting_fixture_code        共  112 失败   69 成功率38.4%
+  decorative_diffuser_length   共  251 失败   67 成功率73.3%
+  plastic_pipe_dn              共   99 失败   66 成功率33.3%
+  custom_door_profile          共   68 失败   48 成功率29.4%
+  metal_trim_profile           共  548 失败   47 成功率91.4%
+  project_material_code        共  736 失败   45 成功率93.9%
+  paint_process                共   15 失败   15 成功率0.0%
+  composite_furniture_line     共   33 失败    9 成功率72.7%
+  ceiling_cl_paint             共   22 失败    4 成功率81.8%
+  custom_furniture_profile     共    9 失败    2 成功率77.8%

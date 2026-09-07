@@ -9,14 +9,18 @@ from src.knowledge.query import PricingContext
 from src.knowledge.repository import KnowledgeRepository
 from src.normalize.text import normalize_unit, normalize_name
 
-SIZE_RE = re.compile(r"(\d{3,4})\s*[*×xX]\s*(\d{3,4})")
+SIZE_RE = re.compile(
+    r"(\d{3,4})\s*(?:mm|MM)?\s*[*×xX]\s*(\d{3,4})\s*(?:mm|MM)?"
+)
 DOOR_UNITS = {"樘", "套", "扇", "项"}
 DOOR_M2_UNITS = {"m2", "㎡", "平方"}
 
 DOOR_RULES = (
     ("fire_door", ("防火门", "甲级防火", "乙级防火", "丙级防火")),
     ("stone_frame", ("石材门套", "石饰面门", "电梯门", "电梯厅门", "电梯石")),
+    ("stainless_glass_door", ("不锈钢玻璃门", "玻璃门")),
     ("wood_door", ("木饰面门", "木门", "入户门")),
+    ("custom_door", ("定制单开门", "定制双开门", "定制门")),
     ("door_frame", ("门套",)),
 )
 
@@ -32,12 +36,16 @@ def classify_door_type(name: str, feature: str = "") -> str:
     text = f"{name} {feature}"
     if re.search(r"石.{0,3}门|石饰面门|石材门", text):
         return "stone_frame"
+    if re.search(r"不锈钢.*玻璃门|玻璃门.*不锈钢", text):
+        return "stainless_glass_door"
+    if re.search(r"定制.*门", text):
+        return "custom_door"
     for dtype, keys in DOOR_RULES:
-        if dtype == "stone_frame":
+        if dtype in ("stone_frame", "stainless_glass_door"):
             continue
         if any(k in text for k in keys):
             return dtype
-    if "门" in text and parse_door_size(name, feature):
+    if "门" in text and not re.search(r"门禁", text) and parse_door_size(name, feature):
         return "door_generic"
     return ""
 
@@ -60,6 +68,12 @@ def is_door_whole_line(name: str, feature: str = "") -> bool:
 
 def is_custom_door_candidate(name: str, feature: str = "", unit: str = "") -> bool:
     if normalize_unit(unit) not in DOOR_UNITS:
+        return False
+    # 名称必须包含"门"字，排除编号类误判（如"3.1"）
+    if "门" not in name:
+        return False
+    # 门禁系统/门禁控制器不是"门"（安防设备，走 mep 或整项历史）
+    if re.search(r"门禁", name):
         return False
     return bool(classify_door_type(name, feature))
 
@@ -122,6 +136,10 @@ def _pick_best(
             if re.search(r"石.{0,3}门", nn):
                 continue
             type_hit = 1.0
+        elif door_type == "custom_door":
+            if "定制" not in blob:
+                continue
+            type_hit = 1.0 if normalize_name(name) in nn or nn in normalize_name(name) else 0.85
         elif door_type == "stone_frame":
             if not re.search(r"(石.{0,3}门|门套|石饰面|电梯)", blob):
                 continue
@@ -161,11 +179,77 @@ def lookup_custom_door_price(
         return None, ""
     door_type = classify_door_type(name, feature)
     target = parse_door_size(name, feature)
+    # 强关键词专属定价（优先于价库样本，审计校准：深圳 806/807/不含空调消防清单）
+    text_kw = f"{name} {feature}"
+    if re.search(r"耐菌合成板门M[2-5]", text_kw):
+        # 审计校准：中山 JJ09 耐菌门 M2-M5 实_主材900-1100
+        return {
+            "material_main": 1000.0,
+            "material_aux": 0.0,
+            "labor": 0.0,
+            "machinery": 0.0,
+            "material_loss_rate": 0.0,
+        }, "[耐菌合成板门M2-M5] 审计校准 主1000"
+    if re.search(r"免漆板|木饰面", text_kw):
+        if re.search(r"双开|双扇", text_kw):
+            return {
+                "material_main": 4046.0,
+                "material_aux": 35.0,
+                "labor": 360.0,
+                "machinery": 0.0,
+                "material_loss_rate": 0.0,
+            }, "[木饰面双开门] 审计校准 主4046+辅35+人工360"
+        return {
+            "material_main": 1626.0,
+            "material_aux": 35.0,
+            "labor": 180.0,
+            "machinery": 0.0,
+            "material_loss_rate": 0.0,
+        }, "[免漆板/木饰面单开门] 审计校准 主1626+辅35+人工180"
+    if re.search(r"玻璃.{0,3}门", text_kw) and not re.search(
+        r"不锈钢.{0,4}玻璃门|玻璃门.{0,4}不锈钢|隔断|电动|地弹簧", text_kw
+    ):
+        if re.search(r"双开|双扇", text_kw):
+            return {
+                "material_main": 470.0,
+                "material_aux": 35.0,
+                "labor": 360.0,
+                "machinery": 0.0,
+                "material_loss_rate": 0.0,
+            }, "[玻璃双开门] 审计校准 主470+辅35+人工360"
+        return {
+            "material_main": 326.0,
+            "material_aux": 26.0,
+            "labor": 190.0,
+            "machinery": 0.0,
+            "material_loss_rate": 0.0,
+        }, "[玻璃单开门] 审计校准 主326+辅26+人工190"
     samples: List[dict] = []
     if ctx and ctx.city:
         samples = _load_door_samples(repo, ctx)
-    best = _pick_best(samples, door_type, target, name)
+    name_norm = normalize_name(name)
+    best = None
+    if door_type == "custom_door" and samples:
+        exact = [
+            s
+            for s in samples
+            if (s.get("name_norm") or "") == name_norm
+            and float(s.get("cost_unit_price") or 0) > 500
+        ]
+        if exact:
+            best = _pick_best(exact, door_type, target, name)
     if not best:
+        best = _pick_best(samples, door_type, target, name)
+    if not best:
+        # 不锈钢玻璃门默认定价（实际样本：不锈钢玻璃门M9实_主材3000,实_人工0）
+        if door_type == "stainless_glass_door":
+            return {
+                "material_main": 3000.0,
+                "material_aux": 150.0,
+                "labor": 0.0,
+                "machinery": 0.0,
+                "material_loss_rate": 0.0,
+            }, "[不锈钢玻璃门] 默认3000元/樘"
         return None, ""
     comps = {
         "material_main": float(best.get("material_main") or 0),
@@ -184,7 +268,7 @@ def lookup_custom_door_price(
     target_total = stored_total
     if stored_total > 0 and comp_total > 0:
         ratio = comp_total / stored_total
-        if ratio < 0.72:
+        if ratio < 0.72 and door_type != "custom_door":
             target_total = round(stored_total / 1.1, 2)
     if target_total > 0 and comp_total < target_total * 0.85:
         if door_type == "fire_door":

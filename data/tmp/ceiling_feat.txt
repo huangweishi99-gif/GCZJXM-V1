@@ -1,0 +1,144 @@
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-04蓝色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=paint_process detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-01白色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=line_match_weak detail=None
+  判 main=3.0 labor=10.0 aux=0.0
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-02黑色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=paint_process detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[装修工程清单] 天棚乳胶漆 | 深圳
+  特征: [装修工程清单] 1、面层：PT-03红色无机涂料一底二面
+  实 main=4.37 labor=8.15 | 判 src=paint_process detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[806清单] 天棚乳胶漆 | 深圳
+  特征: [806清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[807清单] 天棚乳胶漆 | 深圳
+  特征: [807清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75
+
+[不含空调消防清单] 天棚乳胶漆 | 深圳
+  特征: [不含空调消防清单] 1、面层：PT-01无机白色涂料一底二面
+  实 main=3.0 labor=10.0 | 判 src=line_match_weak detail=None
+  判 main=4.37 labor=8.15 aux=1.75

@@ -33,7 +33,8 @@ def rebuild_craft_cost_profiles(conn) -> int:
                   cr.labor, cr.machinery, cr.cost_unit_price,
                   si.name_norm, bl.feature, bl.unit, bl.name,
                   COALESCE(p.city, '') AS city,
-                  COALESCE(p.price_tier, 'mid') AS price_tier
+                  COALESCE(p.price_tier, 'mid') AS price_tier,
+                  COALESCE(cr.is_verified, 0) AS is_verified
            FROM cost_records cr
            JOIN standard_items si ON si.id = cr.standard_item_id
            LEFT JOIN boq_lines bl ON bl.id = cr.source_line_id
@@ -64,6 +65,10 @@ def rebuild_craft_cost_profiles(conn) -> int:
     updated = 0
     for key, recs in buckets.items():
         craft_id, trade, tk, tv, unit_n, city, tier = key
+        # 定稿优先：有已闭环定稿样本时只用定稿，避免过程稿价拉偏工艺剖面
+        verified = [x for x in recs if x["is_verified"]]
+        if verified:
+            recs = verified
         if len(recs) < 1:
             continue
         main = _median([x["material_main"] for x in recs])

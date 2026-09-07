@@ -14,7 +14,7 @@ from src.ingest.detector import (
     is_pricing_row,
     should_skip_sheet,
 )
-from src.ingest.formula_eval import row_quantity_from_ws
+from src.ingest.formula_eval import eval_cell, row_quantity_from_ws
 from src.ingest.line_types import ParsedLine, ParsedWorkbook, cell_str, to_float
 from src.ingest.unit_price_analysis import (
     enrich_from_boq_features,
@@ -33,6 +33,39 @@ def _get(row: Tuple[Any, ...], mapping: dict, key: str, alt: Optional[str] = Non
     return row[idx]
 
 
+def _cell_num(
+    row: Tuple[Any, ...],
+    mapping: dict,
+    key: str,
+    *,
+    ws=None,
+    excel_row: Optional[int] = None,
+    cache: Optional[dict] = None,
+    wb=None,
+    alt: Optional[str] = None,
+) -> Optional[float]:
+    """读数值；公式单元格走 formula_eval（含跨表）。"""
+    v = _to_float(_get(row, mapping, key, alt))
+    if v is not None:
+        return v
+    idx = mapping.get(alt or key)
+    if ws is None or excel_row is None or idx is None:
+        return None
+    return eval_cell(ws, excel_row, idx + 1, cache, wb=wb)
+
+
+def _component_cost(
+    mm: Optional[float],
+    loss: Optional[float],
+    la: Optional[float],
+    ma: Optional[float],
+    mc: Optional[float],
+) -> Optional[float]:
+    if not any(x is not None and x != 0 for x in (mm, la, ma, mc)):
+        return None
+    return (mm or 0) * (1 + (loss or 0)) + (la or 0) + (ma or 0) + (mc or 0)
+
+
 def _parse_sheet(
     df: pd.DataFrame,
     sheet_name: str,
@@ -46,6 +79,8 @@ def _parse_sheet(
     section_stack: List[str] = []
     m = layout.column_map
     floor_cols = layout.floor_qty_columns
+    book = getattr(ws, "parent", None) if ws is not None else None
+    cache: dict = {}
 
     for i in range(layout.data_start_row, len(df)):
         row = tuple(df.iloc[i].tolist())
@@ -66,32 +101,43 @@ def _parse_sheet(
             continue
 
         def col(key: str, alt: Optional[str] = None) -> Optional[float]:
-            return _to_float(_get(row, m, key, alt))
+            return _cell_num(
+                row, m, key, ws=ws, excel_row=excel_row, cache=cache, wb=book, alt=alt
+            )
 
         mm = col("material_main")
+        la = col("labor")
+        ma = col("material_aux")
+        mc = col("machinery")
+        loss = col("material_loss_rate")
+        cost_up = col("cost_unit_price")
         if m.get("_cost_side"):
-            mm = _to_float(_get(row, m, "material_main_cost")) or mm
-            la = _to_float(_get(row, m, "labor_cost")) or col("labor")
-            ma = _to_float(_get(row, m, "material_aux_cost"))
-            mc = _to_float(_get(row, m, "machinery_cost"))
-            loss = _to_float(_get(row, m, "material_loss_rate_cost")) or col(
-                "material_loss_rate"
-            )
-            cost_up = _to_float(_get(row, m, "cost_unit_price"))
-        else:
-            la = col("labor")
-            ma = col("material_aux")
-            mc = col("machinery")
-            loss = col("material_loss_rate")
-            cost_up = col("cost_unit_price")
-        if cost_up is None and any(x is not None for x in (mm, la, ma, mc)):
-            cost_up = (mm or 0) * (1 + (loss or 0)) + (la or 0) + (ma or 0) + (mc or 0)
+            mm = col("material_main_cost") or mm
+            la = col("labor_cost") or la
+            ma = col("material_aux_cost") or ma
+            mc = col("machinery_cost") or mc
+            loss = col("material_loss_rate_cost") or loss
+            cost_up = col("cost_unit_price") or cost_up
+            # 链接行若成本区留空，用「其中」桥接列反推（人工+主材含损耗+辅材机械）
+            if cost_up is None or cost_up <= 0:
+                side_total = _component_cost(mm, loss, la, ma, mc)
+                if side_total and side_total > 0:
+                    cost_up = side_total
+                else:
+                    left_l = col("labor")
+                    left_m = col("material_main")
+                    left_h = col("machinery")
+                    if any(x is not None and x > 0 for x in (left_l, left_m, left_h)):
+                        cost_up = (left_l or 0) + (left_m or 0) + (left_h or 0)
+        if cost_up is None or cost_up <= 0:
+            cost_up = _component_cost(mm, loss, la, ma, mc)
         listed_up = col("unit_price")
-        if not m.get("_cost_side"):
-            if listed_up is not None and listed_up > 0:
-                cost_up = listed_up
-            elif (cost_up is None or cost_up == 0) and listed_up:
-                cost_up = listed_up
+        # 仅在完全没有人材机明细时才退回综合单价；有明细时不把管理费/利润计入成本
+        if (cost_up is None or cost_up <= 0) and listed_up and listed_up > 0:
+            mgmt = col("management") or 0.0
+            profit = col("profit") or 0.0
+            net = listed_up - mgmt - profit
+            cost_up = net if net > 0 else listed_up
 
         feat = _cell_str(_get(row, m, "feature"))
         spec = _cell_str(_get(row, m, "spec")) if "spec" in m else ""

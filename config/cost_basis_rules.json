@@ -1,8 +1,16 @@
 {
-  "_comment": "价库合价与用户成本区口径：多数项÷default_net_divisor 为净价",
+  "_comment": "价库合价与用户成本区口径：多数项÷default_net_divisor 为净价；gross 项不除",
   "default_net_divisor": 1.1,
+  "gross_units": ["项"],
   "gross_name_patterns": [
-    "MT-0\\d.*金属饰面"
+    "MT-0\\d.*金属饰面",
+    "措施费",
+    "装饰风口",
+    "提升泵",
+    "污水提升泵",
+    "ST-0[12]",
+    "SI-0[12]",
+    "高压气瓶"
   ],
   "gross_unit_name_rules": [
     {

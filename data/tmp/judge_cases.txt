@@ -1,0 +1,19 @@
+[地面块料
+（主材甲供）] src=line_match conf=0.78 auto=True m=0.0 l=60.0 a=16.0 mech=0.0 total=76.0 | notes=['对照口径：名称+特征(26字)+单位(㎡)', '整项参照置信 78%<80%：[主材价库]材料价库(tile:600*1200·深圳·mid)；规格600*1200（深圳·中档）']
+[岩板墙饰面
+（主材甲供）] src=line_match conf=0.78 auto=True m=0.0 l=80.0 a=51.0 mech=0.0 total=131.0 | notes=['对照口径：名称+特征(22字)+单位(㎡)', '[弱整项知识库清单价(深圳·mid·1样本)（深圳·中档）「岩板墙饰面(主材甲供)」 名称100% 特征100%']
+[探测器拆除、安装] src=market_reference conf=0.72 auto=False m=0.0 l=15.0 a=1.0 mech=1.0 total=17.0 | notes=['对照口径：名称+特征(7字)+单位(套)', '专项规则：市场参考：拆除工程综合兜底']
+[消防广播拆除、安装] src=market_reference conf=0.72 auto=False m=0.0 l=15.0 a=1.0 mech=1.0 total=17.0 | notes=['对照口径：名称+特征(12字)+单位(套)', '专项规则：市场参考：拆除工程综合兜底']
+[喷头拆除、安装] src=line_match conf=0.78 auto=False m=0.0 l=170.52 a=0.0 mech=3.48 total=174.0 | notes=['对照口径：名称+特征(7字)+单位(个)', '[弱整项知识库清单价(深圳·mid·5样本)（深圳·中档）「喷头拆除、安装」 名称100% 特征100%']
+[镀锌风管拆除、移位] src=mep_install_profile conf=0.72 auto=False m=85.0 l=48.0 a=12.0 mech=2.0 total=149.55 | notes=['对照口径：名称+特征(5字)+单位(㎡)', '[通风风管] 按延长米']
+[280℃防火阀拆除、安装] src=market_reference conf=0.72 auto=False m=0.0 l=15.0 a=1.0 mech=1.0 total=17.0 | notes=['对照口径：名称+特征(13字)+单位(套)', '专项规则：市场参考：拆除工程综合兜底']
+[原玻璃双开门拆除后安装] src=line_match conf=0.78 auto=True m=0.0 l=600.0 a=0.0 mech=0.0 total=600.0 | notes=['对照口径：名称+特征(20字)+单位(樘)', '整项参照置信 78%<80%：[主材价库]材料价库(glass·深圳·mid)；规格glass（深圳·中档）']
+[原有空调拆除] src=line_match conf=0.92 auto=False m=0.0 l=287.18 a=0.0 mech=5.86 total=293.04 | notes=['对照口径：名称+特征(0字)+单位(套)', '[知识库整项]知识库清单价(通用·mid·1样本)【跨区/跨档参考】（深圳·中档）「原有空调拆除」 名称100% 特征100%']
+[多联式空调机组室外机
+（主材利旧）] src=market_reference conf=0.82 auto=True m=0.0 l=1260.0 a=5.39 mech=33.1 total=1298.49 | notes=['对照口径：名称+特征(0字)+单位(台)', '专项规则：实际样本校准：多联式空调机组室外机14匹实_主材18073.45,实_辅材5.39,实_人工1260.35,实_机械33.1']
+[风机盘管（保护性拆除）] src=market_reference conf=0.78 auto=False m=0.0 l=170.97 a=0.0 mech=0.0 total=170.97 | notes=['对照口径：名称+特征(0字)+单位(台)', '专项规则：复核参考：风机盘管保护性拆除']
+[边墙式排风机（主材利旧）] src=market_reference conf=0.82 auto=True m=0.0 l=185.0 a=45.0 mech=8.0 total=888.0 | notes=['对照口径：名称+特征(0字)+单位(台)', '[市场参考深圳·中档] 市场参考：离心/边墙排风机（规则:hvac_fan）']
+[条形灯安装含管线（主材甲供）] src=unresolved conf=0.35 auto=False m=0.0 l=0.0 a=0.0 mech=0.0 total=0.0 | notes=['对照口径：名称+特征(0字)+单位(m)', '未达自动判断门槛：工艺=装饰综合；无材料目录命中']
+[灯具安装含管线（主材甲供）] src=unresolved conf=0.35 auto=False m=None l=None a=None mech=None total=None | notes=['对照口径：名称+特征(0字)+单位(套)', '[工艺价型]灯具深圳·中档 样本4 标签=—']
+[风盘移位] src=line_match conf=0.78 auto=True m=220.0 l=209.0 a=110.0 mech=11.0 total=550.0 | notes=['对照口径：名称+特征(16字)+单位(个)', '[弱整项知识库清单价(通用·mid·1样本)【跨区/跨档参考】（深圳·中档）「风盘移位」 名称100% 特征100%']
+[移位及安装烟感] src=market_reference conf=0.82 auto=True m=155.0 l=115.0 a=10.0 mech=0.0 total=280.0 | notes=['对照口径：名称+特征(7字)+单位(个)', '专项规则：市场参考：烟感探测器含安装']

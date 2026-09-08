@@ -19165,6 +19165,52 @@
       "machinery": 0.14,
       "material_loss_rate": 0.0,
       "source_note": "实际样本提炼：增加ZR-RVS电线实_主材4.52,人工1.74,辅材0.56,机械0.14（5条/4项目）"
+    },
+    {
+      "id": "steam_room_downlight",
+      "name_keywords": [
+        "湿蒸筒灯",
+        "防水筒灯"
+      ],
+      "units": [
+        "只",
+        "个",
+        "套"
+      ],
+      "cities": [
+        "深圳"
+      ],
+      "material_main": 155.0,
+      "material_aux": 6.0,
+      "labor": 40.0,
+      "machinery": 0.0,
+      "confidence": 0.85,
+      "source_note": "实际样本校准：深圳丽思卡尔顿SPA湿蒸房防水筒灯 实_主材155 实_人工40 实_辅材6（防水灯区别于普通筒灯70）"
+    },
+    {
+      "id": "floor_spring_material",
+      "name_keywords": [
+        "地弹簧"
+      ],
+      "exclude_name_keywords": [
+        "地弹簧玻璃门",
+        "玻璃地弹簧门",
+        "全玻地弹簧"
+      ],
+      "units": [
+        "副",
+        "套",
+        "个"
+      ],
+      "cities": [
+        "深圳"
+      ],
+      "material_main": 450.0,
+      "material_aux": 0.0,
+      "labor": 0.0,
+      "machinery": 0.0,
+      "confidence": 0.85,
+      "source_note": "实际样本校准：深圳地弹簧（重型玻璃门五金，纯材料供应）实_主材450"
     }
   ]
 }

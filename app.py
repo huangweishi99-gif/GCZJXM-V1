@@ -506,8 +506,8 @@ def cmd_audit_judge(args: argparse.Namespace) -> None:
         limit=args.limit,
         project_id=args.project,
         export_path=out,
-        exclude_simulated=args.exclude_simulated,
-        exclude_fee_items=args.exclude_fee,
+        exclude_simulated=not getattr(args, "include_simulated", False),
+        exclude_fee_items=not getattr(args, "include_fee", False),
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     if out:
@@ -527,6 +527,8 @@ def cmd_audit_review(args: argparse.Namespace) -> None:
     if args.refresh or not input_path.exists():
         summary = run_judge_audit(
             exclude_self=not args.include_self,
+            exclude_simulated=not getattr(args, "include_simulated", False),
+            exclude_fee_items=not getattr(args, "include_fee", False),
             limit=args.limit,
             export_path=input_path,
         )
@@ -1248,14 +1250,14 @@ def main() -> None:
     p_audit.add_argument("--abs-tol", type=float, default=5.0, help="分项绝对误差容忍/元（实际≈0时）")
     p_audit.add_argument("--total-tol", type=float, default=0.15, help="合计相对误差容忍（默认15%%）")
     p_audit.add_argument(
-        "--exclude-simulated",
+        "--include-simulated",
         action="store_true",
-        help="排除模拟工程量/框架清单项目（附件2-1/附件2-2，实值为模拟价，拉低指标且不可修）",
+        help="包含模拟工程量/框架清单样本（默认排除，与 regression 口径一致）",
     )
     p_audit.add_argument(
-        "--exclude-fee",
+        "--include-fee",
         action="store_true",
-        help="排除费用项（安全文明施工费/材料搬运费等，judge 按人材机做法设计，不覆盖费率类）",
+        help="包含费用项样本（默认排除，与 regression 口径一致）",
     )
     p_audit.set_defaults(func=cmd_audit_judge)
 
@@ -1273,6 +1275,16 @@ def main() -> None:
         "--include-self",
         action="store_true",
         help="--refresh 时不排除同标准项（仅对比用）",
+    )
+    p_review.add_argument(
+        "--include-simulated",
+        action="store_true",
+        help="--refresh 时包含模拟/框架样本（默认排除，与 regression 口径一致）",
+    )
+    p_review.add_argument(
+        "--include-fee",
+        action="store_true",
+        help="--refresh 时包含费用项样本（默认排除，与 regression 口径一致）",
     )
     p_review.set_defaults(func=cmd_audit_review)
 

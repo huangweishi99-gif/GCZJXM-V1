@@ -543,12 +543,12 @@ def _allow_market_without_feature(name: str, feature: str, craft: CraftMatch) ->
         return True
     name_n = normalize_name(name)
     if len(name_n) >= 6 and re.search(
-        r"灯|插座|开关|配电|电缆|线管|风口|风幕|喷淋|烟感|弱电|桥架|母线|阀门|洁具|风机|排气扇|软管|软连接|制冷剂|调试|探测器|按钮|模块|压力表|防火阀|阀|灭火器|箭头|斑马线|划线|井盖|化粪池|水泵|泵|水箱|端子箱|电话|放大器|扬声器|点位|接地",
+        r"灯|插座|开关|配电|电缆|线管|风口|风幕|喷淋|烟感|弱电|桥架|母线|阀门|洁具|风机|排气扇|软管|软连接|制冷剂|调试|探测器|按钮|模块|压力表|防火阀|阀|灭火器|箭头|斑马线|划线|井盖|化粪池|水泵|泵|水箱|端子箱|电话|放大器|扬声器|点位|接地|吸污口|给水口|回水口|泳池",
         name_n,
     ):
         return True
     if re.search(
-        r"拆除|修补|加固|加工费|成品保护|保洁交付|雨污水井|墙面抹灰|构造柱|抱框柱|发泡混凝土|胶泥|焊条|镀锌角码|气枪钉|波导线|防雨百叶|设备终端箱|折叠|摇摇车|现场排查|措施费|反支撑|塞口|挡水|检修门|检修口|吊灯|筒灯|防滑条|洗墙灯|软灯条|磁吸灯|吸音棉|吸音板|窗台板|水磨石|洞洞板|软木板|苔藓|白板墙|钢梯|过梁|圈梁|构造柱|坡道|防水卷材|卷材防水|洗手台|银镜|隔断|防火门|百叶窗|伸缩缝|瓦楞板|夹芯板|一体板|散水台|地胶|钢丝网|岩板|马桶|提升泵|电能表|篦子|井盖|道牙|防撞|护角|基座|端子箱|软管|风口|阀",
+        r"拆除|修补|加固|加工费|成品保护|保洁交付|雨污水井|墙面抹灰|构造柱|抱框柱|发泡混凝土|胶泥|焊条|镀锌角码|气枪钉|波导线|防雨百叶|设备终端箱|折叠|摇摇车|现场排查|措施费|反支撑|塞口|挡水|检修门|检修口|吊灯|筒灯|防滑条|洗墙灯|软灯条|磁吸灯|吸音棉|吸音板|窗台板|水磨石|洞洞板|软木板|苔藓|白板墙|钢梯|过梁|圈梁|构造柱|坡道|防水卷材|卷材防水|洗手台|银镜|隔断|防火门|百叶窗|伸缩缝|瓦楞板|夹芯板|一体板|散水台|地胶|钢丝网|岩板|马桶|提升泵|电能表|篦子|井盖|道牙|防撞|护角|基座|端子箱|软管|风口|阀|地弹簧|闭门器|门吸|合页",
         name_n,
     ):
         return True
@@ -1018,7 +1018,9 @@ def judge_line_components(
 
     from src.pricing.residential_finish_price import lookup_residential_finish_components
 
-    res_comps, res_note = lookup_residential_finish_components(name, feature, unit)
+    res_comps, res_note = lookup_residential_finish_components(
+        name, feature, unit, city=(ctx.city if ctx else "")
+    )
     if res_comps and (
         _components_usable(res_comps) or "合入他项" in (res_note or "")
     ):
@@ -1161,7 +1163,9 @@ def judge_line_components(
     # --- 层 0f2：照明物料代号（Mr15n/D13f/Wi12 等，名称含代号即可）---
     from src.pricing.lighting_fixture_price import lookup_lighting_fixture_components
 
-    light_comps, light_note = lookup_lighting_fixture_components(name, feature, unit)
+    light_comps, light_note = lookup_lighting_fixture_components(
+        name, feature, unit, city=(ctx.city if ctx else "")
+    )
     if light_comps and _components_usable(light_comps):
         result.material_main = float(light_comps.get("material_main") or 0)
         result.material_aux = float(light_comps.get("material_aux") or 0)

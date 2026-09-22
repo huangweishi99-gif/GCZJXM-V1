@@ -42,3 +42,6 @@ outputs/
 
 # 可选：本地导出 JSON 报告（校准/audit 可本地重跑）
 data/exports/*.json
+
+# audit_tools.py drill 的钻取输出（本地分析产物）
+data/exports/*.txt

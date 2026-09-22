@@ -115,10 +115,27 @@ def _extract_fixture_code(name: str) -> Optional[str]:
     return m.group(1) if m else None
 
 
+# 城市×代号 专项价：同一照明代号在不同项目属不同批次（如 Rm10 珠海 145 vs 其他城市 35），
+# 按「城市 + 代号」精确限定，避免跨项目误伤（与 market_reference 限城规则同口径）。
+# (主材, 辅材, 人工, 机械, 说明) —— 2026-09-14 审计校准（均为对应城市定稿值）
+_CITY_CODE_PRICES: dict[str, dict[str, tuple[float, float, float, float, str]]] = {
+    "珠海": {
+        "D13M": (98.0, 8.0, 28.0, 8.0, "D13m 可调深藏射灯（珠海定稿 主98/人28）"),
+        "LB13": (135.0, 1.5, 35.0, 1.5, "Lb13 LED地埋洗墙灯（珠海定稿 主135/人35）"),
+        "MR15F": (145.0, 1.5, 35.0, 1.5, "Mr15f 下照迷你格栅灯（珠海定稿 主145/人35）"),
+        "RM10": (145.0, 1.5, 18.0, 1.5, "Rm10 LED透光模组灯（珠海定稿 主145/人18）"),
+    },
+    "中山": {
+        "R6": (50.0, 0.5, 8.0, 0.3, "R6 LED灯条（中山定稿 主50/人8）"),
+    },
+}
+
+
 def lookup_lighting_fixture_components(
     name: str,
     feature: str = "",
     unit: str = "",
+    city: str = "",
 ) -> Tuple[Optional[dict], str]:
     """照明物料代号（Mr15n / D13f / Wi12 等）或特征灯带延长米 → 分项价。"""
     unit_n = normalize_unit(unit)
@@ -236,6 +253,10 @@ def lookup_lighting_fixture_components(
             return None, ""
     elif unit_n not in ("套", "个", "台"):
         return None, ""
+    # 城市×代号 专项价优先（同代号跨项目分批，仅对限定城市生效）
+    city_prices = (_CITY_CODE_PRICES.get((city or "").strip()) or {}).get(code.upper())
+    if city_prices:
+        main, aux, labor, mach, label = city_prices
     return {
         "material_main": main,
         "material_loss_rate": 0.0,

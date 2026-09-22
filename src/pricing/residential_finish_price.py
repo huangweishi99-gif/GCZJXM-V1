@@ -55,6 +55,8 @@ def lookup_residential_finish_components(
     name: str,
     feature: str = "",
     unit: str = "",
+    *,
+    city: str = "",
 ) -> Tuple[Optional[dict], str]:
     unit_n = normalize_unit(unit)
     nn = normalize_name(name)
@@ -147,6 +149,15 @@ def lookup_residential_finish_components(
             return _pack(48.0, 45.0, 18.5, 0.5, 0.01), "[精装]铝扣板吊顶"
         if re.search(r"装饰板", nn):
             return _pack(5.5, 57.5, 44.86, 0.5, 0.01), "[精装]天棚装饰板腻子漆"
+        # 中山(云湾)「平面吊顶天棚」=纯石膏板平顶(不含乳胶漆)：实主30/人42/辅3；
+        # 含乳胶漆/腻子/造型等的吊顶仍走下方「石膏板吊顶+乳胶漆」整包档，避免误压带涂饰的吊顶
+        if (
+            city == "中山"
+            and re.search(r"平面吊顶", nn)
+            and re.search(r"石膏板", text)
+            and not re.search(r"乳胶漆|涂料|油漆|造型|跌级|弧形", text)
+        ):
+            return _pack(30.0, 42.0, 3.0, 0.0), "[精装·中山]平面石膏板吊顶(不含乳胶漆)"
         if re.search(r"石膏板|阻燃夹板|乳胶漆", text):
             return _pack(5.5, 94.5, 75.952, 1.5, 0.02), "[精装]石膏板吊顶+乳胶漆"
 
@@ -164,6 +175,13 @@ def lookup_residential_finish_components(
     if unit_n in ("m", "米") and re.search(r"金属踢脚|铝合金踢脚", text):
         return _pack(13.5, 15.0, 3.5, 0.3, 0.03), "[精装]铝合金踢脚线"
     if unit_n in ("m", "米") and re.search(r"金属装饰线|MT02|黑色铝条", text):
+        # 有展开面/展开尺寸/可见宽度或明确不锈钢/古铜材质的线条：放行给金属线条模块
+        # 按展开宽度插值（如云湾 MT-01"展开尺寸:…=93mm"、客厅/次卧背景墙不锈钢线条），
+        # 避免泛化 28/10 抢价；纯 MT02 黑色铝条仍走本规则。
+        if re.search(r"展开面|展开尺寸|不锈钢|古铜", text) or re.search(
+            r"宽\s*\d+(?:\.\d+)?\s*mm|\d+(?:\.\d+)?\s*mm\s*宽", text
+        ):
+            return None, ""
         return _pack(28.0, 10.0, 2.5, 0.2, 0.03), "[精装]金属装饰线"
 
     # --- 墙面硬装 ---

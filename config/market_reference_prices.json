@@ -62,7 +62,10 @@
       "machinery": 1.2,
       "material_loss_rate": 0.0,
       "preserve_components": true,
-      "source_note": "实际样本校准：墙面WD-04木饰面实_主材580,实_辅材15,实_人工55,实_机械1.2（隔断另设规则）"
+      "source_note": "实际样本校准：墙面WD-04木饰面实_主材580,实_辅材15,实_人工55,实_机械1.2（隔断另设规则）",
+      "cities": [
+        "珠海"
+      ]
     },
     {
       "id": "wall_wood_veneer_wd04_partition",
@@ -760,6 +763,25 @@
       "source_note": "市场参考：楼地面涂膜防水"
     },
     {
+      "id": "zs_waterproof_coating",
+      "name_keywords": [
+        "涂膜防水"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 14.25,
+      "material_aux": 0.5,
+      "labor": 5.25,
+      "machinery": 0.1,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾 涂膜防水存在过程稿12/人5 与定稿16.5/人5.5 两批（差37%），取中值14.25/5.25 可同时落在±20%内（18.75%与13.6%）覆盖两批；限定中山（深圳卫生间涂膜防水另为 30/42 批次）",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
       "id": "waterproof_nonwoven_80g",
       "name_keywords": [
         "防水无纺布"
@@ -1249,8 +1271,10 @@
         "不锈钢天花",
         "铝板天花",
         "铝板灯槽",
-        "铝格栅",
         "格栅吊顶"
+      ],
+      "exclude_name_keywords": [
+        "铝格栅"
       ],
       "units": [
         "㎡",
@@ -1260,7 +1284,10 @@
       "material_aux": 85,
       "labor": 135,
       "machinery": 2,
-      "source_note": "市场参考：不锈钢/铝板造型天花（含灯槽）"
+      "source_note": "市场参考：不锈钢/铝板造型天花（含灯槽）",
+      "cities": [
+        "珠海"
+      ]
     },
     {
       "id": "aluminum_grille_ceiling_50x100_review",
@@ -1445,11 +1472,11 @@
       "units": [
         "m³"
       ],
-      "material_main": 185,
-      "material_aux": 22,
-      "labor": 75,
-      "machinery": 12,
-      "source_note": "市场参考：陶粒回填层"
+      "material_main": 360,
+      "material_aux": 10.5,
+      "labor": 50,
+      "machinery": 8.5,
+      "source_note": "市场参考+样本校准：陶粒回填层（按 m³）。中山会所定稿 实_主材360/人工50/辅10.5/机8.5（4 条一致）；江门 实385/28 主材亦落此档。㎡ 沉箱陶粒见 backfill_ceramsite_sump"
     },
     {
       "id": "ceramsite_concrete_bedding_review",
@@ -3285,6 +3312,45 @@
       "source_note": "市场参考：木饰面板（海德/会所常用）"
     },
     {
+      "id": "wood_veneer_door_m_zs",
+      "name_keywords": [
+        "木饰面门M",
+        "不含门套"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 1250.0,
+      "material_aux": 60.0,
+      "labor": 145.0,
+      "machinery": 1.5,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 木饰面门M3/M4/M5/M6（不含门套）9+ 行一致 实_主材1250,实_辅材60,实_人工145,实_机械1.5；限定中山（M 系列为云湾项目代号），不影响珠海木饰面平开门 620/75 批次",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "wall_wood_veneer_wd01_zs",
+      "name_keywords": [
+        "墙面木饰面"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 420.0,
+      "material_aux": 92.5,
+      "labor": 90.0,
+      "machinery": 3.5,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 墙面木饰面WD-01 共12行主材一致420（人工85~95，取中90）；限定中山，不影响珠海木饰面 580/75 与 620/75 批次",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
       "id": "panel_board_code",
       "name_keywords": [
         "免漆板",
@@ -3766,14 +3832,13 @@
         "陶粒回填"
       ],
       "units": [
-        "㎡",
-        "m³"
+        "㎡"
       ],
       "material_main": 65,
       "material_aux": 12,
       "labor": 10.5,
       "machinery": 5,
-      "source_note": "市场参考：沉箱陶粒回填"
+      "source_note": "市场参考：沉箱陶粒回填（㎡，200mm厚）。m³ 陶粒回填走 backfill_ceramsite（360/50）"
     },
     {
       "id": "explosion_proof_light",
@@ -5653,14 +5718,14 @@
       "units": [
         "㎡"
       ],
-      "material_main": 5,
-      "material_aux": 57,
-      "labor": 91.5,
-      "machinery": 0.08,
+      "material_main": 52.22,
+      "material_aux": 33.79,
+      "labor": 64.5,
+      "machinery": 3.07,
       "cities": [
         "深圳"
       ],
-      "source_note": "深圳定稿：平面石膏板吊顶+无机涂料投影综合约154元/㎡"
+      "source_note": "审计校准：深圳深海定稿 CL-01/CL-02 平面石膏板吊顶+无机涂料 6 行一致 实_主材52.22,实_辅材33.79,实_人工64.5,实_机械3.07（另有 5/57/91.5/0.08 同合计153.58 的不同拆分批次，取多数派；合计不变故不影响合价）"
     },
     {
       "id": "sz_curtain_wall_box_ceiling",
@@ -8464,7 +8529,10 @@
       "material_aux": 0,
       "labor": 0,
       "machinery": 0,
-      "source_note": "实际样本校准：GL-01中空玻璃实_主材340,实_人工0,实_辅材0"
+      "source_note": "实际样本校准：GL-01中空玻璃实_主材340,实_人工0,实_辅材0",
+      "cities": [
+        "中山"
+      ]
     },
     {
       "id": "electric_roller_blind",
@@ -12181,7 +12249,10 @@
       "labor": 470.8,
       "machinery": 24.78,
       "require_feature_keywords": false,
-      "source_note": "实际样本校准：ST-02米白色大理石天棚及侧面实_主材495.58,实_辅材247.79,实_人工470.80,实_机械24.78"
+      "source_note": "实际样本校准：ST-02米白色大理石天棚及侧面实_主材495.58,实_辅材247.79,实_人工470.80,实_机械24.78",
+      "cities": [
+        "深圳"
+      ]
     },
     {
       "id": "marble_st05_wave_facade",
@@ -12217,6 +12288,26 @@
       "labor": 210.0,
       "machinery": 0.0,
       "source_note": "实际样本校准：CT-02米白色仿大理石岩板（岩板暗门）实_主材180,实_辅材353.67,实_人工210"
+    },
+    {
+      "id": "zs_tile_pattern_pave",
+      "name_keywords": [
+        "拼花铺贴",
+        "地面瓷砖拼花"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 220.0,
+      "material_aux": 29.1,
+      "labor": 73.0,
+      "machinery": 0.8,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 地面瓷砖拼花铺贴CT-01/CT-02 实_主材220,实_辅材29.1,实_人工73,实_机械0.8；限定中山。此前该行被 slate_secret_door_ct02（关键词 CT-02 岩板暗门）误命中成 180/210",
+      "cities": [
+        "中山"
+      ]
     },
     {
       "id": "aluminum_dust_carpet_fa01",
@@ -19105,6 +19196,24 @@
       "source_note": "审计校准：截止阀DN40 实_主材39.66~75,实_辅材1.5~24.16,实_人工25~35"
     },
     {
+      "id": "valve_globe_dn50",
+      "name_keywords": [
+        "截止阀"
+      ],
+      "feature_keywords": [
+        "DN50"
+      ],
+      "require_feature_keywords": true,
+      "units": [
+        "个"
+      ],
+      "material_main": 50.6,
+      "material_aux": 25.3,
+      "labor": 48.07,
+      "machinery": 2.53,
+      "source_note": "审计校准：截止阀DN50 实_主材50.6,实_辅材25.3,实_人工48.07,实_机械2.53（同项目另有 主90/人35/辅1.5 批次，合计同为126.5；取与本族 DN15/20/25/40 一致的辅材≈主材40~50%口径）"
+    },
+    {
       "id": "access_system_install",
       "name_keywords": [
         "门禁系统安装"
@@ -19211,6 +19320,309 @@
       "machinery": 0.0,
       "confidence": 0.85,
       "source_note": "实际样本校准：深圳地弹簧（重型玻璃门五金，纯材料供应）实_主材450"
+    },
+    {
+      "id": "stainless_frame_zs",
+      "name_keywords": [
+        "不锈钢门套",
+        "不锈钢窗套",
+        "电梯不锈钢侧板门套"
+      ],
+      "feature_keywords": [
+        "不锈钢",
+        "电梯"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "cities": [
+        "中山"
+      ],
+      "material_main": 200,
+      "material_aux": 19,
+      "labor": 68,
+      "machinery": 0,
+      "source_note": "实际样本校准：中山不锈钢门套/窗套(云湾MT-01/02/05)实_主材200,人工68"
+    },
+    {
+      "id": "lighting_cove_zs",
+      "name_keywords": [
+        "灯槽"
+      ],
+      "cities": [
+        "中山"
+      ],
+      "material_main": 38,
+      "material_aux": 3.5,
+      "labor": 27,
+      "machinery": 0,
+      "source_note": "实际样本校准：中山石膏板灯槽实_主材38,人工27"
+    },
+    {
+      "id": "waterproof_coating_zs",
+      "name_keywords": [
+        "涂膜防水"
+      ],
+      "cities": [
+        "中山"
+      ],
+      "material_main": 12,
+      "material_aux": 0.5,
+      "labor": 5,
+      "machinery": 0,
+      "source_note": "实际样本校准：中山墙面/楼地面涂膜防水实_主材12,人工5"
+    },
+    {
+      "id": "wood_door_zs_m4",
+      "name_keywords": [
+        "木饰面门M4"
+      ],
+      "cities": [
+        "中山"
+      ],
+      "material_main": 1250,
+      "material_aux": 60,
+      "labor": 145,
+      "machinery": 0,
+      "source_note": "实际样本校准：中山木饰面门M4(云湾)实_主材1250,人工145"
+    },
+    {
+      "id": "refuse_clearance_jm",
+      "name_keywords": [
+        "垃圾清运"
+      ],
+      "cities": [
+        "江门"
+      ],
+      "material_main": 0,
+      "material_aux": 1,
+      "labor": 12,
+      "machinery": 0,
+      "source_note": "实际样本校准：江门垃圾清运实_人工12辅材1"
+    },
+    {
+      "id": "mortar_protect_layer_zs",
+      "name_keywords": [
+        "水泥砂浆防水保护层"
+      ],
+      "cities": [
+        "中山"
+      ],
+      "material_main": 5,
+      "material_aux": 0.8,
+      "labor": 6,
+      "machinery": 0,
+      "source_note": "实际样本校准：中山地面20厚水泥砂浆防水保护层实_主材5人工6辅材0.8"
+    },
+    {
+      "id": "wood_backing_zs",
+      "name_keywords": [
+        "木龙骨石膏板基层"
+      ],
+      "cities": [
+        "中山"
+      ],
+      "material_main": 38,
+      "material_aux": 4,
+      "labor": 18,
+      "machinery": 0,
+      "source_note": "实际样本校准：中山木龙骨石膏板基层实_主材38人工18辅材4"
+    },
+    {
+      "id": "leather_upholster_zs",
+      "name_keywords": [
+        "扪皮饰面"
+      ],
+      "cities": [
+        "中山"
+      ],
+      "material_main": 140,
+      "material_aux": 12,
+      "labor": 40,
+      "machinery": 0,
+      "source_note": "实际样本校准：中山扪皮饰面(UP-101)实_主材140人工40辅材12"
+    },
+    {
+      "id": "screed_mortar_zs",
+      "name_keywords": [
+        "砂浆找平"
+      ],
+      "units": [
+        "m2",
+        "㎡"
+      ],
+      "cities": [
+        "中山"
+      ],
+      "material_main": 8.5,
+      "material_aux": 0,
+      "labor": 10.5,
+      "machinery": 0,
+      "source_note": "实际样本校准：中山水泥砂浆找平实_主材8.5人工10.5"
+    },
+    {
+      "id": "putty_wall_waterproof_sz",
+      "name_keywords": [
+        "墙面挂耐水腻子"
+      ],
+      "units": [
+        "㎡",
+        "m2"
+      ],
+      "cities": [
+        "深圳"
+      ],
+      "preserve_components": true,
+      "material_main": 3.5,
+      "material_aux": 0,
+      "labor": 20,
+      "machinery": 0,
+      "source_note": "实际样本校准：深圳墙面挂耐水腻子(岁宝/深海)实_主材3.5人工20；天花挂耐水腻子走通用0.9/11不在此规则"
+    },
+    {
+      "id": "floor_spring",
+      "name_keywords": [
+        "地弹簧"
+      ],
+      "units": [
+        "副",
+        "个",
+        "套",
+        "件"
+      ],
+      "material_main": 450,
+      "material_aux": 0,
+      "labor": 0,
+      "machinery": 0,
+      "source_note": "实际样本校准：深圳地弹簧实_主材450（五金主材价，安装另计）"
+    },
+    {
+      "id": "pool_suction_outlet",
+      "name_keywords": [
+        "吸污口"
+      ],
+      "units": [
+        "个",
+        "套"
+      ],
+      "allow_demolition_context": true,
+      "material_main": 60.9,
+      "material_aux": 18,
+      "labor": 40,
+      "machinery": 0,
+      "source_note": "实际样本校准：深圳热泡池吸污口SP-1022实_主材60.9辅材18人工40"
+    },
+    {
+      "id": "pipe_insulation_m3",
+      "name_keywords": [
+        "管道绝热",
+        "冷凝管保温"
+      ],
+      "units": [
+        "m3",
+        "m³"
+      ],
+      "material_main": 400,
+      "material_aux": 10,
+      "labor": 120,
+      "machinery": 5,
+      "source_note": "实际样本校准：中山冷凝管保温(难燃B1级橡塑13mm)实_主材400人工120"
+    },
+    {
+      "id": "ceiling_aluminum_grille_zh",
+      "name_keywords": [
+        "铝格栅"
+      ],
+      "units": [
+        "㎡",
+        "m2"
+      ],
+      "cities": [
+        "珠海"
+      ],
+      "material_main": 707,
+      "material_aux": 57.6,
+      "labor": 120,
+      "machinery": 1.5,
+      "source_note": "实际样本校准：珠海AM-01a铝格栅吊顶(30*120*2.5@130)实_主材707辅材57.6人工120"
+    },
+    {
+      "id": "ceiling_aluminum_strip_panel",
+      "name_keywords": [
+        "铝扣板",
+        "铝扣板顶棚"
+      ],
+      "feature_keywords": [
+        "铝合金条板"
+      ],
+      "require_feature_keywords": true,
+      "units": [
+        "㎡",
+        "m2"
+      ],
+      "material_main": 45,
+      "material_aux": 3,
+      "labor": 30,
+      "machinery": 0,
+      "source_note": "实际样本校准：轻钢龙骨铝扣板顶棚(300x600x0.3铝合金条板)实_主材45辅材3人工30"
+    },
+    {
+      "id": "ceiling_stepped_zs",
+      "name_keywords": [
+        "跌级吊顶"
+      ],
+      "units": [
+        "㎡",
+        "m2"
+      ],
+      "cities": [
+        "中山"
+      ],
+      "material_main": 63.75,
+      "material_aux": 44.43,
+      "labor": 75,
+      "machinery": 3.5,
+      "source_note": "实际样本校准：中山跌级吊顶天棚(60型轻钢龙骨+硅酸钙板)实_主材63.75辅材44.43人工75"
+    },
+    {
+      "id": "ceiling_stainless_sz",
+      "name_keywords": [
+        "吊顶天棚"
+      ],
+      "feature_keywords": [
+        "不锈钢板"
+      ],
+      "require_feature_keywords": true,
+      "units": [
+        "㎡",
+        "m2"
+      ],
+      "cities": [
+        "深圳"
+      ],
+      "material_main": 380,
+      "material_aux": 35,
+      "labor": 125,
+      "machinery": 0,
+      "source_note": "实际样本校准：深圳公区吊顶天棚(轻钢龙骨+阻燃夹板+不锈钢板面层)实_主材380辅材35人工125"
+    },
+    {
+      "id": "aluminum_skirting_sz",
+      "name_keywords": [
+        "铝合金踢脚线"
+      ],
+      "units": [
+        "m",
+        "米"
+      ],
+      "cities": [
+        "深圳"
+      ],
+      "material_main": 12,
+      "material_aux": 3.5,
+      "labor": 15,
+      "machinery": 0,
+      "source_note": "实际样本校准：深圳铝合金踢脚线50mm高(轻钢龙骨+12mm阻燃夹板基层)实_主材12辅材3.5人工15"
     }
   ]
 }

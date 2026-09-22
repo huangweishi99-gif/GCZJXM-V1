@@ -508,6 +508,7 @@ def cmd_audit_judge(args: argparse.Namespace) -> None:
         export_path=out,
         exclude_simulated=not getattr(args, "include_simulated", False),
         exclude_fee_items=not getattr(args, "include_fee", False),
+        gold_only=getattr(args, "gold_only", False),
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     if out:
@@ -529,6 +530,7 @@ def cmd_audit_review(args: argparse.Namespace) -> None:
             exclude_self=not args.include_self,
             exclude_simulated=not getattr(args, "include_simulated", False),
             exclude_fee_items=not getattr(args, "include_fee", False),
+            gold_only=getattr(args, "gold_only", False),
             limit=args.limit,
             export_path=input_path,
         )
@@ -1259,6 +1261,11 @@ def main() -> None:
         action="store_true",
         help="包含费用项样本（默认排除，与 regression 口径一致）",
     )
+    p_audit.add_argument(
+        "--gold-only",
+        action="store_true",
+        help="只抽检定稿样本（is_verified=1，默认关闭以保持既有口径）；用于查看排除旧版/过程稿后的准确率",
+    )
     p_audit.set_defaults(func=cmd_audit_judge)
 
     p_review = sub.add_parser(
@@ -1285,6 +1292,11 @@ def main() -> None:
         "--include-fee",
         action="store_true",
         help="--refresh 时包含费用项样本（默认排除，与 regression 口径一致）",
+    )
+    p_review.add_argument(
+        "--gold-only",
+        action="store_true",
+        help="--refresh 时只抽检定稿样本（is_verified=1）",
     )
     p_review.set_defaults(func=cmd_audit_review)
 

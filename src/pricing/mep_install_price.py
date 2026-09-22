@@ -51,6 +51,21 @@ def lookup_vrf_hvac_components(
             "machinery": 25.0,
         }, f"[VRF外机 SWJ] 型号系数{cap}"
 
+    # 多联式/变频多联 室外机：清单给"制冷量XXkW"时按冷量工程价
+    # （实际样本校准：云湾 L-2 制冷量61.5kW → 主材25277.5=411元/kW、人工600/台）
+    kw_m = re.search(r"制冷量[：:]?\s*(\d+(?:\.\d+)?)\s*[kK][wW]", text)
+    if kw_m and re.search(r"室外机|外机", text):
+        cap = float(kw_m.group(1))
+        if cap >= 10:  # kW，排除小型一拖一外机
+            main = round(cap * 411.0, 2)
+            return {
+                "material_main": main,
+                "material_loss_rate": 0.0,
+                "material_aux": round(main * 0.0034, 2),
+                "labor": 600.0,
+                "machinery": 10.5,
+            }, f"[VRF多联外机 制冷量{cap}kW] 实际样本校准（411元/kW）"
+
     if re.search(r"内机|SNJ|风管机", text, re.I) and re.search(
         r"SNJ|一拖一|风管机", text, re.I
     ):
@@ -656,6 +671,12 @@ def lookup_hvac_duct_components(
         wm = re.search(r"(\d+)\s*\*\s*(\d+)", text)
         width = int(wm.group(1)) if wm else 100
         height = int(wm.group(2)) if wm else 100
+        # 名称/特征压平成单行后，序号会并进规格（"…200*100" + "1.型号" → "200*1001"），
+        # 贪婪匹配会把 height 读成 1001（面积虚增 10 倍）。越界时按 2~3 位严格重解。
+        if height > 400 or width > 1500:
+            tight = re.search(r"(\d{2,4})\s*\*\s*(\d{2,3})", text)
+            if tight:
+                width, height = int(tight.group(1)), int(tight.group(2))
         # 桥架价格基于截面积（宽×高）
         area = width * height / 1000  # mm²/1000
         is_weak = re.search(r"弱电", text)
@@ -733,8 +754,11 @@ def lookup_hvac_duct_components(
                 aux = 0.0  # 实辅材多为0
                 mach = round(main * 0.03, 2)
             else:
+                # 非镀锌「金属桥架/普通桥架」200以上（会所精装修两版样本 + 弱电桥架）：
+                #   金属桥架200*100 实 38/22 与 36.5/30 → 取 37/26（原 labor=38 偏高，两行皆判失败）
+                #   弱电桥架200*100 实38.9/30.95、200*150 实48.1/30.95 → 同曲线
                 main = round(25.0 + area * 0.6, 2)
-                labor = round(30.0 + area * 0.4, 2)
+                labor = round(15.0 + area * 0.55, 2)
                 aux = 0.0
                 mach = round(main * 0.02, 2)
         elif is_fire:
@@ -941,17 +965,23 @@ def lookup_hvac_duct_components(
         # 按FQ型号分级定价（实际样本校准）
         fq_match = re.search(r"FQ(\d+)", text, re.I)
         fq_num = int(fq_match.group(1)) if fq_match else 4
-        # FQ01A/B: main~30, labor~24; FQ02: main~38, labor~30
-        # FQ03: main~76, labor~60; FQ04: main~118, labor~94
-        fq_table = {
-            1: (30.0, 24.0),
-            2: (38.0, 30.0),
-            3: (76.0, 60.0),
-            4: (118.0, 94.0),
-        }
-        main, labor = fq_table.get(fq_num, (94.1, 89.4))
-        aux = round(main * 0.5, 2)
-        mach = round(labor * 0.05, 2)
+        # 两类口径必须分开：
+        #   ① 冷媒分歧器（R410/干燥过滤器式，理想汽车框架清单）：
+        #      FQ01A/B 实30/24、FQ02 实38/30、FQ03 实76/60、FQ04 实118/94
+        #   ② 本体安装式分歧器（会所空调工程，型号写作纯 FQ01/FQ02）：
+        #      珠海会所精装修+会所清单两版一致 实420/85/辅25/机25
+        if fq_match and not re.search(r"冷媒|R410|干燥", text, re.I):
+            main, labor, aux, mach = 420.0, 85.0, 25.0, 25.0
+        else:
+            fq_table = {
+                1: (30.0, 24.0),
+                2: (38.0, 30.0),
+                3: (76.0, 60.0),
+                4: (118.0, 94.0),
+            }
+            main, labor = fq_table.get(fq_num, (94.1, 89.4))
+            aux = round(main * 0.5, 2)
+            mach = round(labor * 0.05, 2)
         return {
             "material_main": main,
             "material_aux": aux,
@@ -1118,9 +1148,10 @@ def lookup_mep_accessory_components(
             mach = 0.0
         elif is_prism_guide:
             # 定制线性灯（棱晶导光板/压铸铝）PL01/PL01a/EL01/EL02 2026审计校准
-            # 实 main=45+1.6×W（PL01 40W→112.11, PL01a/EL01 15W→78, EL02 10W→61）, labor≈21（40W档28）
+            # 实 main=45+1.6×W（PL01 40W→112.11, PL01a/EL01 15W→78, EL02 10W→61）
+            # 人工随功率：EL01 15W→21、EL02 10W→16.5（≈6+W/米），40W 档 28
             main = round(45.0 + power * 1.6, 2)
-            labor = 28.0 if power >= 30 else 21.0
+            labor = 28.0 if power >= 30 else round(6.0 + power, 2)
             mach = 0.0
         elif is_cob:
             # COB灯带（深圳）：含铝型材 main=48, 软灯带 main=16.09, 人工统一18.2（2026审计校准）
@@ -1254,7 +1285,12 @@ def lookup_mep_accessory_components(
         is_high_end = bool(re.search(r"电气工程", text))
         is_set_unit = unit_n in ("套",)
         
-        if is_set_unit:
+        if "插座" in text and "地面" in text:
+            # 地面插座（地插：预埋底盒+金属盖板）单列，不能按普通「套」档 14.62/6.31
+            # 样本：珠海海德会所 8821 实125/25、8989 实97.83/42.13（同总价拆分不同）、会所合并 135/12
+            # 取中位 125/25
+            main, labor, aux, mach = 125.00, 25.00, 0.5, 0.5
+        elif is_set_unit:
             # 套单位（含底盒+面板）：单价更低
             if "安全型" in text or "五孔" in text or "二三孔" in text:
                 main, labor, aux, mach = 14.62, 6.31, 1.12, 0.0
@@ -1469,6 +1505,16 @@ def lookup_mep_accessory_components(
     if unit_n in ("m", "米") and "金属软管" in text and not re.search(r"灯|条形|灯具|射灯|吊灯|吸顶灯", text):
         dm = re.search(r"DN\s*(\d{2,3})(?=\D|$)", text, re.I)
         dia = int(dm.group(1)) if dm else 20
+        if re.search(r"含配件", text):
+            # 深圳/岁宝等「增加金属软管￠16（含配件）」实_主材4.18/人工3.96/辅材2.09/机械0.21
+            # 与江门「配管 金属软管 Φ20」3.0/6.9 是不同做法，故以「含配件」窄条件隔离
+            return {
+                "material_main": 4.18,
+                "material_loss_rate": 0.0,
+                "material_aux": 2.09,
+                "labor": 3.96,
+                "machinery": 0.21,
+            }, "[金属软管]含配件Φ16"
         if dia <= 20:
             return {
                 "material_main": 3.0,

@@ -76,12 +76,16 @@ def load_audit_samples(
     min_total: float = 1.0,
     limit: Optional[int] = None,
     project_id: Optional[int] = None,
+    gold_only: bool = False,
 ) -> List[AuditSample]:
+    """gold_only=True 时只取定稿样本（cost_records.is_verified=1，即 project_pairs 登记为 gold 的清单）。"""
     where = " AND cr.cost_unit_price >= ? "
     params: list = [min_total]
     if project_id is not None:
         where += " AND cr.source_project_id=? "
         params.append(project_id)
+    if gold_only:
+        where += " AND COALESCE(cr.is_verified, 0)=1 "
 
     sql = f"""
         SELECT cr.id AS record_id, cr.standard_item_id, cr.source_project_id AS project_id,
@@ -220,6 +224,7 @@ def run_judge_audit(
     export_path: Optional[str | Path] = None,
     exclude_simulated: bool = False,
     exclude_fee_items: bool = False,
+    gold_only: bool = False,
 ) -> Dict[str, Any]:
     """
     对历史 cost_records 回测 judge_line_components。
@@ -228,13 +233,14 @@ def run_judge_audit(
     与真实项目同类项差异显著，拉低指标且不可修）。
     exclude_fee_items=True 时排除费用项（安全文明施工费/材料搬运费等，judge 按人材机做法设计，
     本不覆盖费率类条目）。
+    gold_only=True 时只回测定稿样本（is_verified=1）；默认 False 保持既有口径（含过程稿/旧版本）。
     """
     conn = get_connection(db_path)
     repo = KnowledgeRepository(db_path)
     engine = PricingEngine(db_path)
     net_divisor = get_net_divisor(repo.settings.get("pricing", {}))
     try:
-        samples = load_audit_samples(conn, limit=limit, project_id=project_id)
+        samples = load_audit_samples(conn, limit=limit, project_id=project_id, gold_only=gold_only)
     finally:
         conn.close()
 
@@ -293,6 +299,7 @@ def run_judge_audit(
         "filters": {
             "exclude_simulated": exclude_simulated,
             "exclude_fee_items": exclude_fee_items,
+            "gold_only": gold_only,
             "excluded_count": excluded_n,
         },
         "tolerance": {

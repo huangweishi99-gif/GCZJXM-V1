@@ -69,10 +69,11 @@ def lookup_market_reference(
             continue
 
         cities = [normalize_name(c) for c in (rule.get("cities") or []) if c]
-        if cities and city_n and city_n not in cities:
+        # 城市特化规则只对明确属于该城市的样本生效；城市未知的样本不得套用城市校准价，
+        # 只能落到通用规则（无 cities），避免"珠海/深圳校准规则"误判城市未知的历史行。
+        if cities and (not city_n or city_n not in cities):
             continue
-        # 城市/档位特化规则优先于通用市场价
-        if cities and city_n and city_n in cities:
+        if cities:
             score += 25.0
         tiers = [str(t).lower() for t in (rule.get("tiers") or []) if t]
         if tiers and tier_n not in tiers:

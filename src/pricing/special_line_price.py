@@ -633,6 +633,10 @@ def lookup_finish_exact_components(
             "machinery": 1.2,
         }, "[复核参考]电梯不锈钢门头"
     if unit_n in ("m2", "㎡") and re.search(r"过门石|门槛石", nn):
+        # 名称含"门槛石"但主工作实为找平/找坡（如"平面砂浆找平层（门槛石）"）时不是门槛石项，
+        # 不得套过门石湿贴市场价，放行后续找平类定价
+        if re.search(r"找平|找坡", nn):
+            return None, ""
         # 编号石材门槛石（如 ST-02，石材品种随编号定、盘间价差大）不套市场档，放行编号/历史层
         if re.search(r"ST-?\d{1,2}|编号[\s：:]*ST|大理石|天然石|人造石|米黄|爵士白|雅士白|黑金花", text):
             return None, ""

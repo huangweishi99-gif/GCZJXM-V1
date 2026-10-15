@@ -54,3 +54,6 @@ data/tmp/_tmp_*
 
 # 探测脚本根目录
 _tmp_*.py
+
+# AI 询价缓存（运行时自动生成，不进版本控制）
+data/ai_inquiry_cache/

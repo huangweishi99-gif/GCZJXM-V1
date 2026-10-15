@@ -135,10 +135,11 @@ def lookup_sanitary_fixture_components(
         return None, ""
 
     # 2026 审计校准：洁具配件前置排除（避免被台盆/拖把池/小便器等误伤）
-    if "抓杆" in text or "扶手" in text:
-        # 洗手盆抓杆 实_主材15, 实_人工0
+    # 只收「抓杆」和名称即「安全扶手」的配件（主材15/人工0）。
+    # 「卫生间扶手」是成品不锈钢扶手（主材135/人工25），留给精装层，不能在这里抢走。
+    if "抓杆" in text or nn in ("安全扶手",):
         return {"material_main": 15.0, "material_aux": 0.0, "labor": 0.0,
-                "machinery": 0.0, "material_loss_rate": 0.0}, "[洁具]抓杆扶手"
+                "machinery": 0.0, "material_loss_rate": 0.0}, "[洁具]抓杆/安全扶手"
     if "开孔" in text or "开槽" in text:
         # 石材台面开洗菜盆孔 实_主材0, 实_人工35
         return {"material_main": 0.0, "material_aux": 0.0, "labor": 35.0,
@@ -408,7 +409,9 @@ def lookup_hvac_duct_components(
             }, f"[冷冻水管] DN{dia}含保温"
 
     if unit_n in ("m", "米") and re.search(r"冷媒铜管|铜管", text):
-        dm = re.search(r"[Φφø]\s*(\d+(?:\.\d+)?)", text)
+        # 小数点后只留 1 位：特征「φ12.7」紧挨下一行「3.厚度」会被粘成 12.73。
+        # 同口径存在裸管/含保温两套价，此处不改价，只避免口径被粘坏。
+        dm = re.search(r"[Φφø]\s*(\d+(?:\.\d)?)", text)
         has_symbol_dm = bool(dm)
         if not dm:
             dm = re.search(r"(\d+(?:\.\d+)?)\s*\*\s*(\d+(?:\.\d+)?)", text)
@@ -523,6 +526,16 @@ def lookup_hvac_duct_components(
             # WDZBN-RYJS-2x1.5实_主材3.09,实_人工4.28（area=3）
             # 报警信号二线WDZN-RYS-B2-2X2.5mm2实_主材4.84,实_人工1.84（area=5）
             # 消防工程ZR-RVS 2*1.5实_主材2.25,实_人工2.4（area=3）
+            # 增加ZR-RVS-2x1.5mm²（电气主线，非消防）实_主材4.5,实_人工1.7（深圳样本）
+            if re.search(r"ZR-RVS\s*-?\s*2\s*[x\*×]?\s*1\.5", text, re.I) and not re.search(r"消防", text, re.I):
+                main, labor, aux, mach = 4.5, 1.7, 0.56, 0.14
+                return {
+                    "material_main": main,
+                    "material_loss_rate": 0.0,
+                    "material_aux": aux,
+                    "labor": labor,
+                    "machinery": mach,
+                }, f"[配线] ZR-RVS-2x1.5mm² 电气主线（深圳口径）"
             if re.search(r"消防", text, re.I) and re.search(r"ZR-RVS|ZR-RV", text, re.I):
                 # 消防工程ZR-RVS线缆（聚氯乙烯绝缘绞型连接用软线）
                 main = round(0.6 + area * 0.55, 2)
@@ -571,6 +584,16 @@ def lookup_hvac_duct_components(
                     labor = round(1.0 + area * 0.11, 2)
             elif area <= 10:
                 # 实际样本：普通WDZ-BYJ-10约8-10元（管内穿线走定稿口径表）
+                # 实际样本：WDZC-BYJ-10线槽配线（珠海项目）实_主材12.5, 实_人工2.5, 实_辅材0.18, 实_机械0.18
+                if re.search(r"WDZC-BYJ\s*-?\s*10", text, re.I) and is_trunking:
+                    main, labor, aux, mach = 12.0, 2.5, 0.18, 0.18
+                    return {
+                        "material_main": main,
+                        "material_loss_rate": 0.0,
+                        "material_aux": aux,
+                        "labor": labor,
+                        "machinery": mach,
+                    }, f"[配线] WDZC-BYJ-10 单芯（线槽）"
                 if is_trunking:
                     # 线槽配线WDZC-BYJ-10：主材约50-60, 人工约25
                     main = round(45.0 + area * 1.5, 2)

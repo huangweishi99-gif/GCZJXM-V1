@@ -6,7 +6,11 @@ from typing import Optional, Tuple
 
 import re
 
-from src.knowledge.project_materials import lookup_project_material_row, extract_material_codes
+from src.knowledge.project_materials import (
+    lookup_project_material_row,
+    lookup_project_material_by_name,
+    extract_material_codes,
+)
 from src.pricing.custom_door import is_door_whole_line
 from src.knowledge.query import PricingContext
 from src.knowledge.repository import KnowledgeRepository
@@ -290,3 +294,41 @@ def lookup_project_material_components(
         "machinery": round(total_est * shares.get("machinery", 0.02), 2),
     }
     return comps, note
+
+
+def lookup_named_material_main(
+    name: str,
+    feature: str,
+    unit: str,
+    *,
+    ctx: Optional[PricingContext] = None,
+    project_ref: Optional[str] = None,
+    db_path: Optional[str] = None,
+) -> Tuple[Optional[dict], str]:
+    """本项目主材表按名称命中时，只回主材价，不按份额拆人工辅材。
+
+    无 project_ref 不查。表价是材料采购价，不是综合单价。
+    """
+    project_ref = (ctx.project_materials_ref if ctx else None) or project_ref
+    if not project_ref:
+        return None, ""
+    row, note = lookup_project_material_by_name(
+        name, feature, unit, project_ref=project_ref, db_path=db_path
+    )
+    if not row:
+        return None, ""
+    main_val = float(row.get("material_main") or 0)
+    if main_val <= 0:
+        return None, ""
+    loss = 0.0
+    remark = str(row.get("remark") or "")
+    m_loss = re.search(r"损耗([0-9.]+)", remark)
+    if m_loss:
+        loss = float(m_loss.group(1))
+    return {
+        "material_main": main_val,
+        "material_loss_rate": loss,
+        "material_aux": 0.0,
+        "labor": 0.0,
+        "machinery": 0.0,
+    }, note

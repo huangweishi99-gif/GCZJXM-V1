@@ -4,8 +4,27 @@ import json
 import os
 import time
 import hashlib
+import urllib.request
+import urllib.error
 from typing import Dict, Optional, Any
 from dataclasses import dataclass
+
+try:
+    from src.config.ai_model import load_ai_model_config
+except Exception:  # 极简场景下允许 import 失败
+    load_ai_model_config = None  # type: ignore
+
+_SYSTEM_PROMPT = """你是中国工程造价询价助手。基于用户给定的【项目名称/项目特征/单位/城市】，
+给出该清单项的【主材/辅材/人工/机械】单价（人民币元，保留 2 位小数）。
+
+口径：
+- 主材：该项的核心材料（如石材、瓷砖、电线、风机盘管）
+- 辅材：施工耗材（胶、钉、接头、油漆等）
+- 人工：人工费合计（按现浇装饰装修口径）
+- 机械：机具摊销/台班（一般 0~5 元；大型设备可能 50~200）
+
+严格只输出 JSON，不要任何解释或 markdown：
+{"material_main": 数字, "material_aux": 数字, "labor": 数字, "machinery": 数字, "reason": "一句话依据"}"""
 
 @dataclass
 class AIInquiryResult:
@@ -150,10 +169,73 @@ class AIPriceInquirer:
         )
     
     def _query_llm(self, name: str, feature: str, unit: str, city: str = '') -> Optional[AIInquiryResult]:
-        """调用大语言模型询价（预留接口）"""
-        # 这里可以接入实际的LLM API，如OpenAI、阿里云、百度等
-        # 目前返回None，使用规则估算兜底
-        return None
+        """调用大语言模型（OpenAI 兼容 API）询价。失败返 None。"""
+        if load_ai_model_config is None:
+            return None
+        cfg = load_ai_model_config()
+        base_url = (cfg.get("base_url") or "").rstrip("/")
+        api_key = cfg.get("api_key") or ""
+        model = cfg.get("model_name") or "grok-4.7"
+        if not base_url or not api_key:
+            return None
+
+        user_prompt = (
+            f"项目名称：{name or '未知'}\n"
+            f"项目特征：{feature or '无'}\n"
+            f"单位：{unit or '无'}\n"
+            f"城市：{city or '不限'}\n"
+            f"请基于以上信息给出人材机单价。"
+        )
+        body = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": _SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt},
+            ],
+            "max_tokens": int(cfg.get("max_tokens") or 400),
+            "temperature": float(cfg.get("temperature") or 0.1),
+        }
+
+        req = urllib.request.Request(
+            f"{base_url}/chat/completions",
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}",
+            },
+            method="POST",
+        )
+        try:
+            timeout = int(cfg.get("timeout_seconds") or 60)
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                raw = resp.read().decode("utf-8")
+            data = json.loads(raw)
+            content = (data.get("choices") or [{}])[0].get("message", {}).get("content") or ""
+            content = content.strip()
+            # 容忍 ```json 包裹
+            if content.startswith("```"):
+                content = content.strip("`")
+                if "\n" in content:
+                    content = content.split("\n", 1)[1]
+            obj = json.loads(content)
+            now = time.time()
+            return AIInquiryResult(
+                name=name,
+                feature=feature,
+                unit=unit,
+                material_main=float(obj.get("material_main") or 0),
+                material_aux=float(obj.get("material_aux") or 0),
+                labor=float(obj.get("labor") or 0),
+                machinery=float(obj.get("machinery") or 0),
+                confidence=0.65,  # LLM 询价 conf 中等
+                source=f"llm:{model}",
+                query_time=now,
+                expires_at=now + 86400 * 30,
+            )
+        except (urllib.error.URLError, urllib.error.HTTPError, KeyError, ValueError, json.JSONDecodeError, TimeoutError) as exc:
+            # 失败不抛异常，调用方会走规则估算兜底
+            self._last_llm_error = f"{type(exc).__name__}: {exc}"
+            return None
     
     def inquire(
         self,

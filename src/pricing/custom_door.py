@@ -191,6 +191,15 @@ def lookup_custom_door_price(
             "material_loss_rate": 0.0,
         }, "[耐菌合成板门M2-M5] 审计校准 主1000"
     if re.search(r"免漆板|木饰面", text_kw):
+        # 中山云湾定稿 木饰面门DR-03（樘）：1050/55/170/0，限定中山
+        if re.search(r"DR-03", text_kw) and ctx and (ctx.city or "").replace("市", "") == "中山":
+            return {
+                "material_main": 1050.0,
+                "material_aux": 55.0,
+                "labor": 170.0,
+                "machinery": 0.0,
+                "material_loss_rate": 0.0,
+            }, "[中山木饰面门DR-03] 审计校准 主1050+辅55+人工170"
         if re.search(r"双开|双扇", text_kw):
             return {
                 "material_main": 4046.0,

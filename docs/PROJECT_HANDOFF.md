@@ -133,9 +133,9 @@ mobile/ + src/sync/           ← 手机校正 PWA + FastAPI
 | 弱匹配拦截 | ✅ | 主材编号冲突、特征产品名冲突、泛称提高门槛 |
 | 分城市场价 | ✅ | `sz_` / `zh_` 优先；通用规则默认不 auto_fill |
 | 价格数量级防线 | ✅ | `sanity_check`：越界打标降级 auto_fill；`audit-price` 全库 0 越界 |
-| 定额量价分离 | ✅ | `quota_manager`：消耗量定额 + 城市×工种人工/机械价 + 外部价覆盖 |
+| 定额量价分离 | ✅ | `quota_manager`：样例定额只写 `quota_hint`，不入正式成本；复核摘要单列「建议定额」 |
 | 取费库 | ✅ | `fee_rates`：管理费/利润/风险 + 措施/规费/税金汇总（merge 顺序 default→tier→category） |
-| 清单五要素体检 | ✅ | `boq_validation`：编码/名称/特征/单位/工程量；补充清单项（含字母编码）提示不误报 |
+| 清单五要素体检 | ✅ | `boq_validation`：编码/名称/特征/单位/工程量；致命项不自动填价；同名不同价按序号进复核摘要 |
 | 手机 sync | ✅ | `python app.py sync serve` |
 
 ### 4.2 七套闭环项目
@@ -290,6 +290,7 @@ python app.py sync token --show
 [已完成] 价格数量级防线 + 全库 audit-price 0 越界
 [已完成] 定额量价分离（quota_standards 73 条）+ 城市×工种人工/机械价
 [已完成] 取费库 + 清单五要素体检命令
+[已完成] 2026-10-13 交付闸门：主交付与老交付都拦截致命项；定额建议与同名不同价进复核摘要；手机校正规格词只生成未启用候选
 [进行中] audit-judge 全量核心准确 72.8% → 目标 80%
 [进行中] 压低 unresolved/generic_finish → 拆门窗、纯材料代号、项目包干专项
 [进行中] learn 未入库历史项目 → 提高 line_match 占比
@@ -308,6 +309,7 @@ python app.py sync token --show
 | **P1** | 电缆/桥架/JDG/消防配管/配线/消防弱电/通风/电表/阀门附件已修一版；继续补冷媒、CL 无机涂料灯槽/边槽 | `mep_install_price.py` / `material_process_price.py` |
 | **P2** | regression 后自动 audit + 阈值门禁 | `app.py` relearn-all --audit |
 | **P2** | 定额 OCR 全量 | 已有 `quota_standards` 73 条；补 PDF 扫描件 OCR → `quota_items` 全量 |
+| **P2** | 广东取费口径（✅ 2026-10-13：`quote-fees --region guangdong --labor --machinery`，安文费按人工费+机械费计取，装饰 13%/建筑 19%/安装 35.77%/市政 16.5%，缺基数时回退并标注） | `config/fee_rates.json` regions + `src/pricing/fee_rates.py` |
 
 ---
 
@@ -316,7 +318,8 @@ python app.py sync token --show
 | 问题 | 对策 |
 |------|------|
 | 工艺价型中位数「高置信低准确」 | 已降权；`generic_finish` 禁止 craft_profile sanity 通过 |
-| 弱整项同名异规 | `_weak_candidate_rejected` 拦截编号/产品名 |
+| 弱整项同名异规 | `_weak_candidate_rejected` 拦截编号/产品名。名称厚度不同（150mm 套 200mm）不能在这里整段拒绝：拒绝后会掉进拆除兜底，基线 core 0.8767→0.8713，已回滚 |
+| 冷媒铜管同口径两套价 | φ12.7 裸管 15.46、含保温 24.46，不能收成一个数。特征「φ12.7」紧挨下一行序号会被粘成 12.73，解析只留 1 位小数；冷媒/铜管不自动填 |
 | 低置信弱整项被自动采纳 | `line_match` 低于 0.8 且含项目编号/机电规格时降级为人工复核 |
 | 市场参考合价拆分偏分项 | `market_reference` 含项目编号、喷白或按工艺份额拆分时降级为人工复核 |
 | 通用市场参考分项过粗 | 对窗帘盒、防雨空调室外机配电箱、水压试验/系统调试、暗藏检修口、双头射灯、墙板/SF、涂料、防火涂料、环氧自流平、保温卷帘门等明确名称项补复核参考价；规则不使用 `sz_`/`zh_` 前缀，避免自动填入扩张 |
@@ -327,7 +330,7 @@ python app.py sync token --show
 | 明确小项被弱整项覆盖 | 石膏板（张）、CFC 保温、外围木板基层、内嵌卡座、设备三相四孔插座、双扇玻璃门、玻璃钢隔油池、SBS 平面防水卷材、成品软膜灯箱等小项优先走 `special_line_price` 复核参考 |
 | 金标准单元格是公式 | `data_only=False` + `formula_eval` |
 | 综合单价当成本 | parser 优先分量成本，再扣管理费 |
-| 保温厚度误当冷媒管径 | 冷媒管解析用 Φ 而非「20mm 保温」 |
+| 保温厚度误当冷媒管径 | 冷媒管解析用 Φ 而非「20mm 保温」。Φ 后只留 1 位小数，避免「φ12.7」粘上下一行序号变成 12.73。同口径裸管/含保温两套价，不收成一个数 |
 | 断路器被照明代号吃掉 | `lighting_fixture_price` 排除 NXBLE/NM1 |
 | 电缆截面公式抢历史强匹配 | 电缆专项在 line_conf 不足时用；估算法暂不 auto_fill |
 | 电缆规格在名称/特征重复出现 | 名称中有明确线缆型号时优先采用名称规格；否则再读特征中的单个 `规格:`，避免通用 `2.5` 覆盖名称型号或重复累加截面 |
@@ -347,6 +350,8 @@ python app.py sync token --show
 | `check_components` 读错键 | 曾读不存在的 `cost_unit_price` 把综合单价误报为 0 → 移除该键校验 |
 | 取费 merge 顺序 | tier 曾覆盖 category → 标准应为 `default → tier → category`（类别优先，档位兜底） |
 | 补充清单项编码 | 含字母编码（如 `011302B003001`）是广联达补充项格式，`validate-boq` 作提示而非警告 |
+| 样例定额当正式价 | 定额库消耗量是样例。命中只写 `quota_hint` 与复核摘要，不写入成本区 |
+| 手机校正直接启用规则 | `apply_to_same_spec` 只追加 `correction_rule_candidates.json`，`enabled=false`；有规格词时必须 `require_feature_keywords` |
 | 定额价越界误报 | 定额子目含材料价超过市场参考价上限时，仅打标不阻断（定额价 = 消耗量×外部价，允许更高） |
 
 ---

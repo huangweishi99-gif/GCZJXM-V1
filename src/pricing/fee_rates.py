@@ -41,6 +41,7 @@ def get_rates(
     tier: str = "mid",
     path: Optional[str] = None,
     style: str = "",
+    region: str = "",
 ) -> Dict[str, float]:
     """取综合单价费率建议。
 
@@ -48,6 +49,8 @@ def get_rates(
         category: 工程类别（装饰装修/土建/安装/幕墙/市政），未知走 default
         tier: 档位（high/mid/low）
         style: 项目风格（如 batch_fitout 批量精装 12%），优先级最高
+        region: 地区口径（如 guangdong）。广东安文费与利润以「人工费+机械费」
+            为基数，费率与基数键（safety_base/profit_base）一并返回
 
     Returns:
         {management_fee_rate, profit_rate, risk_rate, ...}
@@ -69,6 +72,21 @@ def get_rates(
     if style and style in by_style:
         rates.update(by_style[style])
 
+    # 地区口径最后叠加：广东安文费/利润改按「人工费+机械费」计取
+    region_over = (cfg.get("regions") or {}).get(region or "")
+    if region_over:
+        rates["region"] = region
+        for key in ("safety_base", "profit_base"):
+            if region_over.get(key):
+                rates[key] = region_over[key]
+        safety = region_over.get("safety_rate") or {}
+        if isinstance(safety, dict):
+            rates["safety_civil_rate"] = float(
+                safety.get(category or "") or safety.get("_default") or 0
+            )
+        if region_over.get("profit_rate") is not None:
+            rates["profit_rate"] = float(region_over["profit_rate"])
+
     return rates
 
 
@@ -78,23 +96,41 @@ def apply_fees(
     tier: str = "mid",
     path: Optional[str] = None,
     style: str = "",
+    region: str = "",
+    labor: float = 0.0,
+    machinery: float = 0.0,
 ) -> Dict[str, float]:
     """在成本单价基础上计取 管理费+利润+风险，得到综合单价。
+
+    广东口径下利润以「人工费+机械费」为基数（labor/machinery 为 0 时
+    退回按成本单价计取，并在返回中标注 profit_base_fallback）。
 
     Returns:
         {management_fee, profit, risk, comprehensive_unit_price}
     """
-    rates = get_rates(category, tier, path, style)
+    rates = get_rates(category, tier, path, style, region)
     mgmt = cost_unit_price * rates["management_fee_rate"]
-    profit = cost_unit_price * rates["profit_rate"]
     risk = cost_unit_price * rates["risk_rate"]
-    return {
+    fallback = False
+    if rates.get("profit_base") == "labor_machinery":
+        base = labor + machinery
+        if base > 0:
+            profit = base * rates["profit_rate"]
+        else:
+            profit = cost_unit_price * rates["profit_rate"]
+            fallback = True
+    else:
+        profit = cost_unit_price * rates["profit_rate"]
+    out = {
         "management_fee": round(mgmt, 2),
         "profit": round(profit, 2),
         "risk": round(risk, 2),
         "comprehensive_unit_price": round(cost_unit_price + mgmt + profit + risk, 2),
         "rates": rates,
     }
+    if fallback:
+        out["profit_base_fallback"] = True
+    return out
 
 
 def build_summary(
@@ -104,21 +140,39 @@ def build_summary(
     tier: str = "mid",
     path: Optional[str] = None,
     style: str = "",
+    region: str = "",
+    labor: float = 0.0,
+    machinery: float = 0.0,
 ) -> Dict[str, Any]:
-    """生成单位工程费用汇总（分部分项 → 措施 → 规费 → 税金 → 含税总价）。"""
-    rates = get_rates(category, tier, path, style)
-    fees = apply_fees(cost_unit_price, category, tier, path, style)
+    """生成单位工程费用汇总（分部分项 → 措施 → 规费 → 税金 → 含税总价）。
+
+    广东口径下安全文明施工费以「人工费+机械费」为基数（labor/machinery
+    为 0 时退回按分部分项合计计取，并标注 safety_base_fallback）。
+    """
+    rates = get_rates(category, tier, path, style, region)
+    fees = apply_fees(
+        cost_unit_price, category, tier, path, style, region, labor, machinery
+    )
     comprehensive = fees["comprehensive_unit_price"]
 
     subtotal = comprehensive * quantity  # 分部分项合计
-    safety = subtotal * rates["safety_civil_rate"]  # 安全文明施工费（不可竞争）
+    safety_fallback = False
+    if rates.get("safety_base") == "labor_machinery":
+        lm_total = (labor + machinery) * quantity
+        if lm_total > 0:
+            safety = lm_total * rates["safety_civil_rate"]
+        else:
+            safety = subtotal * rates["safety_civil_rate"]
+            safety_fallback = True
+    else:
+        safety = subtotal * rates["safety_civil_rate"]  # 安全文明施工费（不可竞争）
     organization = subtotal * rates["organization_fee_rate"]  # 其他组织措施
     measure_total = safety + organization
     before_tax = subtotal + measure_total
     tax = before_tax * rates["tax_rate"]  # 税金（增值税一般计税 9%）
     total = before_tax + tax
 
-    return {
+    out: Dict[str, Any] = {
         "category": category,
         "tier": tier,
         "rates": rates,
@@ -130,3 +184,8 @@ def build_summary(
         "税金(9%)": round(tax, 2),
         "含税总造价": round(total, 2),
     }
+    if safety_fallback:
+        out["safety_base_fallback"] = True
+    if fees.get("profit_base_fallback"):
+        out["profit_base_fallback"] = True
+    return out

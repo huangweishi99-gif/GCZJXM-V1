@@ -36,6 +36,9 @@ class CostParts:
     material_aux: float = 0.0
     machinery: float = 0.0
     source: str = ""
+    note: str = ""
+    quota_hint: str = ""
+    blocked: bool = False
 
     def usable(self) -> bool:
         return any(
@@ -58,6 +61,9 @@ class InlineLinkReport:
     masters: int = 0
     slaves: int = 0
     cross_sheet_slaves: int = 0
+    review_rows: List[Dict[str, Any]] = field(default_factory=list)
+    review_path: str = ""
+    blocked: int = 0
 
 
 def _cell_num(val) -> Optional[float]:
@@ -318,6 +324,7 @@ def _judge_cost(
     ctx: PricingContext,
 ) -> CostParts:
     j = judge_line_components(name, feature, unit, engine, repo, ctx=ctx)
+    bits = [x for x in (j.notes[:2] + j.warnings[:2]) if x]
     return CostParts(
         material_main=float(j.material_main or 0),
         material_loss_rate=float(j.material_loss_rate or 0),
@@ -325,6 +332,8 @@ def _judge_cost(
         material_aux=float(j.material_aux or 0),
         machinery=float(j.machinery or 0),
         source=j.source or "judge",
+        note="；".join(bits),
+        quota_hint=j.quota_hint or "",
     )
 
 
@@ -353,7 +362,10 @@ def _fill_sheet_append(
     wb_masters: Dict[str, MasterRowRef],
     quote_masters: Dict[str, MasterRowRef],
     rate_anchor_sheet: Optional[str] = None,
+    markup: float = 1.0,
     sheet_bindings: Optional[List[Dict[str, Any]]] = None,
+    review_rows: Optional[List[Dict[str, Any]]] = None,
+    boq_report=None,
 ) -> Dict[str, int]:
     """任意甲方表：智能模板追加统一成本分析区。"""
     from src.export.cost_analysis_template import (
@@ -368,16 +380,19 @@ def _fill_sheet_append(
 
     bindings = bind_cost_analysis_template(ws, layout)
     write_cost_headers(ws, layout, bindings)
-    write_rate_cell(ws, bindings, rate_anchor_sheet=rate_anchor_sheet)
+    write_rate_cell(ws, bindings, rate_anchor_sheet=rate_anchor_sheet, markup=markup)
     if sheet_bindings is not None:
         sheet_bindings.append({"sheet": sn, **bindings_summary(bindings)})
+
+    from src.export.boq_validation import gate_for_line, warning_notes_for_line
 
     cm = layout.column_map
     name_i = cm.get("name")
     feat_i = cm.get("feature")
     unit_i = cm.get("unit")
     qty_i = cm.get("quantity")
-    sh_ref = sh_judge = sh_master = sh_slave = sh_cross = 0
+    seq_i = cm.get("seq")
+    sh_ref = sh_judge = sh_master = sh_slave = sh_cross = sh_blocked = 0
 
     for ri in range(layout.data_start_row, len(df)):
         row = tuple(df.iloc[ri])
@@ -387,8 +402,17 @@ def _fill_sheet_append(
         name = _row_text(row, name_i)
         feature = _row_text(row, feat_i)
         unit = _row_text(row, unit_i)
+        seq = _row_text(row, seq_i)
+        qty = _col_num(row, qty_i)
         nn, un, sig = make_dedupe_key(name, feature, unit)
         key = f"{nn}|{sig}|{un}"
+        blocked, block_reason = (
+            gate_for_line(boq_report, seq, name) if boq_report is not None else (False, "")
+        )
+        warn_note = (
+            warning_notes_for_line(boq_report, seq, name) if boq_report is not None else ""
+        )
+        quota_note = ""
 
         if key not in wb_masters:
             wb_masters[key] = MasterRowRef(sn, excel_row)
@@ -396,16 +420,26 @@ def _fill_sheet_append(
             ref = _lookup_reference(
                 name, feature, unit, by_key, by_name_unit, by_cal
             )
-            if ref and ref.usable():
+            if blocked:
+                components = {}
+                note = f"体检拦截：{block_reason}"
+                cost_source = "boq_blocked"
+                sh_blocked += 1
+            elif ref and ref.usable():
                 components = _cost_parts_to_components(ref)
                 note = ref.source or ""
+                cost_source = note
                 sh_ref += 1
             else:
                 cost = _judge_cost(name, feature, unit, engine, repo, ctx)
                 components = _cost_parts_to_components(cost)
-                note = cost.source or ""
+                note = "；".join(x for x in (cost.source, cost.note, cost.quota_hint, warn_note) if x)
+                quota_note = cost.quota_hint or ""
+                cost_source = cost.source or ""
                 sh_judge += 1
-            skip_cost = "合入他项" in note or not any(
+            if warn_note and not blocked and warn_note not in note:
+                note = "；".join(x for x in (note, warn_note) if x)
+            skip_cost = blocked or "合入他项" in note or not any(
                 float(components.get(k) or 0)
                 for k in (
                     "material_main",
@@ -432,6 +466,25 @@ def _fill_sheet_append(
             )
             if not skip_cost and "防水" in name and "第二道" in name:
                 quote_masters["js_waterproof"] = MasterRowRef(sn, excel_row)
+            needs_review = blocked or skip_cost or bool(warn_note) or bool(quota_note) or any(
+                k in note for k in ("定额建议", "未达", "需人工", "AI估算")
+            )
+            if review_rows is not None and needs_review:
+                review_rows.append({
+                    "sheet": sn,
+                    "seq": seq,
+                    "name": name,
+                    "unit": unit,
+                    "quantity": qty,
+                    "source": cost_source,
+                    "status": "不自动填" if skip_cost else "已填需复核",
+                    "note": note[:240],
+                    "quota_hint": quota_note,
+                    "amount_hint": round(float(qty or 0) * sum(
+                        float(components.get(k) or 0)
+                        for k in ("material_main", "labor", "material_aux", "machinery")
+                    ), 2),
+                })
             if skip_cost and "防水" in name and "js_waterproof" in quote_masters:
                 link_quote_unit_price(
                     ws,
@@ -452,6 +505,7 @@ def _fill_sheet_append(
         "cross_sheet_slaves": sh_cross,
         "reference": sh_ref,
         "judged": sh_judge,
+        "blocked": sh_blocked,
         "template": bindings_summary(bindings),
     }
 
@@ -522,12 +576,22 @@ def fill_inline_cost_link(
     tier: str = "mid",
     project_materials_ref: Optional[str] = None,
     db_path: Optional[str] = None,
+    markup: float = 1.0,
 ) -> InlineLinkReport:
     src = Path(tender_path)
     out = Path(output_path) if output_path else (
         resolve_db_path(db_path).parent / "exports" / f"{src.stem}_成本链接.xlsx"
     )
     _materialize_workbook_copy(src, out)
+
+    from src.export.boq_validation import validate_boq
+    from src.export.review_summary import write_review_workbook
+
+    boq_report = None
+    try:
+        boq_report = validate_boq(str(src))
+    except Exception:
+        boq_report = None
 
     by_key, by_name_unit, by_cal = build_reference_price_index(reference_paths)
     repo = KnowledgeRepository(db_path)
@@ -542,7 +606,7 @@ def fill_inline_cost_link(
     ]
 
     report = InlineLinkReport(output_path=str(out.resolve()))
-    ref_hits = judged = masters = slaves = cross_sheet_slaves = 0
+    ref_hits = judged = masters = slaves = cross_sheet_slaves = blocked = 0
     wb_masters: Dict[str, MasterRowRef] = {}
     quote_masters: Dict[str, MasterRowRef] = {}
     rate_anchor_sheet: Optional[str] = None
@@ -570,6 +634,9 @@ def fill_inline_cost_link(
             wb_masters=wb_masters,
             quote_masters=quote_masters,
             rate_anchor_sheet=rate_anchor_sheet,
+            markup=markup,
+            review_rows=report.review_rows,
+            boq_report=boq_report,
         )
         profile = (stats.get("template") or {}).get("连接画像") or "append"
         if rate_anchor_sheet is None and profile == "national_quote":
@@ -580,6 +647,7 @@ def fill_inline_cost_link(
         masters += stats["masters"]
         slaves += stats["slaves"]
         cross_sheet_slaves += stats["cross_sheet_slaves"]
+        blocked += stats.get("blocked") or 0
         report.sheets.append({"sheet": sn, "layout": profile, **stats})
 
     wb.save(out)
@@ -588,4 +656,8 @@ def fill_inline_cost_link(
     report.masters = masters
     report.slaves = slaves
     report.cross_sheet_slaves = cross_sheet_slaves
+    report.blocked = blocked
+    review_path = out.with_name(f"{out.stem}_复核摘要.xlsx")
+    write_review_workbook(review_path, report.review_rows, boq_report)
+    report.review_path = str(review_path)
     return report

@@ -20,7 +20,11 @@ from src.knowledge.repository import KnowledgeRepository
 from src.link.dedupe import MasterRowRef, make_dedupe_key, master_cell_formula
 from src.pricing.calc import calc_from_components
 from src.pricing.engine import PricingEngine
-from src.pricing.component_judge import judge_line_components, judge_to_reference_tuple
+from src.pricing.component_judge import (
+    judge_line_components,
+    judge_to_reference_tuple,
+    judgment_risk_tags,
+)
 
 # 追加的成本区字段（在已有列之后）
 COST_FIELDS = (
@@ -414,7 +418,7 @@ def _resolve_costs(
     repo: KnowledgeRepository,
     reference_fill: bool,
     ctx: Optional[PricingContext] = None,
-) -> Tuple[Optional[dict], str]:
+) -> Tuple[Optional[dict], str, Any]:
     """导出填价以 judge 为准；pricing_lines 仅作备注，避免引擎误匹配分量固化。"""
     judgment = judge_line_components(
         row["name"],
@@ -427,7 +431,7 @@ def _resolve_costs(
     )
     comps, note = judge_to_reference_tuple(judgment)
     if comps:
-        return comps, note
+        return comps, note, judgment
     has = any(row.get(k) is not None for k in COST_FIELDS[:6])
     if has:
         existing = {
@@ -438,8 +442,8 @@ def _resolve_costs(
             "machinery": row.get("machinery") or 0,
         }
         if any(existing.get(k) for k in existing):
-            return existing, row.get("match_note") or note
-    return None, note
+            return existing, row.get("match_note") or note, judgment
+    return None, note, judgment
 
 
 def _write_master_row(
@@ -757,6 +761,12 @@ def fill_tender_inplace(
     if project_materials_ref:
         ctx.project_materials_ref = project_materials_ref
 
+    from src.export.boq_validation import gate_for_line, validate_boq, warning_notes_for_line
+    from src.export.review_summary import write_review_workbook
+
+    boq_report = validate_boq(str(src))
+    review_rows: List[Dict[str, Any]] = []
+
     wb = load_workbook(out)
     by_sheet: Dict[str, List[dict]] = {}
     for r in rows:
@@ -765,6 +775,7 @@ def fill_tender_inplace(
     linked = 0
     cross_linked = 0
     filled = 0
+    blocked = 0
     used_tender_breakdown = False
     wb_masters: Dict[str, MasterRowRef] = {}
 
@@ -792,9 +803,44 @@ def fill_tender_inplace(
 
             if key not in wb_masters:
                 wb_masters[key] = MasterRowRef(sheet_name, excel_row)
-                components, note = _resolve_costs(
+                components, note, judgment = _resolve_costs(
                     row, engine, repo, reference_fill, ctx=ctx
                 )
+                blocked_line, block_reason = gate_for_line(
+                    boq_report, str(row.get("seq") or ""), row.get("name") or ""
+                )
+                warn_note = warning_notes_for_line(
+                    boq_report, str(row.get("seq") or ""), row.get("name") or ""
+                )
+                quota_note = getattr(judgment, "quota_hint", "") or ""
+                if blocked_line:
+                    components = None
+                    note = "；".join(x for x in (block_reason, note) if x)
+                    blocked += 1
+                elif warn_note and warn_note not in note:
+                    note = "；".join(x for x in (note, warn_note) if x)
+                tags = judgment_risk_tags(
+                    judgment, name=row.get("name") or "", feature=row.get("feature") or ""
+                )
+                if blocked_line or not components or warn_note or quota_note or "需人工复核" in tags:
+                    review_rows.append({
+                        "sheet": sheet_name,
+                        "seq": row.get("seq") or "",
+                        "name": row.get("name") or "",
+                        "unit": row.get("unit") or "",
+                        "quantity": row.get("quantity"),
+                        "status": "不自动填" if blocked_line or not components else "需复核",
+                        "source": getattr(judgment, "source", "") or "",
+                        "note": note[:240],
+                        "quota_hint": quota_note,
+                        "amount_hint": round(
+                            float(row.get("quantity") or 0)
+                            * sum(float(components.get(k) or 0) for k in (
+                                "material_main", "labor", "material_aux", "machinery"
+                            )) if components else 0,
+                            2,
+                        ),
+                    })
                 if components:
                     qty = float(row["quantity"] or 0)
                     if qty > 0 and cols.col("quantity"):
@@ -820,6 +866,10 @@ def fill_tender_inplace(
     meta.append(["母行填价", filled])
     meta.append(["链接重复行", linked])
     meta.append(["跨表链接行", cross_linked])
+    meta.append(["体检拦截", blocked])
+    review_path = out.with_name(f"{out.stem}_复核摘要.xlsx")
+    write_review_workbook(review_path, review_rows, boq_report)
+    meta.append(["复核摘要", str(review_path)])
     note = (
         "甲方报价表：综合单价=其中合计；成本区填数后 G/H/I 桥接；重复项链接母行（可跨 sheet）"
         if used_tender_breakdown

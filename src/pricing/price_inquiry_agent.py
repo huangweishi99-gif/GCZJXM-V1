@@ -130,11 +130,19 @@ class PriceInquiryAgent:
         return None
 
     def _get_api_config(self) -> Dict[str, Any]:
-        """获取API配置。"""
+        """获取API配置：从 config/ai_model.json + .env 读取。"""
+        try:
+            from src.config.ai_model import load_ai_model_config
+            cfg = load_ai_model_config()
+        except Exception:
+            cfg = {}
         return {
-            "enabled": False,
-            "endpoint": "https://api.example.com/price/query",
-            "api_key": "",
+            "enabled": bool(cfg.get("base_url") and cfg.get("api_key")),
+            "endpoint": (cfg.get("base_url") or "").rstrip("/") + "/chat/completions",
+            "api_key": cfg.get("api_key", ""),
+            "model": cfg.get("model_name", "grok-4.7"),
+            "timeout": int(cfg.get("timeout_seconds") or 60),
+            "max_tokens": int(cfg.get("max_tokens") or 400),
         }
 
     def _parse_api_response(self, data: Dict) -> Optional[Dict[str, float]]:

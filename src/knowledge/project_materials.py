@@ -116,6 +116,101 @@ def _category_from_code(code: str) -> str:
     return _CODE_CATEGORY.get(prefix, "饰面")
 
 
+_SECTION_WORDS = {"瓷砖类", "石材类", "木饰面", "涂料", "金属", "玻璃"}
+_TAX_RATE_DEFAULT = 1.13
+
+
+def _num(value) -> Optional[float]:
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return float(value)
+    return None
+
+
+def _eval_arith(expr: str) -> Optional[float]:
+    """仅四则运算，不执行任意代码。"""
+    tokens = re.findall(r"\d+(?:\.\d+)?|[+\-*/()]", expr)
+    if not tokens or "".join(tokens) != expr:
+        return None
+    pos = 0
+
+    def peek() -> str:
+        return tokens[pos] if pos < len(tokens) else ""
+
+    def parse_expr() -> float:
+        val = parse_term()
+        while peek() in ("+", "-"):
+            op = tokens[pos]
+            nonlocal_advance()
+            rhs = parse_term()
+            val = val + rhs if op == "+" else val - rhs
+        return val
+
+    def nonlocal_advance() -> None:
+        nonlocal pos
+        pos += 1
+
+    def parse_term() -> float:
+        val = parse_factor()
+        while peek() in ("*", "/"):
+            op = tokens[pos]
+            nonlocal_advance()
+            rhs = parse_factor()
+            if op == "/" and rhs == 0:
+                raise ZeroDivisionError
+            val = val * rhs if op == "*" else val / rhs
+        return val
+
+    def parse_factor() -> float:
+        if peek() == "(":
+            nonlocal_advance()
+            val = parse_expr()
+            if peek() != ")":
+                raise ValueError
+            nonlocal_advance()
+            return val
+        if peek() == "-":
+            nonlocal_advance()
+            return -parse_factor()
+        tok = peek()
+        if not tok or not tok[0].isdigit():
+            raise ValueError
+        nonlocal_advance()
+        return float(tok)
+
+    try:
+        val = parse_expr()
+    except (ValueError, ZeroDivisionError, IndexError):
+        return None
+    if pos != len(tokens):
+        return None
+    return val
+
+
+def _eval_price_formula(formula: str, gross_by_row: dict, tax_rate: float) -> Optional[float]:
+    """主材表含税价里的同行算术：=65+1.2*10、=(380+29)/1.2、=O34*1.6。"""
+    expr = str(formula or "").strip()
+    if not expr.startswith("="):
+        return None
+    expr = expr[1:].replace(" ", "")
+    expr = re.sub(
+        r"\$?O\$?(\d+)",
+        lambda m: str(gross_by_row.get(int(m.group(1)), "")),
+        expr,
+    )
+    expr = expr.replace("$", "")
+    if not expr or not re.fullmatch(r"[0-9.+\-*/()]+", expr):
+        return None
+    val = _eval_arith(expr)
+    if val is None or val != val or val <= 0:
+        return None
+    return val
+
+
+def _net_from_gross(gross: float, tax_rate: float) -> float:
+    rate = tax_rate if tax_rate and tax_rate > 1 else _TAX_RATE_DEFAULT
+    return round(gross / rate, 2)
+
+
 def import_project_materials_xlsx(
     file_path: str | Path,
     *,
@@ -256,6 +351,141 @@ def import_project_materials_xlsx(
         "catalog_total": total,
         "source": str(fp),
         "codes": [r["material_code"] for r in rows_in],
+    }
+
+
+def import_named_materials_sheet(
+    file_path: str | Path,
+    *,
+    project_name: str,
+    project_ref: str,
+    city: str = "",
+    price_tier: str = "mid",
+    sheet_name: str = "主材表",
+    db_path: Optional[str] = None,
+) -> dict:
+    """导入无物料编号的项目主材表（重黔站房口径）。
+
+    只写 project_material_prices，不进 material_price_facts。
+    逐项价按品类取中位会把同城地砖、铝板价拉偏。
+    含税价折不含税（默认 /1.13，取表头税率）；无含税价时用已填不含税价。
+    """
+    fp = Path(file_path)
+    wb = openpyxl.load_workbook(fp, data_only=False)
+    if sheet_name not in wb.sheetnames:
+        wb.close()
+        return {"imported": 0, "error": f"无工作表 {sheet_name}", "project_ref": project_ref}
+    ws = wb[sheet_name]
+    tax_rate = _num(ws.cell(2, 15).value) or _TAX_RATE_DEFAULT
+
+    gross_by_row: dict = {}
+    for r in range(4, ws.max_row + 1):
+        gross = _num(ws.cell(r, 15).value)
+        if gross and gross > 1:
+            gross_by_row[r] = gross
+    for r in range(4, ws.max_row + 1):
+        if r in gross_by_row:
+            continue
+        raw = ws.cell(r, 15).value
+        if isinstance(raw, str) and raw.startswith("="):
+            val = _eval_price_formula(raw, gross_by_row, tax_rate)
+            if val:
+                gross_by_row[r] = val
+
+    rows_in: list = []
+    section = ""
+    for r in range(4, ws.max_row + 1):
+        name = ws.cell(r, 3).value
+        name_s = str(name).strip() if name else ""
+        if name_s in _SECTION_WORDS or (name_s and not ws.cell(r, 1).value and not ws.cell(r, 6).value):
+            section = name_s
+            continue
+        if not name_s:
+            continue
+        unit = ws.cell(r, 6).value
+        un = normalize_unit(str(unit) if unit else "")
+        if not un:
+            continue
+        gross = gross_by_row.get(r)
+        net = _num(ws.cell(r, 12).value)
+        if gross and gross > 1:
+            price_f = _net_from_gross(gross, tax_rate)
+            price_note = f"含税{gross:g}/税率{tax_rate:g}"
+        elif net and net > 1:
+            price_f = round(net, 2)
+            price_note = "表内不含税价"
+        else:
+            continue
+        loss = _num(ws.cell(r, 13).value) or 0.0
+        spec = ws.cell(r, 9).value
+        area = ws.cell(r, 8).value
+        code_cell = ws.cell(r, 2).value
+        code = str(code_cell).strip().upper() if code_cell else f"NAME-{r}"
+        rows_in.append(
+            {
+                "material_code": code,
+                "material_name": name_s[:80],
+                "name_norm": normalize_name(name_s),
+                "spec_text": str(spec).strip() if spec else "",
+                "use_area": str(area).strip() if area else "",
+                "unit_norm": un,
+                "material_main": price_f,
+                "loss_rate": loss,
+                "category": section or "饰面",
+                "remark": f"主材表逐项价·{price_note}·损耗{loss:g}",
+            }
+        )
+    wb.close()
+
+    conn = get_connection(db_path)
+    try:
+        conn.execute(
+            "DELETE FROM project_material_prices WHERE project_ref=? AND source_file=?",
+            (project_ref, str(fp)),
+        )
+        for row in rows_in:
+            conn.execute(
+                """INSERT OR REPLACE INTO project_material_prices
+                   (material_code, material_name, name_norm, spec_text, use_area,
+                    unit_norm, material_main, category, project_name, project_ref,
+                    city, price_tier, source_file, remark)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (
+                    row["material_code"],
+                    row["material_name"],
+                    row["name_norm"],
+                    row["spec_text"],
+                    row["use_area"],
+                    row["unit_norm"],
+                    row["material_main"],
+                    row["category"],
+                    project_name,
+                    project_ref,
+                    city or "",
+                    price_tier or "mid",
+                    str(fp),
+                    row["remark"],
+                ),
+            )
+        conn.commit()
+        total = conn.execute(
+            "SELECT COUNT(*) c FROM project_material_prices WHERE project_ref=?",
+            (project_ref,),
+        ).fetchone()["c"]
+    finally:
+        conn.close()
+
+    return {
+        "imported": len(rows_in),
+        "project_ref": project_ref,
+        "project_name": project_name,
+        "city": city,
+        "price_tier": price_tier,
+        "tax_rate": tax_rate,
+        "catalog_total": total,
+        "source": str(fp),
+        "synced_material_facts": False,
+        "names": [r["material_name"] for r in rows_in],
     }
 
 
@@ -491,3 +721,62 @@ def lookup_project_material_row(
     finally:
         conn.close()
     return None, ""
+
+
+def lookup_project_material_by_name(
+    name: str,
+    feature: str,
+    unit: str,
+    *,
+    project_ref: Optional[str] = None,
+    db_path: Optional[str] = None,
+) -> Tuple[Optional[dict], str]:
+    """无物料编号时，按清单名称匹配本项目主材表（不跨项目）。
+
+    全等优先；否则清单名以主材名为前缀（防水面砖墙面 → 防水面砖）。
+    不拿特征里的「地砖/铝板」去套整表，避免把做法描述当成主材行。
+    多个前缀同时命中时取最长名，避免「地砖」套到「地砖地面」。
+    """
+    if not project_ref:
+        return None, ""
+    key = normalize_name(name)
+    if not key or len(key) < 2:
+        return None, ""
+    un = normalize_unit(unit)
+    conn = get_connection(db_path)
+    try:
+        rows = conn.execute(
+            """SELECT * FROM project_material_prices
+               WHERE project_ref=?
+                 AND (unit_norm=? OR unit_norm='' OR ?='')""",
+            (project_ref, un, un),
+        ).fetchall()
+    finally:
+        conn.close()
+    exact = [r for r in rows if r["name_norm"] == key]
+    if exact:
+        chosen = exact
+        how = "名称"
+    else:
+        # 只认清单里真实出现的部位后缀，禁止「地砖地面」套「地砖梯面」
+        _suffixes = ("墙面", "地面", "楼面", "踢脚", "吊顶", "顶棚")
+        prefixed = [
+            r for r in rows
+            if r["name_norm"] and len(r["name_norm"]) >= 4 and key.startswith(r["name_norm"])
+            and key[len(r["name_norm"]):] in _suffixes
+        ]
+        if not prefixed:
+            return None, ""
+        best_len = max(len(r["name_norm"]) for r in prefixed)
+        chosen = [r for r in prefixed if len(r["name_norm"]) == best_len]
+        how = "名称后缀"
+    row_dict = dict(chosen[0])
+    row_dict["_from_project_catalog"] = True
+    note = (
+        f"[项目主材表·{how}]{row_dict.get('project_name') or project_ref}·"
+        f"{row_dict.get('material_name')} 主材{float(row_dict['material_main']):.2f}/"
+        f"{row_dict.get('unit_norm') or ''}"
+    )
+    if len(chosen) > 1:
+        note = f"{note}（同长{len(chosen)}条，取首条）"
+    return row_dict, note

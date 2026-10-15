@@ -44,10 +44,10 @@ FIELD_ALIASES: Dict[str, List[str]] = {
     ],
     "material_loss_rate": ["主材损耗率", "损耗率"],
     "labor": ["人工成本单价", "人工费", "人工"],
-    "material_aux": ["辅材费", "辅材及机械费", "辅材+机械费", "辅材及机械", "辅材"],
+    "material_aux": ["辅材费", "辅材及机械费", "辅材+机械费", "辅材及机械", "辅材", "材料"],
     "machinery": ["机械费", "机械"],
     "cost_amount": ["成本合价", "材料成本总价", "人工成本总价"],
-    "cost_unit_price": ["成本单价", "成本价"],
+    "cost_unit_price": ["成本单价", "成本价", "单价"],
     "unit_price": [
         "综合单价（不含税）",
         "综合单价(不含税)",
@@ -55,9 +55,11 @@ FIELD_ALIASES: Dict[str, List[str]] = {
         "不含税单价",
         "含税单价",
         "综合单价（不含税）",
+        "上报金额",
+        "报价",
     ],
     "amount": ["合价", "合计", "不含税合价", "含税合价"],
-    "remark": ["备注", "说明"],
+    "remark": ["报价备注", "备注", "说明"],
     "management": ["管理费"],
     "profit": ["利润"],
     "tax": ["税金", "税费"],
@@ -115,6 +117,11 @@ def _match_field(header: str, field: str) -> bool:
         return False
     if field == "quantity" and ("规则" in h or "计算规则" in h):
         return False
+    # 「控制价」是招标限价，不是投标单价；「项目特征」不得被「名称」别名吞掉
+    if field == "unit_price" and "控制价" in h:
+        return False
+    if field == "name" and "特征" in h:
+        return False
     for alias in FIELD_ALIASES.get(field, []):
         a = _norm_header(alias)
         if h == a:
@@ -132,6 +139,17 @@ def _match_field(header: str, field: str) -> bool:
             if field == "quantity" and ("规则" in h or "适用范围" in h):
                 continue
             if field == "feature" and "适用范围" in h:
+                continue
+            # 「材料」是辅材的最短别名，不得吞掉「材料费/材料成本单价」等主材列
+            if field == "material_aux" and a == "材料" and (
+                "主材" in h or "材料费" in h or "材料成本" in h or "材料计划" in h
+            ):
+                continue
+            # 「单价」是成本单价的最短别名，只认右侧成本区的裸列名，
+            # 不得吞掉「综合单价/不含税单价/单价合计」
+            if field == "cost_unit_price" and a == "单价" and (
+                h != "单价" or (left_boundary is not None and i <= left_boundary)
+            ):
                 continue
             return True
     return False
@@ -229,6 +247,9 @@ def _merge_subheader(
     )
     for k in fill_keys:
         if k not in out and k in sub:
+            out[k] = sub[k]
+        # 右侧成本区的「单价」才是成本单价；报价/控制价列里的「单价」是综合单价
+        elif k == "cost_unit_price" and k in sub and sub[k] > out.get(k, -1):
             out[k] = sub[k]
 
     # 同一表头行出现多个「合价」：靠后出现且位于成本单价之后 → 成本合价

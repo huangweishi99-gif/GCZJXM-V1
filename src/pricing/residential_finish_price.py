@@ -27,7 +27,8 @@ def _pack(
 # 公区特征：命中后不做户型精装套价
 _PUBLIC_AREA_MARKERS = re.compile(
     r"公区|售楼|会所|地库|坡道|大堂|电梯厅|消防栓|弱电井|强电井|"
-    r"干挂|背栓|条形空调|装饰风口|肌理无机|轻钢龙骨石膏板吊顶"
+    r"干挂|背栓|条形空调|装饰风口|肌理无机|轻钢龙骨石膏板吊顶|"
+    r"站厅|站台|地铁|候车|出入口|设备区|公共区|转换层"
 )
 # 户型部位 / 住宅专属
 _RESIDENTIAL_MARKERS = re.compile(
@@ -66,6 +67,11 @@ def lookup_residential_finish_components(
     # --- 合入他项：金标准为空，不估數 ---
     if re.search(r"门槛石防水|阳台防水|防水（第一道防水）|防水\(第一道防水\)", nn):
         return _pack(0.0, 0.0), "[精装·合入他项]"
+
+    # 成品卫生间扶手：名称即户型项，特征里的「无障碍/安全抓杆」不能把它挡在住宅语境外，
+    # 也不能交给洁具层的配件价（主材15/人工0）。同键两行均为主材135/人工25/辅材2。
+    if unit_n in ("套", "个") and re.search(r"卫生间扶手", nn):
+        return _pack(135.0, 25.0, 2.0, 0.0), "[精装]卫生间不锈钢扶手"
 
     # 公区项不套户型精装口径（避免污染海德/深海等）
     if not residential:
@@ -211,6 +217,9 @@ def lookup_residential_finish_components(
     if unit_n in ("m", "米") and re.search(r"厨房吊柜|吊柜", nn):
         return _pack(1150.0, 30.0, 35.0, 3.0), "[精装]厨房吊柜"
     if unit_n in ("m", "米") and re.search(r"厨房地柜|地柜", nn):
+        # 中山云湾定稿专项：厨房地柜（m）实_主材950, 实_辅材20, 实_人工180, 实_机械0
+        if "中山" in (city or ""):
+            return _pack(950.0, 20.0, 180.0, 0.0), "[中山]厨房地柜含台面（定稿）"
         return _pack(1600.0, 30.0, 35.0, 3.0), "[精装]厨房地柜含台面"
 
     # --- 门 ---
@@ -225,6 +234,9 @@ def lookup_residential_finish_components(
     if unit_n in ("个",) and re.search(r"浴室柜", nn):
         return _pack(1050.0, 150.0, 35.0, 1.5), "[精装]定制浴室柜"
     if unit_n in ("个",) and re.search(r"镜箱", nn):
+        # 中山云湾定稿专项：镜箱（套/个）实_主材1600, 实_辅材100, 实_人工380, 实_机械20
+        if "中山" in (city or ""):
+            return _pack(1600.0, 100.0, 380.0, 20.0), "[中山]定制镜箱（定稿）"
         return _pack(850.0, 95.0, 35.0, 1.5), "[精装]定制镜箱"
     if unit_n in ("套",) and re.search(r"毛巾", text):
         return _pack(268.0, 25.0, 5.0, 1.5), "[精装]毛巾杆/架"
@@ -233,6 +245,9 @@ def lookup_residential_finish_components(
     if unit_n in ("组", "个", "套") and re.search(r"^地漏$|地漏", nn):
         return _pack(55.0, 25.0, 1.5, 0.2), "[精装]不锈钢地漏"
     if unit_n in ("组", "套") and re.search(r"洗脸盆|台盆|洗手盆", text):
+        # 卫生间扶手/抓杆名称里常写「部位:洗手盆抓杆」，不能被洗脸盆规则抢走
+        if re.search(r"扶手|抓杆", nn):
+            return _pack(135.0, 25.0, 2.0, 0.0), "[精装]卫生间不锈钢扶手/抓杆"
         return _pack(320.0, 55.0, 44.0, 0.8), "[精装]洗脸盆含龙头"
     if unit_n in ("组", "套") and re.search(r"洗涤盆|洗菜盆", text):
         # 拖把池（含龙头排水附件）价格较低

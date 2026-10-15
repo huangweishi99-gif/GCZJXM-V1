@@ -747,6 +747,24 @@
       "source_note": "市场参考：聚氨酯涂膜防水两遍约35-50元/㎡(控制价/行业)"
     },
     {
+      "id": "waterproof_polymer_cement_1_5",
+      "name_keywords": [
+        "涂膜防水"
+      ],
+      "feature_keywords": [
+        "1.5mm"
+      ],
+      "require_feature_keywords": true,
+      "units": [
+        "㎡"
+      ],
+      "material_main": 22,
+      "material_aux": 5.5,
+      "labor": 28,
+      "machinery": 1.5,
+      "source_note": "市场参考：1.5mm聚合物水泥防水涂料，厚于普通薄涂，主材按用量上浮"
+    },
+    {
       "id": "waterproof_floor",
       "name_keywords": [
         "涂膜防水",
@@ -1477,6 +1495,25 @@
       "labor": 50,
       "machinery": 8.5,
       "source_note": "市场参考+样本校准：陶粒回填层（按 m³）。中山会所定稿 实_主材360/人工50/辅10.5/机8.5（4 条一致）；江门 实385/28 主材亦落此档。㎡ 沉箱陶粒见 backfill_ceramsite_sump"
+    },
+    {
+      "id": "backfill_ceramsite_low_zs",
+      "name_keywords": [
+        "陶粒回填"
+      ],
+      "units": [
+        "m³"
+      ],
+      "material_main": 220.0,
+      "material_aux": 25.0,
+      "labor": 90.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 陶粒回填低档（沉箱回填）实_主材220,实_辅材25,实_人工90,实_机械0；限定中山。占比少数档，与backfill_ceramsite 360/50 共存（前者主沉箱底，后者主垫层）",
+      "cities": [
+        "中山"
+      ]
     },
     {
       "id": "ceramsite_concrete_bedding_review",
@@ -3317,6 +3354,13 @@
         "木饰面门M",
         "不含门套"
       ],
+      "exclude_name_keywords": [
+        "超白钢化",
+        "钢化玻璃",
+        "玻璃门",
+        "磨砂贴膜",
+        "喷砂"
+      ],
       "units": [
         "㎡"
       ],
@@ -3349,6 +3393,375 @@
       "cities": [
         "中山"
       ]
+    },
+    {
+      "id": "wood_floor_wd01_zs",
+      "name_keywords": [
+        "实木复合木地板"
+      ],
+      "feature_keywords": [
+        "WD-01"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 75.0,
+      "material_aux": 3.0,
+      "labor": 17.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 实木复合木地板地面WD-01 实_主材75,实_辅材3,实_人工17,实_机械0；限定中山（WD-01为云湾项目代号）。此前该行被 wood_floor_install（关键词 复合地板）误命中成 285/36",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "air_handler_unit_zs",
+      "name_keywords": [
+        "风管机"
+      ],
+      "units": [
+        "台"
+      ],
+      "material_main": 3600.0,
+      "material_aux": 1200.0,
+      "labor": 1000.0,
+      "machinery": 45.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾安装定稿 风管机（整套管路/风口/冷凝水报价口径）实_主材3600,实_辅材1200,实_人工1000,实_机械45；限定中山（mep_install/residential 三源都打错成 2450/3050）",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "kitchen_base_cabinet_zs",
+      "name_keywords": [
+        "厨房地柜"
+      ],
+      "units": [
+        "m",
+        "米"
+      ],
+      "material_main": 950.0,
+      "material_aux": 20.0,
+      "labor": 180.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 厨房地柜 实_主材950,实_辅材20,实_人工180,实_机械0；限定中山。residential_finish_price.py 通用 1600/30/35/3 偏高",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "door_wood_veneer_dr03_zs",
+      "name_keywords": [
+        "木饰面门"
+      ],
+      "feature_keywords": [
+        "DR-03"
+      ],
+      "units": [
+        "樘"
+      ],
+      "material_main": 1050.0,
+      "material_aux": 55.0,
+      "labor": 170.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 木饰面门DR-03（樘）实_主材1050,实_辅材55,实_人工170,实_机械0；限定中山。custom_door 通用 1626/180/35/0 偏高",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "cabinet_wall_cabinet_zs",
+      "name_keywords": [
+        "橱柜-吊柜",
+        "厨房吊柜"
+      ],
+      "units": [
+        "套"
+      ],
+      "material_main": 529.1,
+      "material_aux": 68.3,
+      "labor": 238.9,
+      "machinery": 17.1,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 橱柜-吊柜 实_主材529.1,实_辅材68.3,实_人工238.9,实_机械17.1；限定中山。custom_furniture 通用 988.8/446.6/127.6/31.9 偏高",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "mirror_cabinet_zs",
+      "name_keywords": [
+        "镜箱"
+      ],
+      "units": [
+        "套"
+      ],
+      "material_main": 1600.0,
+      "material_aux": 100.0,
+      "labor": 380.0,
+      "machinery": 20.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 镜箱 实_主材1600,实_辅材100,实_人工380,实_机械20；限定中山。composite_furniture_line 通用 2394/740/261.2/43.5 偏高",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "ceramsite_backfill_zs",
+      "name_keywords": [
+        "陶粒回填"
+      ],
+      "units": [
+        "m3",
+        "立方米"
+      ],
+      "material_main": 360.0,
+      "material_aux": 10.5,
+      "labor": 50.0,
+      "machinery": 8.5,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 陶粒回填 实_主材360,实_辅材10.5,实_人工50,实_机械8.5；限定中山。通用陶粒回填 220/90/25/0 偏低",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "wood_veneer_partition_wd01_zs",
+      "name_keywords": [
+        "木饰面隔断门"
+      ],
+      "units": [
+        "m2",
+        "㎡"
+      ],
+      "material_main": 805.0,
+      "material_aux": 3.5,
+      "labor": 100.0,
+      "machinery": 1.5,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 木饰面隔断门及隔断WD-01 实_主材805,实_辅材3.5,实_人工100,实_机械1.5；限定中山。wall_wood_veneer 通用 580/75/85/2 偏低（隔断门含五金）",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "glass_door_m7_zs",
+      "name_keywords": [
+        "超白钢化玻璃门"
+      ],
+      "units": [
+        "m2",
+        "㎡"
+      ],
+      "material_main": 780.0,
+      "material_aux": 50.0,
+      "labor": 145.0,
+      "machinery": 0.8,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 超白钢化玻璃门(加磨砂贴膜)M7 实_主材780,实_辅材50,实_人工145,实_机械0.8；限定中山（M7为云湾项目代号）",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "shower_water_base_zs",
+      "name_keywords": [
+        "淋浴间挡水水泥基座",
+        "挡水水泥基座"
+      ],
+      "units": [
+        "m",
+        "米"
+      ],
+      "material_main": 20.0,
+      "material_aux": 2.0,
+      "labor": 12.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 淋浴间挡水水泥基座 实_主材20,实_辅材2,实_人工12,实_机械0；限定中山。通用挡水条 0/12/2/0 漏主材",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "ceramic_wear_layer_f7",
+      "name_keywords": [
+        "耐磨混凝土楼面",
+        "F7"
+      ],
+      "units": [
+        "m2",
+        "㎡"
+      ],
+      "material_main": 0.0,
+      "material_aux": 31.1,
+      "labor": 30.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：实_主材0,实_辅材31.1,实_人工30,实_机械0；通用楼面 25/16/0/2 主材/辅材/机械口径不同"
+    },
+    {
+      "id": "wall_handrail_a",
+      "name_keywords": [
+        "靠墙扶手",
+        "卫生间扶手"
+      ],
+      "units": [
+        "m",
+        "套",
+        "米"
+      ],
+      "material_main": 135.0,
+      "material_aux": 2.0,
+      "labor": 25.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：卫生间扶手a 实_主材135,实_辅材2,实_人工25,实_机械0；通用扶手 22/0/0/0 漏主辅"
+    },
+    {
+      "id": "flat_door_m2_zh",
+      "name_keywords": [
+        "平开门"
+      ],
+      "exclude_name_keywords": [
+        "木饰面",
+        "暗门",
+        "玻璃",
+        "防火"
+      ],
+      "units": [
+        "m2",
+        "㎡"
+      ],
+      "material_main": 1800.0,
+      "material_aux": 27.0,
+      "labor": 145.0,
+      "machinery": 1.5,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：珠海云湾定稿 平开门（含门套）实_主材1800,实_辅材27,实_人工145,实_机械1.5；限定珠海",
+      "cities": [
+        "珠海"
+      ]
+    },
+    {
+      "id": "wood_veneer_flat_door_zh",
+      "name_keywords": [
+        "木饰面平开门"
+      ],
+      "units": [
+        "m2",
+        "㎡"
+      ],
+      "material_main": 1250.0,
+      "material_aux": 27.0,
+      "labor": 145.0,
+      "machinery": 1.5,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：珠海云湾定稿 木饰面平开门 实_主材1250,实_辅材27,实_人工145,实_机械1.5；限定珠海",
+      "cities": [
+        "珠海"
+      ]
+    },
+    {
+      "id": "st04_wall_marble_wet_zh",
+      "name_keywords": [
+        "墙面湿贴石材",
+        "湿贴石材"
+      ],
+      "feature_keywords": [
+        "ST-04"
+      ],
+      "units": [
+        "m2",
+        "㎡"
+      ],
+      "material_main": 890.0,
+      "material_aux": 16.8,
+      "labor": 95.0,
+      "machinery": 1.5,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：珠海海德公馆金标准 墙面湿贴石材ST-04 实_主材890,实_辅材16.8,实_人工95,实_机械1.5；限定珠海。project_material_code 通用 1555/95/42/4.2 偏高",
+      "cities": [
+        "珠海"
+      ]
+    },
+    {
+      "id": "pt01_wall_latex",
+      "name_keywords": [
+        "墙面乳胶漆"
+      ],
+      "feature_keywords": [
+        "PT-01"
+      ],
+      "units": [
+        "m2",
+        "㎡"
+      ],
+      "material_main": 3.0,
+      "material_aux": 0.0,
+      "labor": 10.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：墙面乳胶漆PT-01 实_主材3,实_辅材0,实_人工10,实_机械0；通用乳胶漆 4.7/8.2/1.5/0.3 口径略偏"
+    },
+    {
+      "id": "stainless_steel_door_casing_zs",
+      "name_keywords": [
+        "不锈钢门套"
+      ],
+      "units": [
+        "m",
+        "米",
+        "m2",
+        "㎡"
+      ],
+      "material_main": 200.0,
+      "material_aux": 25.0,
+      "labor": 60.0,
+      "machinery": 2.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 不锈钢门套 实_主材200,实_辅材25,实_人工60,实_机械2；限定中山。custom_door 通用 200/35/30/2 与定稿有差异",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "mortar_leveling_layer",
+      "name_keywords": [
+        "平面砂浆找平层"
+      ],
+      "units": [
+        "m2",
+        "㎡"
+      ],
+      "material_main": 5.5,
+      "material_aux": 1.1,
+      "labor": 8.5,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：平面砂浆找平层（中山定稿2行均值）实_主材5.5,实_辅材1.1,实_人工8.5,实_机械0；通用 8.5/10.5/0/0 主材/人工口径偏"
     },
     {
       "id": "panel_board_code",
@@ -3404,7 +3817,10 @@
         "铺木地板"
       ],
       "exclude_name_keywords": [
-        "拆除"
+        "拆除",
+        "WD-01",
+        "WD-02",
+        "WD-03"
       ],
       "units": [
         "㎡"
@@ -3413,7 +3829,7 @@
       "material_aux": 18,
       "labor": 36,
       "machinery": 2,
-      "source_note": "市场参考：木地板铺装"
+      "source_note": "市场参考：木地板铺装；新增exclude WD-01/02/03以免被墙面木饰面编号的'实木复合木地板地面 WD-01'误命中（WD-系列为云湾项目代号，地板WD-01实主75元/㎡）"
     },
     {
       "id": "carpet_floor_block",
@@ -12222,6 +12638,11 @@
         "石材暗门",
         "大理石暗门"
       ],
+      "exclude_name_keywords": [
+        "门槛石",
+        "石材门槛",
+        "过门石"
+      ],
       "units": [
         "㎡"
       ],
@@ -12229,13 +12650,38 @@
       "material_aux": 303.43,
       "labor": 409.64,
       "machinery": 30.34,
-      "source_note": "实际样本校准：ST-02米色大理石（石材暗门）实_主材606.87,实_辅材303.43,实_人工576.53,实_机械30.34"
+      "source_note": "实际样本校准：ST-02米色大理石（石材暗门）实_主材606.87,实_辅材303.43,实_人工576.53,实_机械30.34；新增exclude门槛石以免被'石材门槛石 ST-02'误命中"
+    },
+    {
+      "id": "threshold_stone_st02_zs",
+      "name_keywords": [
+        "门槛石 ST-02",
+        "石材门槛石 ST-02",
+        "过门石 ST-02"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 850.0,
+      "material_aux": 29.1,
+      "labor": 120.0,
+      "machinery": 1.5,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 石材门槛石ST-02 实_主材850,实_辅材29.1,实_人工120,实_机械1.5；限定中山。此前该行被 marble_secret_door_st02（关键词 ST-02）误命中成 448/409",
+      "cities": [
+        "中山"
+      ]
     },
     {
       "id": "marble_st02_ceiling_wall",
       "name_keywords": [
         "ST-02",
         "米白色大理石"
+      ],
+      "exclude_name_keywords": [
+        "门槛石",
+        "石材门槛"
       ],
       "feature_keywords": [
         "天棚",
@@ -12280,6 +12726,10 @@
         "岩板暗门",
         "仿大理石岩板"
       ],
+      "exclude_name_keywords": [
+        "挂贴",
+        "铺贴"
+      ],
       "units": [
         "㎡"
       ],
@@ -12287,7 +12737,30 @@
       "material_aux": 353.67,
       "labor": 210.0,
       "machinery": 0.0,
-      "source_note": "实际样本校准：CT-02米白色仿大理石岩板（岩板暗门）实_主材180,实_辅材353.67,实_人工210"
+      "source_note": "实际样本校准：CT-02米白色仿大理石岩板（岩板暗门）实_主材180,实_辅材353.67,实_人工210；新增exclude挂贴/铺贴以免被'墙面挂贴瓷砖（CT-02)'误命中"
+    },
+    {
+      "id": "wall_tile_ct02_zs",
+      "name_keywords": [
+        "挂贴瓷砖",
+        "墙面挂贴"
+      ],
+      "feature_keywords": [
+        "CT-02"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 35.0,
+      "material_aux": 20.0,
+      "labor": 48.0,
+      "machinery": 2.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 墙面挂贴瓷砖（CT-02）实_主材35,实_辅材20,实_人工48,实_机械2；限定中山。此前该行被 slate_secret_door_ct02（关键词 CT-02 岩板暗门）误命中成 180/210",
+      "cities": [
+        "中山"
+      ]
     },
     {
       "id": "zs_tile_pattern_pave",
@@ -12331,6 +12804,10 @@
         "ST-03",
         "深灰色人造石"
       ],
+      "exclude_name_keywords": [
+        "排水槽",
+        "楼地面"
+      ],
       "units": [
         "㎡"
       ],
@@ -12338,7 +12815,31 @@
       "material_aux": 114.8,
       "labor": 218.12,
       "machinery": 11.48,
-      "source_note": "实际样本校准：ST-03深灰色人造石(燃烧性能等级A级)实_主材229.6,实_辅材114.8,实_人工218.12,实_机械11.48"
+      "source_note": "实际样本校准：ST-03深灰色人造石(燃烧性能等级A级)实_主材229.6,实_辅材114.8,实_人工218.12,实_机械11.48；新增exclude排水槽/楼地面以免被'（排水槽）石材楼地面 ST-03'误命中"
+    },
+    {
+      "id": "stone_floor_drain_st03_zs",
+      "name_keywords": [
+        "石材楼地面",
+        "楼地面 ST-03"
+      ],
+      "feature_keywords": [
+        "ST-03",
+        "排水槽"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 800.0,
+      "material_aux": 45.0,
+      "labor": 120.0,
+      "machinery": 4.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 （排水槽）石材楼地面ST-03 实_主材800,实_辅材45,实_人工120,实_机械4；限定中山（排水槽带湿贴加价）",
+      "cities": [
+        "中山"
+      ]
     },
     {
       "id": "centrifugal_fan_5000_8000",
@@ -15553,6 +16054,9 @@
       "name_keywords": [
         "挡水水泥基座"
       ],
+      "exclude_name_keywords": [
+        "淋浴间"
+      ],
       "units": [
         "m"
       ],
@@ -15560,7 +16064,7 @@
       "material_aux": 2,
       "labor": 12,
       "machinery": 0,
-      "source_note": "实际样本校准：卫生间门口挡水水泥基座实_人工12辅材2"
+      "source_note": "实际样本校准：卫生间门口挡水水泥基座实_人工12辅材2；排除淋浴间（见 shower_water_base_generic，主材20）"
     },
     {
       "id": "door_frame_foam",
@@ -19441,6 +19945,222 @@
       "labor": 40,
       "machinery": 0,
       "source_note": "实际样本校准：中山扪皮饰面(UP-101)实_主材140人工40辅材12"
+    },
+    {
+      "id": "wall_waterproof_pt03_zs",
+      "name_keywords": [
+        "墙面刷",
+        "墙面涂刷"
+      ],
+      "feature_keywords": [
+        "PT-03",
+        "防水涂料"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 5.5,
+      "material_aux": 6.5,
+      "labor": 26.5,
+      "machinery": 0.5,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 墙面刷米白色防水涂料PT-03 实_主材5.5,实_辅材6.5,实_人工26.5,实_机械0.5；限定中山。此前该行走材料价库+防水份额拆分，输出10.92/27.66/32.76/1.46偏高",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "wall_cloth_wp04_zs",
+      "name_keywords": [
+        "墙布",
+        "墙纸"
+      ],
+      "feature_keywords": [
+        "WP-04",
+        "WP-"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 95.0,
+      "material_aux": 10.0,
+      "labor": 35.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 墙布04墙面WP-04 实_主材95,实_辅材10,实_人工35,实_机械0；限定中山（云湾项目代号）。此前该行 unresolved 输出 0",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "multi_function_sliding_door_zs",
+      "name_keywords": [
+        "多功能室移门",
+        "移门"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 280.0,
+      "material_aux": 35.0,
+      "labor": 60.0,
+      "machinery": 5.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 多功能室移门 实_主材280,实_辅材35,实_人工60,实_机械5；限定中山。此前该行走 line_match_weak 弱匹配输出 778/0/0/0 主高估+人工辅材为零",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "self_leveling_5mm_zs",
+      "name_keywords": [
+        "石膏自流平"
+      ],
+      "feature_keywords": [
+        "5mm"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 7.0,
+      "material_aux": 0.8,
+      "labor": 6.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 5mm厚石膏自流平地面 实_主材7,实_辅材0.8,实_人工6,实_机械0；限定中山",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "cabinet_bottom_screed_sz",
+      "name_keywords": [
+        "柜底水泥砂浆找平",
+        "柜底找平"
+      ],
+      "feature_keywords": [
+        "20mm",
+        "20 mm"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 12.0,
+      "material_aux": 0.3,
+      "labor": 22.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：深圳定稿 20mm厚柜底水泥砂浆找平 实_主材12,实_辅材0.3,实_人工22,实_机械0；限定深圳（与通用抹灰找平 4.5/52/31.4/1.8 区分）",
+      "cities": [
+        "深圳"
+      ]
+    },
+    {
+      "id": "shower_water_base_generic",
+      "name_keywords": [
+        "淋浴间挡水水泥基座"
+      ],
+      "units": [
+        "m",
+        "米"
+      ],
+      "material_main": 20.0,
+      "material_aux": 2.0,
+      "labor": 12.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：广西白龙（城市未知）淋浴间挡水水泥基座 实_主材20,实_辅材2,实_人工12；不限城市。此前城市未知行只能落到通用挡水规则 0/12/2/0，主材缺失。同键仅 1 条样本"
+    },
+    {
+      "id": "shower_water_stop_zs",
+      "name_keywords": [
+        "淋浴间挡水",
+        "挡水水泥基座"
+      ],
+      "units": [
+        "m"
+      ],
+      "material_main": 20.0,
+      "material_aux": 2.0,
+      "labor": 12.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 淋浴间挡水水泥基座 实_主材20,实_辅材2,实_人工12,实_机械0；限定中山。此前该行被通用挡水规则输出 0/12/2/0 主材缺失",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "dry_hang_rock_panel_st01_zs",
+      "name_keywords": [
+        "墙面干挂岩板",
+        "干挂岩板"
+      ],
+      "feature_keywords": [
+        "ST-01"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 280.0,
+      "material_aux": 20.0,
+      "labor": 75.0,
+      "machinery": 4.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 墙面干挂岩板（ST-01）实_主材280,实_辅材20,实_人工75,实_机械4；限定中山（与石材干挂 ST-04 不通用）",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "stone_bench_st101_zs",
+      "name_keywords": [
+        "人造石坐凳",
+        "石材坐凳"
+      ],
+      "feature_keywords": [
+        "ST-101"
+      ],
+      "units": [
+        "㎡"
+      ],
+      "material_main": 150.0,
+      "material_aux": 12.0,
+      "labor": 50.0,
+      "machinery": 0.0,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：中山云湾定稿 人造石坐凳（ST-101）实_主材150,实_辅材12,实_人工50,实_机械0；限定中山（与石材楼地面通用规则不通用）",
+      "cities": [
+        "中山"
+      ]
+    },
+    {
+      "id": "waste_bin_sz",
+      "name_keywords": [
+        "垃圾箱"
+      ],
+      "units": [
+        "个"
+      ],
+      "material_main": 54.0,
+      "material_aux": 27.0,
+      "labor": 51.3,
+      "machinery": 2.7,
+      "material_loss_rate": 0.0,
+      "preserve_components": true,
+      "source_note": "审计校准：深圳定稿 垃圾箱实_主材54,实_辅材27,实_人工51.3,实_机械2.7；限定深圳（替代通用 waste_bin 45/15）",
+      "cities": [
+        "深圳"
+      ]
     },
     {
       "id": "screed_mortar_zs",

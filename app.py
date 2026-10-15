@@ -388,18 +388,31 @@ def cmd_import_catalog(args: argparse.Namespace) -> None:
 
 
 def cmd_import_project_materials(args: argparse.Namespace) -> None:
-    from src.knowledge.project_materials import import_project_materials_xlsx
+    from src.knowledge.project_materials import (
+        import_named_materials_sheet,
+        import_project_materials_xlsx,
+    )
 
     init_database()
     fp = _resolve_file(args.file)
     ref = args.ref or args.project.replace(" ", "_")[:48]
-    r = import_project_materials_xlsx(
-        fp,
-        project_name=args.project,
-        project_ref=ref,
-        city=args.city or "",
-        price_tier=args.tier,
-    )
+    if getattr(args, "by_name", False):
+        r = import_named_materials_sheet(
+            fp,
+            project_name=args.project,
+            project_ref=ref,
+            city=args.city or "",
+            price_tier=args.tier,
+            sheet_name=args.sheet or "主材表",
+        )
+    else:
+        r = import_project_materials_xlsx(
+            fp,
+            project_name=args.project,
+            project_ref=ref,
+            city=args.city or "",
+            price_tier=args.tier,
+        )
     print(json.dumps(r, ensure_ascii=False, indent=2))
 
 
@@ -471,12 +484,19 @@ def cmd_quote_fees(args: argparse.Namespace) -> None:
     """取费建议：成本单价 → 综合单价（管理费+利润+风险）及单位工程费汇总。"""
     from src.pricing.fee_rates import build_summary, get_rates
 
-    rates = get_rates(args.category, args.tier, style=args.style)
+    region = getattr(args, "region", "") or ""
+    rates = get_rates(args.category, args.tier, style=args.style, region=region)
     style_tag = f"·{args.style}" if args.style else ""
-    print(f"取费标准（{args.category or '通用'}·{args.tier}{style_tag}）：")
+    region_tag = f"·{region}" if region else ""
+    print(f"取费标准（{args.category or '通用'}·{args.tier}{style_tag}{region_tag}）：")
     print(json.dumps(rates, ensure_ascii=False, indent=2))
     if args.cost:
-        s = build_summary(args.cost, args.quantity or 1, args.category, args.tier, style=args.style)
+        s = build_summary(
+            args.cost, args.quantity or 1, args.category, args.tier,
+            style=args.style, region=region,
+            labor=getattr(args, "labor", 0) or 0,
+            machinery=getattr(args, "machinery", 0) or 0,
+        )
         print("\n费用汇总：")
         print(json.dumps(s, ensure_ascii=False, indent=2))
 
@@ -566,14 +586,21 @@ def cmd_judge(args: argparse.Namespace) -> None:
     tier = args.tier or "mid"
     if tier in ("高", "中", "低"):
         tier = {"高": "high", "中": "mid", "低": "low"}[tier]
-    ctx = PricingContext(city=args.city or "", price_tier=tier) if (args.city or args.tier) else None
+    materials_ref = getattr(args, "materials_ref", None) or ""
+    ctx = None
+    if args.city or args.tier or materials_ref:
+        ctx = PricingContext(
+            city=args.city or "",
+            price_tier=tier,
+            project_materials_ref=materials_ref,
+        )
     j = judge_line_components(
         args.name,
         args.feature or "",
         args.unit,
         engine,
         repo,
-        ctx=ctx if args.city or args.tier else None,
+        ctx=ctx,
     )
     out = {
         "工艺": j.craft_label,
@@ -634,6 +661,9 @@ def cmd_deliver(args: argparse.Namespace) -> None:
                 if tier not in ("高", "中", "低")
                 else {"高": "high", "中": "mid", "低": "low"}[tier]
             )
+            from src.pricing.quote_style import markup_of, resolve_style
+
+            quote_markup = markup_of(resolve_style(pair))
             reports = []
             for i, tender in enumerate(tender_list):
                 if len(tender_list) == 1:
@@ -657,6 +687,7 @@ def cmd_deliver(args: argparse.Namespace) -> None:
                     city=city,
                     tier=tier_norm,
                     project_materials_ref=materials_ref,
+                    markup=quote_markup,
                 )
                 reports.append(report)
                 print(
@@ -669,6 +700,8 @@ def cmd_deliver(args: argparse.Namespace) -> None:
                             "跨表链接": report.cross_sheet_slaves,
                             "引用": report.reference_hits,
                             "组价": report.judged,
+                            "体检拦截": report.blocked,
+                            "复核摘要": report.review_path,
                             "分表绑定": report.sheets,
                         },
                         ensure_ascii=False,
@@ -738,6 +771,8 @@ def cmd_deliver(args: argparse.Namespace) -> None:
                 "跨表链接": report.cross_sheet_slaves,
                 "引用": report.reference_hits,
                 "组价": report.judged,
+                "体检拦截": report.blocked,
+                "复核摘要": report.review_path,
                 "分表绑定": report.sheets,
             },
             ensure_ascii=False,
@@ -912,6 +947,180 @@ def cmd_extract_market_ref(args: argparse.Namespace) -> None:
             f"({c['unit']}) 主材{c['main_median']} 人工{c['lab_median']} "
             f"辅材{c['aux_median']} 机械{c['mach_median']}"
         )
+
+
+def cmd_chat_test(args: argparse.Namespace) -> None:
+    """测试自定义模型（config/ai_model.json + .env）：连通性/对话/工具调用。"""
+    import time
+    import json
+    import urllib.request
+    import urllib.error
+    from src.config.ai_model import load_ai_model_config, is_ai_model_configured
+
+    cfg = load_ai_model_config()
+    print("=" * 60)
+    print("自定义模型连通性测试")
+    print("=" * 60)
+    print(f"配置: provider={cfg.get('provider')}  model={cfg.get('model_name')}")
+    print(f"base_url: {cfg.get('base_url')}")
+    print(f"api_key:  {('已配置 ' + cfg['api_key'][:10] + '...') if cfg.get('api_key') else '【未配置】'}")
+    print(f"timeout={cfg.get('timeout_seconds')}s  max_tokens={cfg.get('max_tokens')}  "
+          f"enable_tool_calls={cfg.get('enable_tool_calls')}")
+    print()
+
+    if not is_ai_model_configured():
+        print("[FAIL] 配置缺失：base_url 或 api_key 为空")
+        print("  - 检查 .env 是否存在并填了 GROK_API_KEY/GROK_BASE_URL")
+        print("  - 检查 config/ai_model.json 是否存在")
+        return
+
+    base_url = cfg["base_url"].rstrip("/")
+    api_key = cfg["api_key"]
+    model = cfg["model_name"]
+    timeout = int(cfg.get("timeout_seconds") or 60)
+
+    # 1) /v1/models 探活
+    print("[1/3] 探活 GET /v1/models ...")
+    t0 = time.time()
+    try:
+        req = urllib.request.Request(
+            f"{base_url}/models",
+            headers={"Authorization": f"Bearer {api_key}"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        models = [m.get("id") for m in (data.get("data") or [])]
+        elapsed = (time.time() - t0) * 1000
+        print(f"  [OK]  {elapsed:.0f}ms  共 {len(models)} 个模型")
+        if model in models:
+            print(f"  [OK]  当前 model '{model}' 在列表中")
+        else:
+            print(f"  [WARN] 当前 model '{model}' 不在列表中（可能被路由到别名）")
+        if not args.no_list and len(models) <= 30:
+            for m in models[:20]:
+                print(f"    - {m}")
+            if len(models) > 20:
+                print(f"    ... 还有 {len(models) - 20} 个")
+    except Exception as exc:
+        print(f"  [FAIL] {type(exc).__name__}: {exc}")
+        return
+
+    # 2) 单轮对话
+    user_msg = args.prompt or "用一句话回复：你是谁？"
+    print()
+    print(f"[2/3] 单轮对话 POST /v1/chat/completions")
+    print(f"  prompt: {user_msg}")
+    body = {
+        "model": model,
+        "messages": [{"role": "user", "content": user_msg}],
+        "max_tokens": int(cfg.get("max_tokens") or 200),
+        "temperature": float(cfg.get("temperature") or 0.1),
+    }
+    t0 = time.time()
+    try:
+        req = urllib.request.Request(
+            f"{base_url}/chat/completions",
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        elapsed = (time.time() - t0) * 1000
+        content = (data.get("choices") or [{}])[0].get("message", {}).get("content") or ""
+        print(f"  [OK]  {elapsed:.0f}ms")
+        print(f"  model: {data.get('model')}")
+        print(f"  reply: {content[:300]}")
+        usage = data.get("usage") or {}
+        if usage:
+            print(f"  usage: prompt={usage.get('prompt_tokens')}  "
+                  f"completion={usage.get('completion_tokens')}  "
+                  f"total={usage.get('total_tokens')}")
+    except Exception as exc:
+        print(f"  [FAIL] {type(exc).__name__}: {exc}")
+        if hasattr(exc, "read"):
+            try:
+                print(f"  body: {exc.read().decode('utf-8', errors='replace')[:500]}")
+            except Exception:
+                pass
+        return
+
+    # 3) 工具调用 / Function calling
+    if cfg.get("enable_tool_calls") and not args.no_tool:
+        print()
+        print("[3/3] 工具调用测试（function calling）")
+        tools = [{
+            "type": "function",
+            "function": {
+                "name": "inquire_price",
+                "description": "查询某清单项在指定城市的人材机单价",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", "description": "项目名称"},
+                        "feature": {"type": "string", "description": "项目特征"},
+                        "unit": {"type": "string", "description": "单位"},
+                        "city": {"type": "string", "description": "城市"},
+                    },
+                    "required": ["name", "unit"],
+                },
+            },
+        }]
+        body2 = {
+            "model": model,
+            "messages": [{
+                "role": "user",
+                "content": "请用工具查一下 800x800 抛光砖（米黄色）在深圳的人材机单价，单位 m²。",
+            }],
+            "tools": tools,
+            "tool_choice": "auto",
+            "max_tokens": 300,
+        }
+        try:
+            req2 = urllib.request.Request(
+                f"{base_url}/chat/completions",
+                data=json.dumps(body2).encode("utf-8"),
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {api_key}",
+                },
+                method="POST",
+            )
+            t0 = time.time()
+            with urllib.request.urlopen(req2, timeout=timeout) as r:
+                data2 = json.loads(r.read().decode("utf-8"))
+            elapsed = (time.time() - t0) * 1000
+            msg = (data2.get("choices") or [{}])[0].get("message", {})
+            tcs = msg.get("tool_calls") or []
+            if tcs:
+                print(f"  [OK]  {elapsed:.0f}ms  触发了 {len(tcs)} 个工具调用")
+                for tc in tcs[:3]:
+                    fn = (tc.get("function") or {}).get("name")
+                    args_raw = (tc.get("function") or {}).get("arguments")
+                    # GBK console 兼容：把非 ASCII 替换成转义形式
+                    try:
+                        args_str = args_raw if isinstance(args_raw, str) else str(args_raw)
+                        args_str = args_str.encode("gbk", errors="replace").decode("gbk")
+                    except Exception:
+                        args_str = repr(args_raw)[:200]
+                    print(f"    function: {fn}")
+                    print(f"    arguments: {args_str[:300]}")
+            else:
+                print(f"  [WARN] {elapsed:.0f}ms  模型未触发工具调用")
+                try:
+                    reply = (msg.get('content') or '')[:200]
+                    reply = reply.encode("gbk", errors="replace").decode("gbk")
+                except Exception:
+                    reply = ""
+                print(f"    reply: {reply}")
+        except Exception as exc:
+            print(f"  [FAIL] {type(exc).__name__}: {exc}")
+
+    print()
+    print("[DONE] 自定义模型测试通过")
 
 
 def cmd_external_price(args: argparse.Namespace) -> None:
@@ -1176,6 +1385,12 @@ def main() -> None:
     p_pm.add_argument("file", help="主材表 xlsx")
     p_pm.add_argument("--project", required=True, help="关联项目名称（如珠海海德公馆售楼处会所）")
     p_pm.add_argument("--ref", default=None, help="项目引用键（默认由项目名生成）")
+    p_pm.add_argument(
+        "--by-name",
+        action="store_true",
+        help="无物料编号的主材表：按材料名称入库，不写品类价库（重黔站房口径）",
+    )
+    p_pm.add_argument("--sheet", default="主材表", help="--by-name 时的工作表名")
     _add_region_args(p_pm)
     p_pm.set_defaults(func=cmd_import_project_materials)
 
@@ -1226,12 +1441,20 @@ def main() -> None:
     p_fee.add_argument("--category", default="", help="工程类别：装饰装修/土建/安装/幕墙/市政")
     p_fee.add_argument("--tier", default="mid", help="档位：high/mid/low")
     p_fee.add_argument("--style", default="", help="项目风格：batch_fitout（批量精装 12%）")
+    p_fee.add_argument("--region", default="", help="地区口径：guangdong（安文费按人工费+机械费计取）")
+    p_fee.add_argument("--labor", type=float, default=0, help="人工费单价（广东口径安文费/利润基数）")
+    p_fee.add_argument("--machinery", type=float, default=0, help="机械费单价（广东口径安文费/利润基数）")
     p_fee.set_defaults(func=cmd_quote_fees)
 
     p_judge = sub.add_parser("judge", help="判断单项人材机（多源融合+置信度）")
     p_judge.add_argument("name", help="项目名称")
     p_judge.add_argument("--feature", default="", help="项目特征")
     p_judge.add_argument("--unit", required=True, help="单位")
+    p_judge.add_argument(
+        "--materials-ref",
+        default=None,
+        help="项目主材表引用键（如 chongqing_stations）；不填不套项目主材价",
+    )
     _add_region_args(p_judge)
     p_judge.set_defaults(func=cmd_judge)
 
@@ -1375,6 +1598,15 @@ def main() -> None:
     p_mr.add_argument("--min-projects", type=int, default=2, help="簇最小项目数（默认 2）")
     p_mr.add_argument("--city", default=None, help="只提炼指定城市")
     p_mr.set_defaults(func=cmd_extract_market_ref)
+
+    p_chat = sub.add_parser(
+        "chat-test",
+        help="测试自定义模型（config/ai_model.json + .env）：连通性/对话/工具调用",
+    )
+    p_chat.add_argument("--prompt", default=None, help="自定义对话 prompt")
+    p_chat.add_argument("--no-list", action="store_true", help="不打印 /v1/models 列表")
+    p_chat.add_argument("--no-tool", action="store_true", help="跳过工具调用测试")
+    p_chat.set_defaults(func=cmd_chat_test)
 
     p_sync = sub.add_parser("sync", help="桌面与手机端同步（清单校正）")
     sync_sub = p_sync.add_subparsers(dest="sync_action", required=True)

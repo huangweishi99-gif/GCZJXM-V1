@@ -42,6 +42,10 @@ class CorrectionIn(BaseModel):
     cost_unit_price: Optional[float] = None
     note: str = ""
     device_id: str = ""
+    city: str = ""
+    tier: str = ""
+    apply_to_same_spec: bool = False
+    feature_keyword: str = ""
 
 
 class JudgeIn(BaseModel):

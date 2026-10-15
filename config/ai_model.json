@@ -1,0 +1,11 @@
+{
+  "provider": "custom",
+  "base_url": "http://192.168.77.222:8787/v1",
+  "model_name": "grok-4.7",
+  "enable_tool_calls": true,
+  "timeout_seconds": 60,
+  "max_tokens": 4000,
+  "temperature": 0.1,
+  "api_key_env": "GROK_API_KEY",
+  "_comment": "自定义模型：grok-4.7 via OpenAI 兼容 API。API Key 走 env 变量（.env），不要把真实 key 写进本文件。enable_tool_calls=true 表示允许 function calling。"
+}

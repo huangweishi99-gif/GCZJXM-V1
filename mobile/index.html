@@ -334,6 +334,12 @@
         </div>
         <label>备注</label>
         <input id="fNote" placeholder="校正说明">
+        <label>规格关键词（勾选同名同价时必填，如 DN50、ST-02）</label>
+        <input id="fSpec" placeholder="留空则候选不含规格，启用前须人工补">
+        <label style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <input id="fSameSpec" type="checkbox" style="width:auto">
+          同名同单位也按此价（只生成未启用候选，不自动填价）
+        </label>
         <div style="margin-top:12px;display:flex;gap:8px">
           <button onclick="submitCorrection()">提交校正</button>
           <button class="secondary" onclick="reJudge()">重新组价</button>
@@ -345,6 +351,16 @@
       document.getElementById('editView').style.display = 'none';
       document.getElementById('listView').style.display = 'block';
       editingLine = null;
+    }
+
+    function projCity() {
+      const proj = (bundle.projects || []).find(p => p.id === currentProject);
+      return proj?.city || '';
+    }
+
+    function projTier() {
+      const proj = (bundle.projects || []).find(p => p.id === currentProject);
+      return proj?.tier || '';
     }
 
     async function submitCorrection() {
@@ -362,6 +378,10 @@
         machinery: num('fMach'),
         note: document.getElementById('fNote').value,
         device_id: navigator.userAgent.slice(0, 80),
+        city: projCity(),
+        tier: projTier(),
+        apply_to_same_spec: !!document.getElementById('fSameSpec')?.checked,
+        feature_keyword: (document.getElementById('fSpec')?.value || '').trim(),
       };
       await api('/api/corrections', { method: 'POST', body: JSON.stringify(body) });
       toast('已保存，待桌面导出');

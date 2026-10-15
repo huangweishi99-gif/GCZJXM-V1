@@ -33,6 +33,50 @@ def _get(row: Tuple[Any, ...], mapping: dict, key: str, alt: Optional[str] = Non
     return row[idx]
 
 
+def _is_amount_formula(v: Any, qty_idx: Optional[int], price_idx: Optional[int]) -> bool:
+    """单价列写成「=工程量列*单价列」时实际是合价，不能当综合单价。"""
+    if not isinstance(v, str) or not v.startswith("=") or qty_idx is None or price_idx is None:
+        return False
+    import re
+
+    cols = re.findall(r"([A-Za-z]+)\d+", v)
+    if len(cols) != 2:
+        return False
+    from openpyxl.utils import column_index_from_string
+
+    got = {column_index_from_string(c) - 1 for c in cols}
+    return got == {qty_idx, price_idx}
+
+
+def _is_sheet_ref(v: Any) -> bool:
+    """单价列写成「=其他表!单元格」时是跨表引用母行，不是本行报价。"""
+    return isinstance(v, str) and "!" in v and v.strip().startswith("=")
+
+
+def _is_other_row_ref(v: Any, excel_row: int) -> bool:
+    """单价列写成「=某列其他行」时是引用母行，不是本行报价。"""
+    if not isinstance(v, str):
+        return False
+    import re
+
+    m = re.fullmatch(r"=?\$?[A-Za-z]+\$?(\d+)", v.strip())
+    return bool(m) and int(m.group(1)) != excel_row
+
+
+def _is_cross_column_ref(v: Any, price_idx: Optional[int]) -> bool:
+    """单价列写成「=另一列」时是引用（如链到控制价），不是本行报价。"""
+    if not isinstance(v, str) or price_idx is None:
+        return False
+    import re
+
+    m = re.fullmatch(r"=?([A-Za-z]+)\d+", v.strip())
+    if not m:
+        return False
+    from openpyxl.utils import column_index_from_string
+
+    return column_index_from_string(m.group(1)) - 1 != price_idx
+
+
 def _cell_num(
     row: Tuple[Any, ...],
     mapping: dict,
@@ -131,7 +175,26 @@ def _parse_sheet(
                         cost_up = (left_l or 0) + (left_m or 0) + (left_h or 0)
         if cost_up is None or cost_up <= 0:
             cost_up = _component_cost(mm, loss, la, ma, mc)
-        listed_up = col("unit_price")
+        raw_up = _get(row, m, "unit_price")
+        up_idx = m.get("unit_price")
+        formula_up = None
+        if ws is not None and up_idx is not None:
+            formula_up = ws.cell(i + 1, up_idx + 1).value
+        # 成本单价列若是「=报价列」，说明本行没有自己的人材机拆分，只是引用母行报价
+        cost_idx = m.get("cost_unit_price")
+        formula_cost = None
+        if ws is not None and cost_idx is not None:
+            formula_cost = ws.cell(i + 1, cost_idx + 1).value
+        if (
+            _is_amount_formula(raw_up, m.get("quantity"), up_idx)
+            or _is_amount_formula(formula_up, m.get("quantity"), up_idx)
+            or _is_other_row_ref(formula_up, i + 1)
+            or _is_sheet_ref(formula_up)
+            or _is_cross_column_ref(formula_cost, cost_idx)
+        ):
+            listed_up = None
+        else:
+            listed_up = col("unit_price")
         # 仅在完全没有人材机明细时才退回综合单价；有明细时不把管理费/利润计入成本
         if (cost_up is None or cost_up <= 0) and listed_up and listed_up > 0:
             mgmt = col("management") or 0.0
@@ -237,9 +300,12 @@ def parse_workbook(path: str | Path) -> ParsedWorkbook:
         oxl = None
 
     for sn in xl.sheet_names:
-        if should_skip_sheet(sn) or _is_analysis_sheet(sn):
+        if _is_analysis_sheet(sn):
             continue
         df = pd.read_excel(xl, sheet_name=sn, header=None)
+        if should_skip_sheet(sn) and detect_sheet_layout(df, sn) is None:
+            # 表名命中跳过词但结构是完整清单（如「汇总表」含编码/名称/单位）时仍解析
+            continue
         ws = oxl[sn] if oxl and sn in oxl.sheetnames else None
         parsed, layout = _parse_sheet(df, sn, ws=ws)
         if layout:

@@ -73,6 +73,57 @@ def bump_revision(db_path: Optional[str | Path] = None) -> int:
         conn.close()
 
 
+def _append_candidate_rule(payload: Dict[str, Any]) -> Optional[Path]:
+    """同名同规格校正只生成未启用候选，不进自动填价。"""
+    if not payload.get("apply_to_same_spec"):
+        return None
+    from src.normalize.text import normalize_name, normalize_unit
+
+    name = normalize_name(payload.get("name") or "")
+    unit = normalize_unit(payload.get("unit") or "")
+    if len(name) < 2 or not unit:
+        return None
+    out = ROOT / "config" / "correction_rule_candidates.json"
+    rows: List[dict] = []
+    if out.exists():
+        try:
+            rows = json.loads(out.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            rows = []
+    if not isinstance(rows, list):
+        rows = []
+    rule_id = f"corr_{name[:24]}_{unit}"
+    rule = {
+        "id": rule_id,
+        "enabled": False,
+        "name_keywords": [name],
+        "units": [unit],
+        "feature_keywords": [payload["feature_keyword"]] if payload.get("feature_keyword") else [],
+        "require_feature_keywords": bool(payload.get("feature_keyword")),
+        "cities": [payload["city"]] if payload.get("city") else [],
+        "tiers": [payload["tier"]] if payload.get("tier") else [],
+        "material_main": payload.get("material_main"),
+        "material_aux": payload.get("material_aux"),
+        "labor": payload.get("labor"),
+        "machinery": payload.get("machinery"),
+        "material_loss_rate": payload.get("material_loss_rate") or 0,
+        "source_note": (
+            f"手机校正候选，未启用。项目 {payload.get('project_id')}，"
+            f"须 audit-judge 与 regression 无回归后再手工启用。"
+        ),
+    }
+    replaced = False
+    for i, old in enumerate(rows):
+        if old.get("id") == rule_id:
+            rows[i] = rule
+            replaced = True
+            break
+    if not replaced:
+        rows.append(rule)
+    out.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+    return out
+
+
 def save_correction(payload: Dict[str, Any], db_path: Optional[str | Path] = None) -> int:
     conn = get_connection(db_path)
     try:
@@ -102,6 +153,7 @@ def save_correction(payload: Dict[str, Any], db_path: Optional[str | Path] = Non
         )
         conn.commit()
         bump_revision(db_path)
+        _append_candidate_rule(payload)
         return int(cur.lastrowid)
     finally:
         conn.close()

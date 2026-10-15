@@ -422,25 +422,33 @@ def write_rate_cell(
     b: CostAnalysisBindings,
     *,
     rate_anchor_sheet: Optional[str] = None,
+    markup: float = 1.0,
 ) -> None:
     """按画像写第 1 行费率系数。
 
-    - 清单询 / 其中分解：每张表本地写系数（金标准）
+    markup 是定稿口径的综合系数（config/quote_styles.json）：
+    综合单价 = 成本单价 × markup。1.0 即成本即报价。
+
+    - 清单询：主材/人工/辅材三列同乘该系数（定稿里管理及利润取费列另计）
+    - 其中分解：系数落在成本单价列，作为「其他费」比例；
+      1.0 时该列为 0，综合单价退回人工费+材料费之和
     - 国标简表：仅成本单价列；非首表引用首表费用率
     """
+    factor = float(markup or 1.0)
     if b.profile == PROFILE_HAIDE:
-        _rate_formula(ws, b.material_main, 1, None)
-        _rate_formula(ws, b.labor, 1, None)
-        _rate_formula(ws, b.material_aux, 1, None)
+        _rate_formula(ws, b.material_main, factor, None)
+        _rate_formula(ws, b.labor, factor, None)
+        _rate_formula(ws, b.material_aux, factor, None)
         return
     if b.profile == PROFILE_BREAKDOWN:
-        _rate_formula(ws, b.cost_unit_price, 0, None)
+        extra = round(factor - 1.0, 4)
+        _rate_formula(ws, b.cost_unit_price, extra if extra > 0 else 0, None)
         _rate_formula(ws, b.material_main, 1, None)
         _rate_formula(ws, b.labor, 1, None)
         _rate_formula(ws, b.material_aux, 1, None)
         return
-    # national_quote：仅成本单价列费率 1，跨表引用首表
-    _rate_formula(ws, b.cost_unit_price, 1, rate_anchor_sheet)
+    # national_quote：成本单价列即综合系数，跨表引用首表
+    _rate_formula(ws, b.cost_unit_price, factor, rate_anchor_sheet)
 
 
 def write_cost_formulas(ws, row: int, b: CostAnalysisBindings) -> None:

@@ -199,6 +199,18 @@ def lookup_curtain_box_components(
     # 3. 石膏板顶窗帘盒：人工51.53元/m（record_id=3545等）
     # 4. 复杂窗帘盒（钢结构/钢板基层）：原主材39.02/人工117.05 已按多数实值校准为 131.67/55/8.5
     
+    # 中山「窗帘盒(200+200mm)」：名称用加号，与珠海「200mm*200mm」双层板不是同一做法
+    # （全库 9 条同值 主材22/人工15/辅材2.5，含 230+200、300+200）。
+    # 必须先于下方 *200 双层板分支，否则 200+200 会被归一化后误套 0/55/29.67。
+    if re.search(r"\d+\s*\+\s*\d+", nn):
+        return {
+            "material_main": 22.0,
+            "material_loss_rate": 0.0,
+            "material_aux": 2.5,
+            "labor": 15.0,
+            "machinery": 0.0,
+        }, "[实际样本]窗帘盒(加号规格·方形石膏板) 主材22/人工15元/m"
+
     # 先检查标准规格（100*200 / 200*200 双层板+轻钢龙骨，简单定价）
     # 实际样本：100*200 与 200*200 同价 main=0,aux=29.67,labor=55,mach=29.67（record_id=9782等）
     if re.search(r"(?:100|200)\s*[*×xX]\s*200|200mm.*200mm|100mm.*200mm", nn):
@@ -465,6 +477,49 @@ def lookup_sanitary_accessory_extra_components(
     }, "[市场参考]卫浴配件"
 
 
+def lookup_public_tile_components(
+    name: str, feature: str, unit: str
+) -> Tuple[Optional[dict], str]:
+    """地铁/车站等公装块料：湿贴含砂浆垫层，不套户型精装 55/48。
+
+    800×800 防滑砖约 55 元/㎡；盲道砖约 80。垫层按厚度进辅材，
+    上翻、防水另列，不重复计入。
+    """
+    nn = normalize_name(name)
+    text = normalize_name(f"{name}\n{feature}")
+    unit_n = normalize_unit(unit)
+    if unit_n not in ("m2", "㎡", "m", "米"):
+        return None, ""
+    if not re.search(r"站厅|站台|地铁|候车|出入口|设备区|公共区", text):
+        return None, ""
+    if not re.search(r"地砖|块料|盲道", nn):
+        return None, ""
+
+    bed = 20.0
+    m = re.search(r"(\d+(?:\.\d+)?)\s*mm", text)
+    if m:
+        thick = float(m.group(1))
+        if 10 <= thick <= 150:
+            bed = round(thick * 0.85, 1)
+    is_tactile = bool(re.search(r"盲道", nn))
+    if unit_n in ("m", "米"):
+        # 100mm 高瓷砖踢脚：砖约 12 元/m，水泥砂浆粘贴
+        return {
+            "material_main": 18.0 if is_tactile else 12.0,
+            "material_loss_rate": 0.03,
+            "material_aux": 3.5,
+            "labor": 16.0 if is_tactile else 18.0,
+            "machinery": 0.0,
+        }, "[市场参考]公装瓷砖踢脚"
+    return {
+        "material_main": 80.0 if is_tactile else 55.0,
+        "material_loss_rate": 0.03,
+        "material_aux": bed,
+        "labor": 68.0 if is_tactile else 65.0,
+        "machinery": 2.5,
+    }, "[市场参考]公装地砖湿贴(含砂浆垫层)"
+
+
 def lookup_tile_skirting_components(
     name: str, feature: str, unit: str
 ) -> Tuple[Optional[dict], str]:
@@ -490,6 +545,16 @@ def lookup_tile_skirting_components(
             "machinery": 0.0,
         }, "[市场参考]块料踢脚人工补项 按面积"
     if unit_n in ("m", "米"):
+        text = normalize_name(f"{name}\n{feature}")
+        # 特征写明瓷砖规格时砖是主材，不能只给人工
+        if re.search(r"瓷砖|地砖", text):
+            return {
+                "material_main": 12.0,
+                "material_loss_rate": 0.03,
+                "material_aux": 3.5,
+                "labor": 18.0,
+                "machinery": 0.0,
+            }, "[市场参考]瓷砖踢脚(含砖)"
         return {
             "material_main": 0.0,
             "material_loss_rate": 0.0,
@@ -797,7 +862,16 @@ def lookup_finish_exact_components(
         }, "[实际样本]电梯门门头上部"
     # MT-02喷砂香槟金系列（不同类型定价不同）
     # 实际样本：电梯内嵌收边 主材380, 人工70, 辅材87, 机械0；门套 主材354.82, 人工88.7, 辅材39.42, 机械9.86；不锈钢门 主材706.68, 人工176.67, 辅材78.52, 机械19.63
+    # 中山窗套/门套（云湾MT-01/02/05）实_主材200,人工68,辅材19,机0（与 market_reference.stainless_frame_zs 一致）
     if unit_n in ("m2", "㎡") and re.search(r"MT-02|喷砂.*香槟金", text):
+        if re.search(r"窗套", text):
+            return {
+                "material_main": 200.0,
+                "material_loss_rate": 0.0,
+                "material_aux": 19.0,
+                "labor": 68.0,
+                "machinery": 0.0,
+            }, "[实际样本]MT-02喷砂香槟金窗套(中山云湾)"
         if re.search(r"电梯.*内嵌.*收边|内嵌收边", text):
             return {
                 "material_main": 380.0,
@@ -860,6 +934,14 @@ def lookup_finish_exact_components(
                 "labor": 18.0,
                 "machinery": 0.5,
             }, "[实际样本]1.2mm JS防水层"
+        elif re.search(r"聚氨酯", nn) and re.search(r"2\s*mm", text) and not re.search(r"上翻|翻边|立面", nn):
+            return {
+                "material_main": 32.0,
+                "material_loss_rate": 0.0,
+                "material_aux": 8.0,
+                "labor": 28.0,
+                "machinery": 0.0,
+            }, "[市场参考]2mm聚氨酯防水(单层,上翻另列)"
         elif re.search(r"2mm|3mm|4mm", nn) or re.search(r"JS防水", nn):
             return {
                 "material_main": 30.0,
@@ -869,6 +951,16 @@ def lookup_finish_exact_components(
                 "machinery": 0.5,
             }, "[实际样本]2mm JS防水层"
         elif re.search(r"立面|聚氨酯", nn):
+            # 2mm 单层聚氨酯（上翻另列）与立面含上翻不是同一口径：
+            # 单层 2mm 主材32/人工28；立面含翻边才走 35/19.85。
+            if re.search(r"2\s*mm", text) and not re.search(r"上翻|翻边|立面", nn):
+                return {
+                    "material_main": 32.0,
+                    "material_loss_rate": 0.0,
+                    "material_aux": 8.0,
+                    "labor": 28.0,
+                    "machinery": 0.0,
+                }, "[市场参考]2mm聚氨酯防水(单层,上翻另列)"
             return {
                 "material_main": 35.0,
                 "material_loss_rate": 0.0,
@@ -885,6 +977,14 @@ def lookup_finish_exact_components(
                 "labor": 18.0,
                 "machinery": 0.5,
             }, "[实际样本]1.2mm JS防水层(特征)"
+        elif re.search(r"聚氨酯", text) and re.search(r"2\s*mm", text) and not re.search(r"上翻|翻边", text):
+            return {
+                "material_main": 32.0,
+                "material_loss_rate": 0.0,
+                "material_aux": 8.0,
+                "labor": 28.0,
+                "machinery": 0.0,
+            }, "[市场参考]2mm聚氨酯防水(单层,上翻另列)"
         elif re.search(r"JS防水|2mm.*防水", text):
             return {
                 "material_main": 30.0,
@@ -893,7 +993,15 @@ def lookup_finish_exact_components(
                 "labor": 42.0,
                 "machinery": 0.5,
             }, "[实际样本]2mm JS防水层(特征)"
-        elif re.search(r"立面.*防水|聚氨酯.*防水", text):
+        elif re.search(r"聚氨酯.*防水|防水.*聚氨酯", text):
+            if re.search(r"2\s*mm", text) and not re.search(r"上翻|翻边", text):
+                return {
+                    "material_main": 32.0,
+                    "material_loss_rate": 0.0,
+                    "material_aux": 8.0,
+                    "labor": 28.0,
+                    "machinery": 0.0,
+                }, "[市场参考]2mm聚氨酯防水(单层,上翻另列)"
             return {
                 "material_main": 35.0,
                 "material_loss_rate": 0.0,
@@ -1185,6 +1293,7 @@ def lookup_special_line_components(
         lookup_epoxy_floor_skirting_components,
         lookup_haide_basement_pt_paint_components,
         lookup_parking_line_marking_components,
+        lookup_public_tile_components,
         lookup_tile_skirting_components,
         lookup_hand_painted_mural_components,
         lookup_review_priority_small_item_components,

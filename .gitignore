@@ -9,6 +9,8 @@ venv/
 
 # 本地知识库与导出（可 relearn-all / tender --export 重新生成）
 data/cost_pricing.db
+# 第三方参考仓只保留源码引用，不把克隆仓提交进来
+data/vendor/
 data/exports/*.xlsx
 data/exports/**/*.xlsx
 
@@ -45,3 +47,10 @@ data/exports/*.json
 
 # audit_tools.py drill 的钻取输出（本地分析产物）
 data/exports/*.txt
+
+# data/tmp 临时分析脚本（仅清下划线前缀；备份 xls/xlsx/扫描/csv 资料保留）
+data/tmp/_*
+data/tmp/_tmp_*
+
+# 探测脚本根目录
+_tmp_*.py

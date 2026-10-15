@@ -9,6 +9,8 @@
 5. 工程量：缺失/为 0/为负（废标雷区）
 
 输出：按 致命/警告/提示 分级报告，供 `validate-boq` 命令使用。
+
+特征必查与同类单价离散来自 jayden-lg/costing-master（MIT），只标疑似、不改清单。
 """
 from __future__ import annotations
 
@@ -16,6 +18,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
+from src.export.boq_feature_rules import collect_feature_gaps, price_dispersion
 from src.ingest.parser import parse_workbook
 from src.ingest.line_types import cell_str
 
@@ -136,10 +139,73 @@ def validate_boq(path: str) -> BoqValidationReport:
             report.valid_lines += 1
         report.issues.extend(line_issues)
 
+    _append_feature_checks(report, wb.lines)
+
     # 排序：fatal 优先
     level_order = {"fatal": 0, "warning": 1, "info": 2}
     report.issues.sort(key=lambda i: level_order.get(i.level, 3))
     return report
+
+
+def _append_feature_checks(report: BoqValidationReport, lines: List[Any]) -> None:
+    """特征缺字段只提示；同类单价 CV>30% 才警告。"""
+    for gap in collect_feature_gaps(lines):
+        report.issues.append(BoqIssue(
+            "info", "feature", gap.seq, gap.name,
+            f"疑似缺{gap.trade}特征字段：{'、'.join(gap.missing)}（来源 costing-master MIT，需人工确认）",
+        ))
+    for row in price_dispersion(lines):
+        seqs = [str(s) for s in row["seqs"] if str(s)]
+        message = (
+            f"同类项 {row['count']} 条，单价 {row['min']:.2f}~{row['max']:.2f}，"
+            f"变异系数 {float(row['cv']):.0%}＞30%，疑似特征差异未进单价"
+        )
+        # 保留汇总行给体检报告，同时拆到各序号，交付复核才能对上具体行。
+        report.issues.append(BoqIssue(
+            "warning", "price", "、".join(seqs[:6]), str(row["name"]), message,
+        ))
+        for seq in seqs:
+            report.issues.append(BoqIssue(
+                "warning", "price", seq, str(row["name"]), message,
+            ))
+
+
+# 致命项不自动填价。编码缺失/非法只警告：装修清单常无 12 位编码，不能因此整表停填。
+_BLOCK_AUTO_FILL = {
+    ("fatal", "name"),
+    ("fatal", "unit"),
+    ("fatal", "quantity"),
+}
+
+
+def gate_for_line(report: BoqValidationReport, seq: str, name: str) -> tuple[bool, str]:
+    """返回 (是否禁止自动填价, 写入复核摘要的原因)。"""
+    name_key = (name or "").strip() or "(无名)"
+    seq_key = str(seq or "")
+    hits = [
+        i for i in report.issues
+        if (i.level, i.kind) in _BLOCK_AUTO_FILL
+        and str(i.seq or "") == seq_key
+        and (i.name or "") == name_key
+    ]
+    if not hits:
+        return False, ""
+    return True, "；".join(h.message for h in hits)
+
+
+def warning_notes_for_line(report: BoqValidationReport, seq: str, name: str) -> str:
+    """非致命问题只提示，不拦截填价。"""
+    name_key = (name or "").strip() or "(无名)"
+    seq_key = str(seq or "")
+    hits = [
+        i.message for i in report.issues
+        if i.level == "warning"
+        and str(i.seq or "") == seq_key
+        and (i.name or "") == name_key
+    ]
+    if not hits:
+        return ""
+    return "体检警告：" + "；".join(hits[:3])
 
 
 def format_report(report: BoqValidationReport) -> str:

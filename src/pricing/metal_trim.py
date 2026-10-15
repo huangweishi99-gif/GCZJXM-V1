@@ -189,6 +189,32 @@ def lookup_metal_trim_price(
                 "[木踢脚线] 实际样本校准",
             )
     
+    # 铝合金装饰线条按截面单列（深圳幕墙样例 4 条各一档，无展开面）。
+    # 不走下方泛化 28/10 死值，否则 30*30 被判成 28/10。
+    if "铝合金装饰线条" in text:
+        section = re.search(r"(\d+)\s*[*×xX]\s*(\d+)\s*mm", text)
+        if section:
+            a, b = int(section.group(1)), int(section.group(2))
+            key = tuple(sorted((a, b)))
+            alu_rates = {
+                (20, 20): 12.2,
+                (20, 50): 20.42,
+                (30, 30): 18.2,
+                (30, 50): 23.94,
+            }
+            mat = alu_rates.get(key)
+            if mat is not None:
+                return (
+                    {
+                        "material_main": mat,
+                        "material_aux": 3.5,
+                        "labor": 25.0,
+                        "machinery": 0.0,
+                        "material_loss_rate": 0.02,
+                    },
+                    f"[铝合金装饰线条{a}*{b}mm] 实际样本校准",
+                )
+
     unfold = parse_unfold_mm(name, feature)
     if unfold is not None:
         samples: List[Tuple[float, dict]] = []

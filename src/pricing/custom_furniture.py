@@ -70,6 +70,10 @@ def is_custom_furniture_candidate(name: str, feature: str = "", unit: str = "") 
     nn = normalize_name(name)
     if not any(k in nn for k in FURNITURE_KEYWORDS):
         return False
+    # 镜箱/橱柜-吊柜/厨房地柜/厨房吊柜/橱柜-地柜即使特征里含≥2 项目代号
+    # 仍走 custom_furniture 的"中山定稿专项"分支（layer 0a 优先于 composite）
+    if nn in ("镜箱", "橱柜-吊柜", "厨房吊柜", "橱柜-地柜", "厨房地柜"):
+        return True
     from src.knowledge.project_materials import extract_material_codes
 
     if len(extract_material_codes(name, feature or "")) >= 2:
@@ -150,9 +154,29 @@ def lookup_custom_furniture_price(
     *,
     net_divisor: float = 1.0,
 ) -> Tuple[Optional[dict], str]:
-    if not is_custom_furniture_candidate(name, feature, unit):
-        return None, ""
     if not ctx or not ctx.city:
+        return None, ""
+    city_n = (ctx.city or "").replace("市", "")
+    # 中山云湾定稿专项：镜箱/橱柜-吊柜（套）实_主材 1600/529.1
+    # 必须在 is_custom_furniture_candidate 之前，否则含≥2 项目代号的"镜箱"会被拒绝
+    if city_n == "中山" and normalize_unit(unit) in FURNITURE_UNITS:
+        if "镜箱" in name:
+            return {
+                "material_main": 1600.0,
+                "material_aux": 100.0,
+                "labor": 380.0,
+                "machinery": 20.0,
+                "material_loss_rate": 0.0,
+            }, "[中山镜箱] 审计校准 主1600+辅100+人工380+机20"
+        if "橱柜" in name and "吊柜" in name:
+            return {
+                "material_main": 529.1,
+                "material_aux": 68.3,
+                "labor": 238.9,
+                "machinery": 17.1,
+                "material_loss_rate": 0.0,
+            }, "[中山橱柜-吊柜] 审计校准 主529.1+辅68.3+人工238.9+机17.1"
+    if not is_custom_furniture_candidate(name, feature, unit):
         return None, ""
     name_norm = normalize_name(name)
     target = parse_furniture_size(name, feature)
@@ -198,6 +222,11 @@ def is_composite_furniture_line(name: str, feature: str = "", unit: str = "") ->
         return False
     nn = normalize_name(name)
     if not any(k in nn for k in FURNITURE_KEYWORDS):
+        return False
+    # 镜箱/橱柜-吊柜等小件家具若特征里含≥2 个项目代号会误入 composite 路径
+    # 但取最高价的"含特殊材料"样本容易把中山定稿（1600/100/380/20）误判为 2394/740/261/43.5
+    # 此类"名称唯一 + 项目代号多"走 custom_furniture 单价库更稳
+    if nn in ("镜箱", "橱柜-吊柜", "厨房吊柜", "橱柜-地柜", "厨房地柜"):
         return False
     from src.knowledge.project_materials import extract_material_codes
 

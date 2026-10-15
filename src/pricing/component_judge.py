@@ -60,6 +60,7 @@ class ComponentJudgment:
     notes: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     auto_fill_ok: bool = False
+    quota_hint: str = ""
 
     def as_components(self) -> dict:
         return {
@@ -87,6 +88,8 @@ def judgment_risk_tags(j: ComponentJudgment, *, name: str = "", feature: str = "
         tags.append("弱历史匹配")
     if j.source == "market_reference":
         tags.append("仅市场参考")
+    if j.source == "quota_suggestion" or j.quota_hint:
+        tags.append("定额仅建议")
     if j.source in ("material_plus_template", "craft_profile"):
         tags.append("模板拆分需复核")
     if j.confidence < 0.75:
@@ -111,6 +114,7 @@ def judgment_explanation(j: ComponentJudgment) -> str:
         "line_match": "历史整项匹配",
         "line_match_weak": "弱历史匹配",
         "market_reference": "市场参考价",
+        "quota_suggestion": "定额建议（未入价）",
         "project_material_code": "项目主材编号价",
         "mep_install_profile": "机电专项价型",
         "special_line_price": "特殊清单/零散项规则",
@@ -170,6 +174,49 @@ def _allocate_by_craft_template(total: float, craft: CraftMatch) -> dict:
 
 def _components_usable(comps: Mapping[str, Any]) -> bool:
     return components_usable(comps)
+
+
+def _median(vals: List[float]) -> float:
+    xs = sorted(float(v) for v in vals)
+    n = len(xs)
+    if n == 0:
+        return 0.0
+    mid = n // 2
+    if n % 2:
+        return xs[mid]
+    return (xs[mid - 1] + xs[mid]) / 2
+
+
+def _same_name_hist(
+    repo: KnowledgeRepository,
+    name: str,
+    unit: str,
+    ctx: PricingContext,
+) -> Optional[dict]:
+    """同名同单位的同城历史取中位，避免一条高辅材样本盖过另一条。"""
+    key = normalize_name(name)
+    un = normalize_unit(unit)
+    if not key:
+        return None
+    conn = repo.conn()
+    try:
+        rows = conn.execute(
+            """SELECT f.material_aux, f.labor, f.machinery
+               FROM line_price_facts f
+               JOIN standard_items s ON s.id = f.standard_item_id
+               WHERE s.name_norm=? AND s.unit_norm=? AND f.city=? AND f.price_tier=?
+                 AND f.sample_count>0""",
+            (key, un, ctx.city or "", ctx.price_tier or "mid"),
+        ).fetchall()
+    finally:
+        conn.close()
+    if not rows:
+        return None
+    return {
+        "material_aux": _median([r["material_aux"] for r in rows]),
+        "labor": _median([r["labor"] for r in rows]),
+        "machinery": _median([r["machinery"] for r in rows]),
+    }
 
 
 def _line_stored_total(cand: dict, repo: KnowledgeRepository, ctx: Optional[PricingContext]) -> float:
@@ -384,7 +431,7 @@ def _auto_fill_review_guard(
     # line_match核心OK=100%，放宽confidence阈值到0.76
     if result.source == "line_match" and result.confidence < 0.76:
         reasons.append("低于自动阈值的历史整项需人工确认")
-    if result.source == "mep_install_profile" and re.search(r"冷媒铜管|防火帆布软接", text):
+    if result.source == "mep_install_profile" and re.search(r"冷媒铜管|铜管|防火帆布软接", text):
         reasons.append("冷媒/软接专项分项波动大，需人工确认")
     # special_line_price灯槽：核心OK=100%，置信度≥0.75时允许auto_fill
     if result.source == "special_line_price" and re.search(r"灯槽", text):
@@ -412,10 +459,27 @@ def _auto_fill_review_guard(
     return result
 
 
+def _fill_missing_loss_rate(
+    result: ComponentJudgment, name: str, feature: str
+) -> None:
+    """损耗率为空时按定稿习惯补档，已有损耗一律不动。"""
+    if result.material_main <= 0 or result.material_loss_rate > 0:
+        return
+    from src.pricing.quote_style import suggest_loss_rate
+
+    rate = suggest_loss_rate(name, feature)
+    if not rate:
+        return
+    result.material_loss_rate = rate
+    result.cost_unit_price = _component_total(result.as_components())
+    result.notes.append(f"[损耗档]定稿习惯 {rate:.0%}")
+
+
 def _finalize_for_output(
     result: ComponentJudgment, name: str, feature: str, unit: str = ""
 ) -> ComponentJudgment:
     result = _auto_fill_review_guard(_finalize_judgment(result, name, feature), name, feature)
+    _fill_missing_loss_rate(result, name, feature)
     _apply_price_sanity(result, name, feature, unit)
     return result
 
@@ -1183,7 +1247,63 @@ def judge_line_components(
 
     # --- 层 0：项目主材编号表（名称/特征含 PT-01、ST-04 → 售楼处主材料价）---
     from src.knowledge.project_materials import extract_material_codes
-    from src.pricing.project_material_lookup import lookup_project_material_components
+    from src.pricing.project_material_lookup import (
+        lookup_project_material_components,
+        lookup_named_material_main,
+    )
+
+    # 无编号主材表（重黔站房）：仅绑定本项目时按名称取主材价，不拆人工辅材
+    if ctx and ctx.project_materials_ref and not extract_material_codes(name, feature):
+        named_comps, named_note = lookup_named_material_main(
+            name, feature, unit, ctx=ctx, db_path=repo.db_path
+        )
+        if named_comps and _components_usable(named_comps):
+            # 表价只补主材。已有同城历史人工/辅材则留下，禁止把综合单价主材清成 0。
+            hist = None
+            if ctx:
+                from src.match.engine import best_match
+
+                conn = repo.conn()
+                try:
+                    pool = engine._load_pool(conn)
+                finally:
+                    conn.close()
+                cand, _level = best_match(
+                    name, feature, unit, pool, th=engine.thresholds, mode=engine.mode
+                )
+                same_name = bool(
+                    cand
+                    and (
+                        cand.name_score >= 0.85
+                        or normalize_name(cand.name_norm) == normalize_name(name)
+                    )
+                )
+                if same_name:
+                    hist = _same_name_hist(repo, name, unit, ctx) or (
+                        repo.get_line_fact(cand.standard_item_id, ctx)[0]
+                    )
+            if hist and (
+                float(hist.get("labor") or 0) > 0 or float(hist.get("material_aux") or 0) > 0
+            ):
+                result.material_main = float(named_comps.get("material_main") or 0)
+                result.material_loss_rate = float(named_comps.get("material_loss_rate") or 0)
+                result.material_aux = float(hist.get("material_aux") or 0)
+                result.labor = float(hist.get("labor") or 0)
+                result.machinery = float(hist.get("machinery") or 0)
+                result.cost_unit_price = _component_total(result.as_components())
+                result.confidence = 0.9
+                result.field_confidence = {
+                    "material_main": 0.92,
+                    "material_aux": 0.85,
+                    "labor": 0.85,
+                    "machinery": 0.8,
+                }
+                result.source = "project_material_code"
+                result.notes.append(named_note)
+                result.notes.append("主材取项目表价，人工/辅材沿用同城历史")
+                result.auto_fill_ok = _auto(result.confidence >= auto_min)
+                result.warnings = _validate_expectations(craft, result.as_components(), role)
+                return _done(result)
 
     if extract_material_codes(name, feature):
         # 特殊项目：石材干挂、石材暗门、岩板暗门、除尘地毯、人造石等是综合单价（含安装）
@@ -1276,7 +1396,7 @@ def judge_line_components(
     # 特殊情况：WD-04木饰面等项目编号但实际是市场参考价的项目
     # 数据库中没有WD-04，但market_reference中有wall_wood_veneer_wd04规则
     # 石材干挂、石材暗门、岩板暗门等是综合单价（含安装），不是单纯材料价
-    is_special_project_code = re.search(r"木饰面|石材干挂|石材暗门|岩板暗门|除尘地毯|人造石", text) and has_project_code
+    is_special_project_code = re.search(r"木饰面|石材干挂|石材暗门|岩板暗门|除尘地毯|人造石|门槛石|过门石|石材门槛", text) and has_project_code
     
     # --- 层 0f4：截面可解析的电力电缆（避免跨规格历史误套）---
     # 优先于is_special_item的market_reference，因为电缆有专门的定价逻辑
@@ -1895,31 +2015,21 @@ def judge_line_components(
             elif "㎡" in unit_norm or "m2" in unit_norm:
                 min_price, max_price = 5, 500
             
-            if total < min_price or total > max_price:
-                result.notes.append(
-                    f"[定额标准] 跳过不合理价格 {total:.2f}（{min_price}-{max_price}）"
+            # 定额库目前是样例消耗量，模糊命中不能当正式成本。
+            # 只记建议，价格留给后续历史/市场参考；没有更好来源时保持未组价。
+            hint = (
+                f"[定额建议·未入价] {quota_info.get('quota_code', '')}"
+                f"「{quota_info.get('name', '')}」"
+                f"匹配{match_score:.0f}% 参考{total:.2f}元/{quota_info.get('unit') or unit}"
+                + (
+                    f"（超出{min_price}-{max_price}，仅供核对）"
+                    if total < min_price or total > max_price
+                    else "（样例定额，须人工套正式消耗量后再入价）"
                 )
-            else:
-                result.notes.append(
-                    f"[定额标准] {quota_info['quota_code']}「{quota_info['name']}」"
-                    f"（匹配度:{match_score:.1f}%，单位:{quota_info['unit']}）"
-                )
-                result.material_main = float(quota_cost.get("material_main") or 0)
-                result.material_aux = float(quota_cost.get("material_aux") or 0)
-                result.labor = float(quota_cost.get("labor") or 0)
-                result.machinery = float(quota_cost.get("machinery") or 0)
-                result.material_loss_rate = 0.02
-                result.cost_unit_price = _component_total(result.as_components())
-                # 置信度基于匹配分数，匹配度越高置信度越高
-                result.confidence = min(0.75, match_score / 100 * 0.7)
-                result.field_confidence = {
-                    "material_main": min(0.75, match_score / 100 * 0.7),
-                    "material_aux": min(0.75, match_score / 100 * 0.6),
-                    "labor": min(0.75, match_score / 100 * 0.7),
-                    "machinery": min(0.75, match_score / 100 * 0.5),
-                }
-                result.source = "quota_standard"
-                result.auto_fill_ok = _auto(match_score >= 60 and result.confidence >= auto_min)
+            )
+            result.quota_hint = hint
+            result.notes.append(hint)
+            result.warnings.append("定额仅建议，未写入成本")
 
     # --- 层 5：仅整项弱匹配或模板提示 ---
     layer5_reject = (
@@ -2138,6 +2248,12 @@ def judge_to_reference_tuple(
         return None, "；".join(note_parts)
 
     if not _components_usable(comps):
+        return None, "；".join(note_parts)
+
+    # 样例定额只作建议。即使后续来源算出价格，老交付也不把定额价当正式成本。
+    if judgment.source == "quota_standard" or (
+        judgment.quota_hint and judgment.source in ("", "unresolved", "quota_suggestion")
+    ):
         return None, "；".join(note_parts)
 
     if judgment.auto_fill_ok or judgment.confidence >= review_min:

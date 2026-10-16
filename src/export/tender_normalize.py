@@ -126,10 +126,11 @@ def parse_tender(path: str | Path) -> TenderSheet:
         if v.startswith("工程名称"):
             result.project_name = v.replace("工程名称", "", 1).lstrip(":：").strip()
             break
-    if "-" in result.project_name:
-        result.short_name = result.project_name.rsplit("-", 1)[-1].strip()
-    elif "：" in result.project_name:
-        result.short_name = result.project_name.rsplit("：", 1)[-1].strip()
+    # 工程名称分隔符可能是连字符(-)、破折号(—/–)或全角冒号(：)，取最后一段为简称
+    for sep in ("-", "—", "–", "："):
+        if sep in result.project_name:
+            result.short_name = result.project_name.rsplit(sep, 1)[-1].strip()
+            break
     else:
         result.short_name = result.project_name
 

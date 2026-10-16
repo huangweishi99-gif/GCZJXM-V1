@@ -282,12 +282,32 @@ def build_xls(data: TenderSheet, out_path: str | Path,
         sec_sample = sec_sample or first_data
         item_sample = item_sample or (first_data + 1 if want_data_rows > 1 else first_data)
 
+        # 样本行格式先备份到远处行，循环里只从备份复制。
+        # 不能直接用 sec_sample/item_sample 当 Copy 源：目标行可能与样本行重合
+        # （如数据区前两行都是分部时，第二轮就会把分部格式贴到 item_sample 行，
+        #   此后所有清单项行继承被污染的样本，A/B 列丢失 @ 文本格式，
+        #   项目编码 011102003001 被转成浮点 11102003001.0、前导零丢失）。
+        FAR_SEC, FAR_ITEM = 600, 601
+        ws.Rows(sec_sample).Copy()
+        ws.Rows(FAR_SEC).PasteSpecial(Paste=-4122)
+        ws.Rows(item_sample).Copy()
+        ws.Rows(FAR_ITEM).PasteSpecial(Paste=-4122)
+        app.CutCopyMode = False
+
         for idx, row in enumerate(data.rows):
             r = first_data + idx
-            # 按角色贴格式
-            src_sample = sec_sample if isinstance(row, SectionRow) else item_sample
-            if src_sample != r:
-                ws.Rows(src_sample).Copy()
+            # 按角色从干净备份贴格式。
+            # 只有当「模板原角色 == 本次写入角色」时才跳过：
+            # r==sec_sample 写分部、r==item_sample 写清单项 → 格式本就正确，不贴；
+            # 其余（含样本行角色被改）一律从备份贴，防止模板残留格式错位。
+            if isinstance(row, SectionRow):
+                skip = (r == sec_sample)
+                far = FAR_SEC
+            else:
+                skip = (r == item_sample)
+                far = FAR_ITEM
+            if not skip:
+                ws.Rows(far).Copy()
                 ws.Rows(r).PasteSpecial(Paste=-4122)
                 app.CutCopyMode = False
             # 清掉该行旧值（模板残留数据）
@@ -314,6 +334,9 @@ def build_xls(data: TenderSheet, out_path: str | Path,
                 ws.Cells(r, _COL["cost_total"]).Formula = f"=K{r}*F{r}"
                 ws.Cells(r, _COL["diff_unit"]).Formula = f"=K{r}-G{r}"
                 ws.Cells(r, _COL["diff_total"]).Formula = f"=Q{r}-H{r}"
+
+        # 清理样本备份行（必须在汇总区/打印区域设置前，否则污染 UsedRange）
+        ws.Range(f"{FAR_SEC}:{FAR_ITEM}").Delete()
 
         # ---------- 汇总区 ----------
         ws.Range(ws.Cells(summary_first, 1), ws.Cells(last_row, _COL["diff_total"])).ClearContents()

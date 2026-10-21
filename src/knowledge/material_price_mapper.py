@@ -44,6 +44,8 @@ _SPEC_PATTERNS = {
 # 砂浆档位 OCR 粘连修复：M103=M10粘"3"、M巧5.303=M20粘连（定额页脚码混入）。
 # 档位>50 不可能是真实强度（装饰砂浆常见 M5~M30），截前两位。
 _MORTAR_GARBLED = re.compile(r"M\s*(\d{3,})")
+# 档位坏形 MI()=M10（I→1、()→0，2026-10-21 实证 230 行：湿拌砂浆MI()/螺栓MI()mm×20mm套）
+_MI_GARBLED = re.compile(r"M\s*I\s*\(\s*\)")
 
 
 def _normalize(raw: str) -> str:
@@ -51,6 +53,7 @@ def _normalize(raw: str) -> str:
     s = unicodedata.normalize("NFKC", raw or "")
     for a, b in _CHAR_FIX.items():
         s = s.replace(a, b)
+    s = _MI_GARBLED.sub("M10", s)  # 必须在剥括号/单位之前
     s = _PAREN_NOISE.sub("", s)
     s = re.sub(r"\s+", "", s)
     # 循环剥离尾部单位词（玻璃胶300mL支 → 玻璃胶300）

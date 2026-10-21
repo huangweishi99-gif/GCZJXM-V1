@@ -271,6 +271,16 @@
       "tag_keys": []
     },
     {
+      "id": "hvac_equipment",
+      "trade": "mep",
+      "label": "暖通设备",
+      "keywords": ["空调器", "风机盘管", "新风机组", "空调机组", "风柜", "换气扇", "风机", "排风扇", "风幕"],
+      "units": ["台", "套"],
+      "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
+      "template_share": {"main": 0.6, "aux": 0.12, "labor": 0.26, "machinery": 0.02},
+      "tag_keys": []
+    },
+    {
       "id": "site_measure",
       "trade": "decoration",
       "label": "措施零星",
@@ -319,8 +329,8 @@
       "trade": "mep",
       "label": "通风管道",
       "priority": 96,
-      "keywords": ["排风管道", "排风管", "排风扇", "通风管道", "静压箱", "防火帆布软接", "风机"],
-      "units": ["m", "㎡", "m2", "台"],
+      "keywords": ["排风管道", "排风管", "通风管道", "静压箱", "防火帆布软接", "风管", "复合风管", "玻镁风管", "酚醛风管"],
+      "units": ["m", "㎡", "m2"],
       "expects": {"material_main": 1, "material_aux": 1, "labor": 1, "machinery": 0},
       "template_share": {"main": 0.55, "aux": 0.1, "labor": 0.33, "machinery": 0.02},
       "tag_keys": []

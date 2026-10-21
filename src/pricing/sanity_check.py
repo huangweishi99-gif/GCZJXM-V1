@@ -94,6 +94,9 @@ PRICE_BANDS: Dict[str, Tuple[float, float, str, str]] = {
 
 # 人工单价区间（元/工日，2026 市场口径，全成本含社保）
 LABOR_BANDS = (200, 600)
+# 按城市覆盖：深圳 2026.09 起对齐造价站定额工日价格口径（官方发布 152.56~270.07），
+# 下限放宽至 130（仍拦得住 15.3 这类小数点 OCR 错）；其他城市保持市场口径
+CITY_LABOR_BANDS = {"深圳": (130, 600)}
 # 机械台班单价区间（元/台班）
 MACHINERY_BANDS = (50, 800)
 # 综合单价合理区间（元/单位工程量，粗略兜底，只拦离谱值）
@@ -116,11 +119,12 @@ def check_material_price(name: str, price: float, unit: str = "") -> Tuple[bool,
     return True, None
 
 
-def check_labor_price(price: float, trade: str = "") -> Tuple[bool, Optional[str]]:
+def check_labor_price(price: float, trade: str = "", city: str = "") -> Tuple[bool, Optional[str]]:
     if not price or price <= 0:
         return False, f"人工单价 {price} 为 0 或负值"
-    if not (LABOR_BANDS[0] <= price <= LABOR_BANDS[1]):
-        return False, f"人工单价 {price} 元/工日超出合理区间({LABOR_BANDS[0]}~{LABOR_BANDS[1]})"
+    lo, hi = CITY_LABOR_BANDS.get(city, LABOR_BANDS)
+    if not (lo <= price <= hi):
+        return False, f"人工单价 {price} 元/工日超出合理区间({lo}~{hi})"
     return True, None
 
 
@@ -287,14 +291,15 @@ def audit_labor_rates(path: Optional[str] = None) -> List[Dict[str, Any]]:
         price = float(price)
         if price <= 0:
             continue
+        city = label.split(".")[0].removesuffix("_mach")
         if trade:
-            ok, reason = check_labor_price(price, trade)
+            ok, reason = check_labor_price(price, trade, city)
             issue_type = "labor"
         elif label.endswith("_mach"):
             ok, reason = check_machinery_price(price)
             issue_type = "machinery"
         else:
-            ok, reason = check_labor_price(price)
+            ok, reason = check_labor_price(price, city=city)
             issue_type = "labor"
         if not ok:
             issues.append({

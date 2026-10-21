@@ -184,10 +184,15 @@ class QuotaManager:
                 consumption, consumption_unit = mat_data[:2]
             else:
                 continue
-            # 量价分离：优先用外部市场价/信息价，其次定额内嵌价，最后估算兜底
+            # 量价分离：优先用外部市场价/信息价，其次定额内嵌价，最后估算兜底。
+            # 内嵌价为第3元素（[消耗量,单位,基期价]），旧条件 len>=4 对3元素行永不生效
+            # 导致全部走品类估算（砂浆估算150 vs 基期价430），已修正为 len>=3。
             price = material_price_dict.get(mat_name, 0)
-            if price <= 0 and len(mat_data) >= 4:
-                price = mat_data[2]
+            if price <= 0 and len(mat_data) >= 3:
+                try:
+                    price = float(mat_data[2])
+                except (TypeError, ValueError):
+                    price = 0
             if price <= 0:
                 price = self._estimate_material_price(mat_name)
             material_cost += consumption * price
@@ -363,17 +368,50 @@ class QuotaManager:
 
     def load_price_info(self, json_path: str = None) -> Dict[str, float]:
         """加载深圳造价信息作为材料价格字典。
-        
+
+        优先 2026.09 官方期刊 CSV（约1500条含规格价），其次 2023 JSON（73条兜底）。
+
         Args:
-            json_path: 价格信息JSON文件路径，默认为config/shenzhen_price_info_2023.json
-        
+            json_path: 强制指定价格文件路径（默认自动探测）
+
         Returns:
-            材料名称到价格的字典
+            材料名称到价格的字典（含「名称」「名称 规格」两种键）
         """
+        price_dict: Dict[str, float] = {}
+
+        # --- 2026.09 期刊 CSV（主源） ---
+        csv_path = Path(__file__).parent.parent.parent / "清单数据资料" / "AI学习清单" / "广联达定额" / "2026年9月信息价_提取" / "2026年9月深圳信息价.csv"
+        if json_path is None and csv_path.exists():
+            try:
+                import csv as _csv
+
+                with csv_path.open(encoding="utf-8-sig") as f:
+                    for row in _csv.DictReader(f):
+                        if (row.get("有效") or "").strip() != "是":
+                            continue
+                        name = (row.get("材料名称") or "").strip()
+                        spec = (row.get("规格") or "").strip()
+                        price_raw = (row.get("价格") or "").strip().replace(",", "")
+                        if not name:
+                            continue
+                        try:
+                            price = float(price_raw)
+                        except ValueError:
+                            continue
+                        if price <= 0:
+                            continue
+                        price_dict[name] = price
+                        if spec:
+                            price_dict[f"{name} {spec}"] = price
+                if price_dict:
+                    return price_dict
+            except Exception:
+                pass
+
+        # --- 2023 JSON（兜底） ---
         if json_path is None:
             json_path = str(Path(__file__).parent.parent.parent / "config" / "shenzhen_price_info_2023.json")
-        
-        price_dict: Dict[str, float] = {}
+
         try:
             data = json.loads(Path(json_path).read_text(encoding="utf-8"))
             for category, items in data.get("categories", {}).items():
@@ -389,5 +427,5 @@ class QuotaManager:
         except Exception:
             # 文件不存在时返回空字典
             pass
-        
+
         return price_dict

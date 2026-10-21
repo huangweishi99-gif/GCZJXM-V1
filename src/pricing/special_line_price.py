@@ -1279,11 +1279,43 @@ def lookup_loose_material_components(
     return None, ""
 
 
+def lookup_frosted_film_components(
+    name: str, feature: str, unit: str
+) -> Tuple[Optional[dict], str]:
+    """玻璃磨砂贴膜：名称可能是「墙纸裱糊」等泛名，特征含磨砂纸/贴膜才命中
+    （福永修缮实证：玻璃窗贴磨砂纸被材料价库 glass 品类误给 267/m²）。"""
+    text = f"{name}\n{feature or ''}"
+    if "磨砂" not in text or not re.search(r"磨砂纸|磨砂膜|贴膜", text):
+        return None, ""
+    return {
+        "material_main": 18.0, "material_loss_rate": 0.05,
+        "material_aux": 2.0, "labor": 8.0, "machinery": 0.0,
+    }, "[磨砂贴膜]玻璃磨砂纸（含铺贴）"
+
+
+def lookup_leb_box_components(
+    name: str, feature: str, unit: str
+) -> Tuple[Optional[dict], str]:
+    """等电位联结箱 LEB/总等电位：小箱体，勿吃材料价库 electrical_device
+    的配电箱价（福永实证 1002/台 vs 控制价 56~154）。"""
+    text = f"{name}\n{feature or ''}"
+    if "等电位" not in text:
+        return None, ""
+    if re.search(r"接地母线|接地端子|测试板安装", name):
+        return None, ""
+    return {
+        "material_main": 85.0, "material_loss_rate": 0.0,
+        "material_aux": 5.0, "labor": 35.0, "machinery": 0.0,
+    }, "[电气]等电位联结箱（含安装）"
+
+
 def lookup_special_line_components(
     name: str, feature: str, unit: str
 ) -> Tuple[Optional[dict], str]:
     """定稿口径优先项（可打断历史弱匹配）。"""
     for fn in (
+        lookup_frosted_film_components,
+        lookup_leb_box_components,
         lookup_ceiling_opening_components,
         lookup_ceiling_slot_components,
         lookup_curtain_box_components,

@@ -77,6 +77,11 @@ def lookup_residential_finish_components(
     if not residential:
         return None, ""
 
+    # 拆除/铲除行不属于住宅精装价型（福永实证：天棚面龙骨及饰面拆除
+    # 被 [精装] 口径给 112/m²，应让出给拆除市场参考规则）
+    if re.search(r"拆除|铲除", nn):
+        return None, ""
+
     # --- B2 户型定稿编号/型号优先，避免落入粗住宅模板 ---
     if unit_n in ("组", "个", "套") and re.search(r"AB1287-400|箭牌AB1287", text):
         return _pack(778.67, 258.37, 0.0, 1.92), "[精装定稿]坐便器AB1287-400"
@@ -114,20 +119,24 @@ def lookup_residential_finish_components(
     # --- 保护层/找坡：材料进辅材，不列主材 ---
     if unit_n in ("m2", "㎡") and re.search(r"细石混凝土保护层|C20细石混凝土保护层", text):
         return _pack(0.0, 22.0, 21.0, 2.0 if "卫生间" in text else 0.5), "[精装]50mm细石混凝土保护层"
-    if unit_n in ("m2", "㎡") and re.search(r"砂浆保护层|找坡层|M20水泥砂浆", text) and "防水" not in text:
+    if (unit_n in ("m2", "㎡") and re.search(r"砂浆保护层|找坡层|M20水泥砂浆", text)
+            and "防水" not in text and "结合层" not in text):
         return _pack(0.0, 22.0, 8.4, 0.5), "[精装]20mm砂浆保护层/找坡"
     if unit_n in ("m3",) and re.search(r"回填|陶粒", text):
         return _pack(385.0, 85.0, 12.0), "[精装]卫生间陶粒回填"
 
     # --- 块料地面（按面层规格）---
     if unit_n in ("m2", "㎡") and re.search(r"块料楼地面|楼地面", nn):
+        # 满贴多工序（30厚结合层+素水泥膏+填缝剂）：辅材含砂浆/胶膏/填缝，非裸铺
+        has_bed = bool(re.search(r"结合层|素水泥膏|基层处理剂", text))
+        aux = 28.0 if has_bed else 14.0
         if re.search(r"400\s*\*\s*400|防滑瓷砖", text):
-            return _pack(45.0, 48.0, 14.0, 2.0, 0.075), "[精装]地砖400防滑"
+            return _pack(45.0, 48.0, aux, 2.0, 0.075), "[精装]地砖400防滑"
         if re.search(r"1500\s*\*\s*750", text):
-            return _pack(85.0, 48.0, 14.0, 2.0), "[精装]地砖1500*750"
+            return _pack(85.0, 48.0, aux, 2.0), "[精装]地砖1500*750"
         if re.search(r"1200\s*\*\s*600", text):
-            return _pack(55.0, 48.0, 14.0, 2.0), "[精装]地砖1200*600"
-        return _pack(55.0, 48.0, 14.0, 2.0), "[精装]块料楼地面"
+            return _pack(55.0, 48.0, aux, 2.0), "[精装]地砖1200*600"
+        return _pack(55.0, 48.0, aux, 2.0), "[精装]块料楼地面"
 
     # --- 块料墙面 ---
     if unit_n in ("m2", "㎡") and re.search(r"块料墙面", nn):

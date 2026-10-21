@@ -1,0 +1,181 @@
+[
+ {
+  "item_key": "块料楼地面",
+  "trade": "装饰装修",
+  "unit_hint": "㎡",
+  "process_chain": [
+   {"step": "基层清理", "materials": [], "note": ""},
+   {"step": "水泥砂浆找平", "materials": ["水泥砂浆"], "note": "特征常见 20 厚 1:3"},
+   {"step": "刷素水泥膏/界面剂", "materials": ["素水泥膏"], "note": ""},
+   {"step": "铺贴块料", "materials": ["块料面层", "粘贴砂浆"], "note": "含切割，损耗常 3%"},
+   {"step": "擦缝", "materials": ["白水泥/填缝剂"], "note": ""},
+   {"step": "清理养护", "materials": [], "note": ""}
+  ],
+  "missing_alerts": ["找平层厚度未写", "结合层砂浆未写", "块料规格未写"],
+  "price_anchor": "020002-33 深圳装饰SJG75（定额口径≈214-218元/㎡）",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "墙面喷刷涂料",
+  "trade": "装饰装修",
+  "unit_hint": "㎡",
+  "process_chain": [
+   {"step": "基层清理", "materials": [], "note": ""},
+   {"step": "满刮腻子", "materials": ["腻子"], "note": "几遍看特征"},
+   {"step": "打磨", "materials": [], "note": ""},
+   {"step": "封闭底漆", "materials": ["底漆"], "note": "一遍"},
+   {"step": "面漆", "materials": ["面漆"], "note": "特征写几遍刷几遍"},
+   {"step": "清理", "materials": [], "note": ""}
+  ],
+  "missing_alerts": ["腻子遍数未写", "面漆遍数未写", "无机涂料按乳胶漆同口径"],
+  "price_anchor": "020003 章 深圳装饰SJG75",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "外墙真石漆系统",
+  "trade": "装饰装修",
+  "unit_hint": "㎡",
+  "process_chain": [
+   {"step": "基层处理", "materials": [], "note": ""},
+   {"step": "抗碱封闭底漆", "materials": ["抗碱底漆"], "note": ""},
+   {"step": "中涂找平", "materials": ["质感砂浆"], "note": ""},
+   {"step": "真石漆主材喷涂", "materials": ["真石漆"], "note": "2 遍"},
+   {"step": "罩面清漆", "materials": ["罩面漆"], "note": ""}
+  ],
+  "missing_alerts": ["禁止按单一涂料价组", "缺哪层标哪层待确认"],
+  "price_anchor": "福永项目复核记录：8 道复合特征按单一价是 -35.8 万偏差根因",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "吊顶天棚",
+  "trade": "装饰装修",
+  "unit_hint": "㎡",
+  "process_chain": [
+   {"step": "弹线", "materials": [], "note": ""},
+   {"step": "吊杆安装", "materials": ["吊杆"], "note": ""},
+   {"step": "主次龙骨安装", "materials": ["轻钢龙骨"], "note": ""},
+   {"step": "罩面板安装", "materials": ["罩面板"], "note": ""},
+   {"step": "嵌缝处理", "materials": ["嵌缝材料"], "note": ""}
+  ],
+  "missing_alerts": ["艺术吊顶/异形人工上浮", "跌级天棚另计"],
+  "price_anchor": "020002 章 深圳装饰SJG75",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "石材墙面干挂",
+  "trade": "装饰装修",
+  "unit_hint": "㎡",
+  "process_chain": [
+   {"step": "基层处理", "materials": [], "note": ""},
+   {"step": "弹线埋件/钢龙骨", "materials": ["钢骨架", "预埋件"], "note": ""},
+   {"step": "石材挂件安装", "materials": ["不锈钢挂件"], "note": ""},
+   {"step": "石材安装", "materials": ["石材"], "note": "含损耗"},
+   {"step": "打胶勾缝", "materials": ["云石胶/密封胶"], "note": ""},
+   {"step": "清洁", "materials": [], "note": ""}
+  ],
+  "missing_alerts": ["石材厚度/品种未写", "钢架含量未写"],
+  "price_anchor": "020003 干挂章 深圳装饰SJG75",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "拆除工程",
+  "trade": "拆除",
+  "unit_hint": "㎡",
+  "process_chain": [
+   {"step": "成品保护", "materials": ["保护膜"], "note": "周边成品保护"},
+   {"step": "面层拆除", "materials": [], "note": ""},
+   {"step": "基层/龙骨拆除", "materials": [], "note": ""},
+   {"step": "垃圾装袋清运", "materials": [], "note": "运距特征没写标待确认"}
+  ],
+  "missing_alerts": ["运距未写", "整项拆除(项/系统)包干价不构成可比单价"],
+  "price_anchor": "market_reference demolition_* 规则（如天棚龙骨饰面拆除 12+3）",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "电力电缆敷设",
+  "trade": "安装",
+  "unit_hint": "m",
+  "process_chain": [
+   {"step": "敷设", "materials": [], "note": "人工"},
+   {"step": "电缆主材", "materials": ["电缆"], "note": "按截面解析价，损耗 1%"}
+  ],
+  "missing_alerts": ["禁止用小截面无规格分档价覆盖大截面", "端头/附件另列项时不含"],
+  "price_anchor": "030208 章 电气SJG74-2（5×10≈34.8元/m、5×16≈56、5×35≈118）",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "镀锌钢管敷设",
+  "trade": "安装",
+  "unit_hint": "m",
+  "process_chain": [
+   {"step": "安装", "materials": [], "note": "人工，含支吊架"},
+   {"step": "管材主材", "materials": ["镀锌钢管"], "note": "按 DN 规格解析价"},
+   {"step": "管件辅材", "materials": ["管件"], "note": "含在辅材"},
+   {"step": "试压/消毒", "materials": [], "note": "给排水管"}
+  ],
+  "missing_alerts": ["DN 规格未写无法解析价"],
+  "price_anchor": "03 册给排水 SJG74-8（DN50 定额口径 53.86 元/m）",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "钢筋工程",
+  "trade": "土建",
+  "unit_hint": "t",
+  "process_chain": [
+   {"step": "制作", "materials": [], "note": "人工 0.9 工日/t 级"},
+   {"step": "绑扎安装", "materials": [], "note": "人工"},
+   {"step": "钢筋主材", "materials": ["钢筋"], "note": "期刊 2026 口径，禁止 2021 高点"},
+   {"step": "垫铁绑丝", "materials": ["垫铁", "绑丝"], "note": "辅材"}
+  ],
+  "missing_alerts": ["2026 口径校准：3900 主材 + 980 人工 + 500 辅材（深圳）"],
+  "price_anchor": "深圳信息价期刊 2026.09 钢筋条目",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "植筋",
+  "trade": "土建",
+  "unit_hint": "根",
+  "process_chain": [
+   {"step": "钻孔", "materials": [], "note": ""},
+   {"step": "清孔", "materials": [], "note": ""},
+   {"step": "注胶", "materials": ["植筋胶"], "note": ""},
+   {"step": "植筋", "materials": ["钢筋"], "note": ""},
+   {"step": "固化", "materials": [], "note": ""}
+  ],
+  "missing_alerts": ["控制价常含多工序（12-44元/根），纯植筋三档 2.85/5.21/8.03 对比"],
+  "price_anchor": "market_reference 植筋三档 φ8-10(1.2+1.5)/φ12-16(2+2.3)/φ18-25(3.5+3.7)",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "碳纤维加固",
+  "trade": "土建",
+  "unit_hint": "㎡",
+  "process_chain": [
+   {"step": "基层处理", "materials": [], "note": ""},
+   {"step": "底胶", "materials": ["底胶"], "note": ""},
+   {"step": "找平胶", "materials": ["找平胶"], "note": ""},
+   {"step": "浸渍胶", "materials": ["浸渍胶"], "note": ""},
+   {"step": "碳布粘贴", "materials": ["碳纤维布"], "note": "层数看特征"},
+   {"step": "固化养护", "materials": [], "note": ""}
+  ],
+  "missing_alerts": ["碳布层数未写", "复合特征禁止单一价型"],
+  "price_anchor": "定额结构加固章",
+  "source": "craft-pricing skill library"
+ },
+ {
+  "item_key": "园路",
+  "trade": "景观",
+  "unit_hint": "㎡",
+  "process_chain": [
+   {"step": "路基夯实", "materials": [], "note": ""},
+   {"step": "垫层", "materials": ["混凝土/碎石"], "note": "厚度看特征"},
+   {"step": "基层", "materials": ["基层材料"], "note": ""},
+   {"step": "结合层", "materials": ["砂浆"], "note": ""},
+   {"step": "面层铺装", "materials": ["花岗岩/透水砖/沥青"], "note": "期刊无花岗岩石材价时留空标待询价"},
+   {"step": "养护", "materials": [], "note": ""}
+  ],
+  "missing_alerts": ["期刊无石材价时面层留空，其余层照常组", "复合结构禁止单一价"],
+  "price_anchor": "福永项目复核记录：园路 +39.8 万偏差根因（期刊无花岗岩石材价）",
+  "source": "craft-pricing skill library"
+ }
+]

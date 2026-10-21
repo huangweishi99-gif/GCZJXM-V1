@@ -135,8 +135,15 @@ def load_audit_samples(
             )
         )
     if limit and len(samples) > limit:
-        step = max(1, len(samples) // limit)
-        samples = samples[::step][:limit]
+        # 稳定抽样：按 record_id 哈希排序取前 limit，与池大小解耦。
+        # 等距步长抽样在池大小变化（学入新定稿）时整体换样，曾造成 core -14pp 假回归（2026-10-19 实证）；
+        # 哈希抽样保证同一 record_id 永远同命运，学入前后基线逐行可比。
+        import hashlib
+
+        samples = sorted(
+            samples,
+            key=lambda s: hashlib.md5(str(s.record_id).encode()).hexdigest(),
+        )[:limit]
     return samples
 
 

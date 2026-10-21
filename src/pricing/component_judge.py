@@ -1193,34 +1193,16 @@ def judge_line_components(
         
         # 电缆截面解析明确时，允许auto_fill
         cable_threshold = _get_auto_threshold("mep_install_profile")
-        # 先尝试market_reference作为校准
-        mkt_city = ctx.city if ctx else ""
-        mkt_tier = ctx.price_tier if ctx else "mid"
-        market = lookup_market_reference(name, feature, unit, city=mkt_city, tier=mkt_tier)
-        
-        if market and market.confidence >= cable_threshold:
-            # market_reference有更高置信度时采用，直接允许auto_fill
-            result.material_main = float(market.material_main or result.material_main)
-            result.material_aux = float(market.material_aux or result.material_aux)
-            result.labor = float(market.labor or result.labor)
-            result.machinery = float(market.machinery or result.machinery)
-            result.material_loss_rate = float(getattr(market, "loss_rate", 0) or result.material_loss_rate)
-            result.cost_unit_price = _component_total(result.as_components())
-            result.field_confidence = {k: market.confidence for k in ("material_main", "material_aux", "labor", "machinery")}
-            result.confidence = market.confidence
-            result.source = "market_reference"
-            result.notes.append(f"电缆市场参考：{market.note}")
-            # 电缆后备：仍走阈值判断，防止错误市场价自动填入
-            result.auto_fill_ok = _auto(market.confidence >= _get_auto_threshold("market_reference"), "market_reference")
-        else:
-            # 使用截面解析结果，当confidence足够时允许auto_fill
-            result.confidence = 0.84
-            result.field_confidence = {
-                k: 0.84 for k in ("material_main", "material_aux", "labor", "machinery")
-            }
-            # 电缆截面解析明确，走阈值判断
-            result.auto_fill_ok = _auto(result.confidence >= cable_threshold, "mep_install_profile")
-        
+        # 截面解析成功即采信解析价（原"市场参考校准"已删除：市场规则多为无规格分档的
+        # 小截面敷设价，如 electrical_power_cable 65元/m 对应 4×10 级，会把 4×95+1×50
+        # 的 301 元/m 覆盖成 65 元/m，福永实证 -79%）
+        result.confidence = 0.84
+        result.field_confidence = {
+            k: 0.84 for k in ("material_main", "material_aux", "labor", "machinery")
+        }
+        # 电缆截面解析明确，走阈值判断
+        result.auto_fill_ok = _auto(result.confidence >= cable_threshold, "mep_install_profile")
+
         result.warnings = _validate_expectations(craft, result.as_components(), role)
         return _done(result)
 
@@ -1403,7 +1385,7 @@ def judge_line_components(
     is_power_cable = bool(re.search(r"电缆|YJV|YJLV", text, re.I))
     if is_power_cable and not is_jdg_conduit:
         from src.pricing.mep_install_price import lookup_power_cable_components
-        
+
         cable_comps, cable_note = lookup_power_cable_components(name, feature, unit)
         if cable_comps and _components_usable(cable_comps):
             result.material_main = float(cable_comps.get("material_main") or 0)
@@ -1896,17 +1878,11 @@ def judge_line_components(
             result.notes.append(
                 f"[工艺价型]{craft.label}{scope} 样本{n} 标签{tk}={tv or '—'}"
             )
-            result.notes.append("工艺价型层已禁用，继续fall through")
-            result.material_main = None
-            result.material_aux = None
-            result.labor = None
-            result.machinery = None
-            result.material_loss_rate = 0.0
-            result.cost_unit_price = None
-            result.confidence = 0.0
-            result.source = ""
-            result.field_confidence = {}
-            result.auto_fill_ok = False
+            result.auto_fill_ok = _auto(
+                profile_conf >= _get_auto_threshold("craft_profile"), "craft_profile"
+            )
+            result.warnings = _validate_expectations(craft, result.as_components(), role)
+            return _done(result)
         else:
             result.notes.append(
                 f"工艺价型样本{n}未通过合理性校验或归类为「装饰综合」，已跳过"
@@ -1917,6 +1893,31 @@ def judge_line_components(
     mat, mnote = lookup.find(name, feature or "", unit, ctx=ctx)
     shares = _share_map(craft.template_share)
     hybrid_conf = 0.0
+
+    # 兜底 craft（装饰综合）被非装饰品类行命中时，装饰湿作业份额严重失真
+    # （福永实证：端子箱人工882/垫层人工363，安装/土建行主材占比应80%+）。
+    # 按品类词表分流份额；装饰词命中则保持装饰份额不动。
+    if craft.craft_id == "generic_finish":
+        _text = f"{name} {feature or ''}"
+        _deco = ("墙", "地面", "楼面", "天棚", "吊顶", "踢脚", "门", "窗", "柜",
+                 "台面", "石材", "瓷砖", "砖", "木地板", "地毯", "墙纸", "涂料",
+                 "乳胶漆", "油漆", "饰面", "软包", "硬包", "隔断", "幕墙", "栏杆", "扶手")
+        _mep = ("空调", "泵", "阀", "仪表", "灯", "箱", "风机", "盘管", "消毒器",
+                "洁具", "水龙头", "配电", "电缆", "桥架", "母线", "开关", "插座",
+                "探头", "模块", "广播", "监控", "摄像", "探测器", "模块箱", "端子",
+                "通风器", "换气", "热水器")
+        _civil = ("土方", "混凝土", "垫层", "基础", "园路", "铺装", "拆除", "砌筑",
+                  "抹灰", "钢筋", "模板", "脚手架", "路面", "缘石", "树池", "绿化",
+                  "种植", "加固", "植筋", "灌浆", "找平", "防水", "保温", "瓦",
+                  "排水板", "检查井", "化粪池", "水池")
+        if any(k in _text for k in _mep) and not any(k in _text for k in _deco):
+            shares = {"material_main": 0.85, "material_aux": 0.05,
+                      "labor": 0.08, "machinery": 0.02}
+            craft = CraftMatch(**{**craft.__dict__, "label": "安装综合(分流)"})
+        elif any(k in _text for k in _civil) and not any(k in _text for k in _deco):
+            shares = {"material_main": 0.55, "material_aux": 0.15,
+                      "labor": 0.22, "machinery": 0.08}
+            craft = CraftMatch(**{**craft.__dict__, "label": "土建综合(分流)"})
 
     unit_n = normalize_unit(unit)
     bare_bulk = unit_n in ("吨", "t", "kg", "千克") or re.fullmatch(
@@ -1962,17 +1963,12 @@ def judge_line_components(
                 result.notes.append(
                     f"按「{craft.label}」份额模板推算辅材/人工（主材来自价库）"
                 )
-                result.notes.append("material_plus_template层已禁用，继续fall through")
-                result.material_main = None
-                result.material_aux = None
-                result.labor = None
-                result.machinery = None
-                result.material_loss_rate = 0.0
-                result.cost_unit_price = None
-                result.confidence = 0.0
-                result.source = ""
-                result.field_confidence = {}
-                result.auto_fill_ok = False
+                result.auto_fill_ok = _auto(
+                    result.confidence >= _get_auto_threshold("material_plus_template"),
+                    "material_plus_template",
+                )
+                result.warnings = _validate_expectations(craft, result.as_components(), role)
+                return _done(result)
 
     # --- 层 4b：定额匹配（特征描述驱动定价）---
     quota_mgr = QuotaManager(repo)
@@ -2005,7 +2001,7 @@ def judge_line_components(
         total = sum(quota_cost.values())
         if total > 0:
             match_score = quota_info.get("match_score", 0)
-            
+
             min_price, max_price = 10, 5000
             unit_norm = (unit or "").lower()
             if unit_norm in ("m", "米"):
@@ -2014,17 +2010,46 @@ def judge_line_components(
                 min_price, max_price = 5, 10000
             elif "㎡" in unit_norm or "m2" in unit_norm:
                 min_price, max_price = 5, 500
-            
-            # 定额库目前是样例消耗量，模糊命中不能当正式成本。
-            # 只记建议，价格留给后续历史/市场参考；没有更好来源时保持未组价。
+            in_range = not (total < min_price or total > max_price)
+
+            # 2026-10-20 解锁：四册真定额已入库（4057子目：OCR勾稽+期刊价映射+
+            # 丢点区间修复+行级一致性修复），样例闸门 obsolete。高分匹配+价格
+            # 合理区间+组件完整 → 正式入价；否则维持建议提示不动 judge 输出。
+            if match_score >= 75 and in_range and _components_usable(quota_cost):
+                conf = 0.80
+                result.material_main = float(quota_cost.get("material_main") or 0)
+                result.material_aux = float(quota_cost.get("material_aux") or 0)
+                result.labor = float(quota_cost.get("labor") or 0)
+                result.machinery = float(quota_cost.get("machinery") or 0)
+                result.material_loss_rate = 0.0  # 定额消耗量已含施工损耗
+                result.cost_unit_price = _component_total(result.as_components())
+                result.field_confidence = {
+                    k: conf for k in ("material_main", "material_aux", "labor", "machinery")
+                }
+                result.confidence = conf
+                result.source = "quota_feature"
+                result.quota_hint = (
+                    f"[定额入价] {quota_info.get('quota_code', '')}"
+                    f"「{quota_info.get('name', '')}」匹配{match_score:.0f}%"
+                )
+                result.notes.append(
+                    f"[定额入价] {quota_info.get('quota_code', '')}"
+                    f"「{quota_info.get('name', '')}」匹配{match_score:.0f}% "
+                    f"{total:.2f}元/{quota_info.get('unit') or unit}"
+                    f"（期刊价映射+基期价兜底，消耗量含损耗）"
+                )
+                result.auto_fill_ok = _auto(conf >= _get_auto_threshold("quota_feature"), "quota_feature")
+                result.warnings = _validate_expectations(craft, result.as_components(), role)
+                return _done(result)
+
             hint = (
                 f"[定额建议·未入价] {quota_info.get('quota_code', '')}"
                 f"「{quota_info.get('name', '')}」"
                 f"匹配{match_score:.0f}% 参考{total:.2f}元/{quota_info.get('unit') or unit}"
                 + (
                     f"（超出{min_price}-{max_price}，仅供核对）"
-                    if total < min_price or total > max_price
-                    else "（样例定额，须人工套正式消耗量后再入价）"
+                    if not in_range
+                    else "（匹配分<75，仅供核对）"
                 )
             )
             result.quota_hint = hint

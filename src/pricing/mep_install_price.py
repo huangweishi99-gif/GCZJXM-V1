@@ -140,7 +140,11 @@ def lookup_sanitary_fixture_components(
     if "抓杆" in text or nn in ("安全扶手",):
         return {"material_main": 15.0, "material_aux": 0.0, "labor": 0.0,
                 "machinery": 0.0, "material_loss_rate": 0.0}, "[洁具]抓杆/安全扶手"
-    if "开孔" in text or "开槽" in text:
+    # 开孔/开槽是配合工种小项：仅当名称指向开孔/槽本身才收。
+    # 成品整体件（洗漱台等）特征里的"开槽干挂安装"是工艺描述，
+    # 若套单开孔人工会吃掉整柜定价值（滨海20261019洗漱台 定稿主材2250/人工800 vs 开孔35）。
+    if ("开孔" in text or "开槽" in text) and not re.search(
+            r"洗漱台|盥洗台|梳妆台|整体|成品台|一体", nn):
         # 石材台面开洗菜盆孔 实_主材0, 实_人工35
         return {"material_main": 0.0, "material_aux": 0.0, "labor": 35.0,
                 "machinery": 0.0, "material_loss_rate": 0.0}, "[洁具]台面开孔"
@@ -148,8 +152,11 @@ def lookup_sanitary_fixture_components(
         # 小便斗隔断 实_主材147.5-204, 实_人工50
         return {"material_main": 200.0, "material_aux": 8.0, "labor": 50.0,
                 "machinery": 0.0, "material_loss_rate": 0.0}, "[洁具]隔断"
-    if ("水龙头" in text or "水咀" in text) and not re.search(r"洗手盆|洗脸盆|台盆|水槽", text):
+    if ("水龙头" in text or "水咀" in text) and not re.search(
+            r"洗手盆|洗脸盆|台盆|水槽|洗漱台|洗手台|一体台", text):
         # 拖把池水龙头/用水咀龙头 实_主材36, 实_人工20（整套盆+龙头不在内）
+        # 守卫含洗漱台/洗手台：成品整体柜的"含水龙头五金"是配件描述，不套单龙头价
+        # （滨海20261019洗漱台 定稿主材2250/人工800 vs 单龙头59）
         return {"material_main": 36.0, "material_aux": 3.0, "labor": 20.0,
                 "machinery": 0.0, "material_loss_rate": 0.0}, "[洁具]水龙头"
 
@@ -1481,6 +1488,10 @@ def lookup_mep_accessory_components(
         }, "[通风调试]检测调试系统"
 
     if unit_n in ("台", "个", "套") and re.search(r"配电箱|配电柜", text) and not re.search(r"移位配电箱", text):
+        # 高压设备（PT柜/进线柜/馈线柜/环网柜等10kV级）是万元级专业设备，低压配电箱
+        # 样本价（几千元）套上会差一个数量级（福永实证：PT柜GT1 被给 1777 vs 控制 39139）
+        if re.search(r"高压|PT柜|PT\d|进线柜|馈线柜|环网柜|开闭所|计量柜|避雷器柜", text):
+            return None, ""
         if re.search(r"落地式|落地", text):
             # 实际样本：落地式配电箱实_主材8637.4,实_辅材36.96,实_人工524.73,实_机械18.91
             main = 8637.4
@@ -1767,10 +1778,17 @@ def lookup_power_cable_components(
     # 特征中包含"电缆头制作安装"等不应排除电缆本身
     if re.search(r"^电缆头|^电缆终端|^电缆附件", name):
         return None, ""
+    # 电缆沟/电缆井名称含"电缆"但属土建行，规格800*800是沟截面非导体截面
+    # （福永实证：电缆沟被解析成640000mm²铜芯电缆→46万元/m）
+    if re.search(r"电缆沟|电缆井|电缆排管", name):
+        return None, ""
 
     spec = _extract_power_cable_spec(name, feature)
     total_mm2 = _sum_cable_core_area(spec)
     if total_mm2 <= 0:
+        return None, ""
+    # 导体总截面上限：常用最大电缆约 4×400+1×185≈1785mm²；超出即尺寸误解析
+    if total_mm2 > 2000:
         return None, ""
 
     is_al = bool(re.search(r"YJLV|铝芯", text, re.I))

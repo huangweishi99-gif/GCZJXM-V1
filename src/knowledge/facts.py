@@ -36,14 +36,21 @@ def rebuild_line_price_facts(conn, standard_item_id: Optional[int] = None) -> in
         f"""SELECT cr.standard_item_id,
                    COALESCE(p.city, '') AS city,
                    COALESCE(p.price_tier, 'mid') AS price_tier,
+                   COALESCE(si.unit_norm, '') AS unit_norm,
                    cr.material_main, cr.material_loss_rate, cr.material_aux,
                    cr.labor, cr.machinery, cr.cost_unit_price,
                    COALESCE(cr.is_verified, 0) AS is_verified
             FROM cost_records cr
             JOIN projects p ON p.id = cr.source_project_id
+            JOIN standard_items si ON si.id = cr.standard_item_id
             WHERE 1=1 {where}""",
         params,
     ).fetchall()
+
+    # 整项措施费（unit=项/系统/宗/座）是包干价，同名同特征也可差 33 倍（垂直运输 450 vs 15000），
+    # 不构成可比单价；进入聚合只会污染中位数（2026-10-19 实证）。整项行留给市场参考/人工复核。
+    _LUMP_UNITS = ("项", "系统", "宗", "座")
+    rows = [r for r in rows if r["unit_norm"] not in _LUMP_UNITS]
 
     buckets: dict = {}
     for r in rows:

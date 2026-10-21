@@ -40,7 +40,12 @@ pages = json.loads(SRC.read_text(encoding="utf-8"))
 # 2a) 费用行/表头行混入材料（电气册"厶安明施工措施费"/"子目名称"/"其他材料费"
 # 系数行等）→ 整条丢弃。
 _FEE_LIKE = ("措施费", "综合单价", "规费", "税金", "管理费", "利润", "参考价格",
-             "子目名称", "工料机", "其他材料费", "全丿", "厶安")
+             "子目名称", "工料机", "其他材料费", "全丿", "厶安",
+             "使用费")  # 仪器仪表使用费是费用科目（仪表册实证 458 行混入材料列）
+# 表头碎片行（2026-10-21 实证 1363 行）：名称=上一行表头残片「×宽B（cm）×高H（cm」，
+# 值列错位（基期价清一色 27.77 或粘连出 6 千亿），整条丢弃。
+import re as _re
+_FRAG_LIKE = _re.compile(r"^[×xX＊*]\s*[宽见]")
 _MACH_PREFIX = "机"
 # 机械行词尾（给排水册机械名不以"机"开头：砂轮切割机/管子切断套丝机/普通车床等）。
 # 基期价与台班消耗常错位且机械占比小，整条丢弃同装饰册策略。
@@ -339,7 +344,7 @@ for p in pages:
             if raw_nm.startswith(_MACH_PREFIX) or any(w in raw_nm for w in _MACH_WORDS):
                 drop_mach += 1
                 continue
-            if any(w in raw_nm for w in _FEE_LIKE):
+            if any(w in raw_nm for w in _FEE_LIKE) or _FRAG_LIKE.match(raw_nm):
                 drop_mach += 1
                 continue
             nm = _clean_name(raw_nm)

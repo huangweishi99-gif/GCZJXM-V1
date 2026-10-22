@@ -2727,6 +2727,7 @@
       "labor": 5.0,
       "machinery": 0.1,
       "confidence": 0.76,
+      "preserve_components": true,
       "source_note": "实际样本校准：缝贴纸带刮平整实_主材3.5,实_人工5.0（2次重复样本）"
     },
     {
@@ -7647,11 +7648,15 @@
       "units": [
         "m³"
       ],
-      "material_main": 450,
-      "material_aux": 30,
-      "labor": 95,
-      "machinery": 15,
-      "source_note": "市场参考：混凝土垫层"
+      "material_main": 130,
+      "material_aux": 0,
+      "labor": 60,
+      "machinery": 0,
+      "preserve_components": true,
+      "cities": [
+        "中山"
+      ],
+      "source_note": "审计校准：中山云湾定稿 LC15轻集料混凝土垫层 13行一致 实_主材130,实_人工60；限定中山。原450/95取自无城市单行样本，命中行零通过"
     },
     {
       "id": "sewage_well",
@@ -8692,6 +8697,7 @@
       "labor": 0.0,
       "machinery": 0.1,
       "confidence": 0.76,
+      "preserve_components": true,
       "source_note": "实际样本校准：保洁交付实_主材1.2,实_人工7.8（2次重复样本）"
     },
     {
@@ -14143,6 +14149,7 @@
       "material_aux": 5.975,
       "labor": 20,
       "machinery": 0,
+      "preserve_components": true,
       "source_note": "实际样本校准：顶棚抹灰面油漆D1实_主材4.35人工20"
     },
     {
@@ -18497,6 +18504,7 @@
       "material_aux": 0,
       "labor": 0,
       "machinery": 0.0,
+      "preserve_components": true,
       "source_note": "实际样本校准：中山沥青防水实_主材38",
       "cities": [
         "中山"

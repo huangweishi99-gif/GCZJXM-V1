@@ -5918,12 +5918,15 @@
       "units": [
         "㎡"
       ],
-      "material_main": 0.95,
-      "material_aux": 6.66,
-      "labor": 11.05,
-      "machinery": 0.38,
+      "material_main": 3.5,
+      "material_aux": 0,
+      "labor": 20,
+      "machinery": 0,
       "preserve_components": true,
-      "source_note": "实际样本校准：深圳天花/墙面挂耐水腻子25条同值 main=0.95,aux=6.66,labor=11.05,mach=0.38（原市场参考主材7.6偏高，后误存为3.5/20已改回实值）"
+      "cities": [
+        "深圳"
+      ],
+      "source_note": "审计校准：深圳岁宝壹品苑定稿 天花挂耐水腻子 31行定稿一致 实_主材3.5,实_辅材0,实_人工20,实_机械0；限定深圳。原0.95/6.66/11.05口径已过时，命中行零通过。中山内墙耐水腻子为主材0口径，不套用"
     },
     {
       "id": "ceiling_opening_hole",

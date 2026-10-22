@@ -25,7 +25,8 @@ _CHAR_FIX = {
     "χ": "x", "Χ": "X", "×": "x", "*": "x", "✕": "x",
     "．": ".", "·": ".", "•": ".",
     "（": "(", "）": ")",
-    "φ": "φ", "Φ": "φ", "小": "φ", "寸": "φ",  # 定额OCR φ→小
+    "φ": "φ", "Φ": "φ", "小": "φ", "寸": "φ", "巾": "φ",  # 定额OCR φ→小；期刊OCR φ→巾
+    "巧": "15",  # 期刊/定额 OCR「15」粘连成「巧」（M巧=M15、DN巧0=DN150、×巧0=×150）
     "一": "-", "–": "-", "—": "-",
 }
 # 括号说明词：定额「（综合）」「（成品）」等不影响价格匹配
@@ -38,6 +39,7 @@ _SPEC_PATTERNS = {
     "mortar": re.compile(r"M\s*(\d+(?:\.\d+)?)"),          # 砂浆强度等级 M20
     "tile": re.compile(r"(\d{3,4})\s*(?:mm)?\s*[x×*]\s*(\d{3,4})"),  # 600x600 砖/板规格
     "dn": re.compile(r"DN\s*(\d+(?:\.\d+)?)", re.I),
+    "pn": re.compile(r"PN\s*(\d+(?:\.\d+)?)", re.I),  # 法兰压力级：DN 相同但 PN 不同是不同件
     "dia": re.compile(r"φ\s*(\d+(?:\.\d+)?)"),
     "thick": re.compile(r"(\d+(?:\.\d+)?)\s*(?:mm)?厚"),
 }
@@ -56,6 +58,8 @@ def _normalize(raw: str) -> str:
     s = _MI_GARBLED.sub("M10", s)  # 必须在剥括号/单位之前
     s = _PAREN_NOISE.sub("", s)
     s = re.sub(r"\s+", "", s)
+    # 数字后紧跟空括号 = 0（期刊 OCR「φ40」写成「巾4()」；() 前是小数点的 20.() 不触发）
+    s = re.sub(r"(\d)\(\)", r"\g<1>0", s)
     # 循环剥离尾部单位词（玻璃胶300mL支 → 玻璃胶300）
     for _ in range(4):
         s2 = re.sub(r"(?<=\d)(?:mL|ml|ML|升|L|支|片|套|个|只|根|条|块|桶|卷|袋|台班)$", "", s)
@@ -70,6 +74,7 @@ def _core_name(s: str) -> str:
     s = re.sub(r"M\s*\d+(?:\.\d+)?", "", s)
     s = re.sub(r"\d{3,4}\s*(?:mm)?\s*x\s*\d{3,4}", "", s)
     s = re.sub(r"DN\s*\d+(?:\.\d+)?", "", s, flags=re.I)
+    s = re.sub(r"PN\s*\d+(?:\.\d+)?", "", s, flags=re.I)
     s = re.sub(r"φ\s*\d+(?:\.\d+)?(?:x\d+(?:\.\d+)?)?", "", s)
     s = re.sub(r"\d+(?:\.\d+)?\s*(?:mm)?厚", "", s)
     s = re.sub(r"[x×*]\d+(?:\.\d+)?(?:x\d+(?:\.\d+)?)?$", "", s)  # 尾部截面 25x25x2.5
@@ -94,6 +99,9 @@ def _specs(s: str) -> Dict[str, Tuple]:
     m = _SPEC_PATTERNS["dn"].search(s)
     if m:
         out["dn"] = (float(m.group(1)),)
+    m = _SPEC_PATTERNS["pn"].search(s)
+    if m:
+        out["pn"] = (float(m.group(1)),)
     m = _SPEC_PATTERNS["dia"].search(s)
     if m:
         out["dia"] = (float(m.group(1)),)

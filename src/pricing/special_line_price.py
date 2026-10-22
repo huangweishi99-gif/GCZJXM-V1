@@ -254,12 +254,40 @@ def lookup_curtain_box_components(
     }, "[默认]窗帘盒 人工55元/m"
 
 
+def lookup_stainless_light_slot_components(
+    name: str, feature: str, unit: str
+) -> Tuple[Optional[dict], str]:
+    """不锈钢型材灯槽（中山云湾定稿口径，按延长米）。
+
+    与石膏板灯槽不同：主材是不锈钢型材本身。全库 13 行全在中山，
+    人工一律 25、辅材 4；主材按做法分两档——金属装饰线条展开料 34，
+    含双层阻燃基层的 24。
+    """
+    nn = normalize_name(name)
+    text = normalize_name(f"{name}\n{feature}")
+    if "不锈钢" not in nn or "灯槽" not in nn:
+        return None, ""
+    if normalize_unit(unit) not in ("m", "米"):
+        return None, ""
+    main = 24.0 if re.search(r"阻燃基层|双层", text) else 34.0
+    return {
+        "material_main": main,
+        "material_loss_rate": 0.0,
+        "material_aux": 4.0,
+        "labor": 25.0,
+        "machinery": 0.0,
+    }, f"[定稿口径]中山不锈钢灯槽 主材{main:g}/人工25/辅材4"
+
+
 def lookup_light_slot_linear_components(
     name: str, feature: str, unit: str
 ) -> Tuple[Optional[dict], str]:
     """灯槽延长米（100×200 等）。"""
     nn = normalize_name(name)
     text = normalize_name(f"{name}\n{feature}")
+    # 不锈钢型材灯槽是主材口径，不套石膏板灯槽的人工50（见 lookup_stainless_light_slot_components）
+    if "不锈钢" in nn:
+        return None, ""
     if "灯槽" not in nn or re.search(r"开槽|涂料|无机", nn):
         return None, ""
     if normalize_unit(unit) not in ("m", "米"):
@@ -1319,6 +1347,7 @@ def lookup_special_line_components(
         lookup_ceiling_opening_components,
         lookup_ceiling_slot_components,
         lookup_curtain_box_components,
+        lookup_stainless_light_slot_components,
         lookup_light_slot_linear_components,
         lookup_stone_arc_guard_components,
         lookup_washbasin_counter_components,

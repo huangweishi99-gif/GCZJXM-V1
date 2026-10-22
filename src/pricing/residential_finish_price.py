@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from typing import Optional, Tuple
 
+from src.knowledge.project_materials import extract_material_codes
 from src.normalize.text import normalize_name, normalize_unit
 
 
@@ -62,6 +63,14 @@ def lookup_residential_finish_components(
     unit_n = normalize_unit(unit)
     nn = normalize_name(name)
     text = normalize_name(f"{name}\n{feature}")
+
+    # 带项目物料编号（CT-01/PT-01/ST-02 等）的行，价格由该项目主材表决定，
+    # B2 户型死值盖上去会跨项目报错（云湾 CT-01 块料实主材 14 被报 55）。
+    # 让位给后续主材编号层与历史匹配。门槛石/挡水条除外：其编号是石材整板价，
+    # 放行会被主材表层按板价报（门槛石 ST-02 实 135 报成 830）。
+    if extract_material_codes(name, feature) and not re.search(r"门槛石|挡水条|过门石", text):
+        return None, ""
+
     residential = _is_residential_context(text)
 
     # --- 合入他项：金标准为空，不估數 ---
